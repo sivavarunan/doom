@@ -1,11 +1,10 @@
-import Image from "next/image";
-import { SidebarComp } from "./pages/MainPage/page";
+import { Indexpage } from "./pages/IndexPage/page";
 
 export default function Home() {
   return (
-    
-      <SidebarComp/>
-  
-    
+    <div>  
+        <Indexpage />
+    </div>
+
   );
 }
