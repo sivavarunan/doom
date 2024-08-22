@@ -6,5 +6,4 @@ function homepage() {
     <SidebarComp/>
   )
 }
-
 export default homepage
