@@ -16,14 +16,14 @@ export function SidebarComp() {
     const links = [
         {
             label: "Dashboard",
-            href: "/pages/Dashboard",
+            href: "/pages/MainPage",
             icon: (
                 <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
             ),
         },
         {
             label: "Profile",
-            href: "/pages/profile",
+            href: "/pages/Profile",
             icon: (
                 <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
             ),
@@ -37,7 +37,7 @@ export function SidebarComp() {
         },
         {
             label: "Logout",
-            href: "/pages/LoginPage/",
+            href: "/pages/LoginPage",
             icon: (
                 <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
             ),
@@ -64,7 +64,7 @@ export function SidebarComp() {
                         <SidebarLink
                             link={{
                                 label: "About",
-                                href: "/pages/about",
+                                href: "/pages/AboutPage",
                                 icon: (
                                     <Image
                                         src="/anime.jpg"
@@ -136,3 +136,4 @@ const Dashboard = () => {
         </div>
     );
 };
+
