@@ -1,13 +1,49 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Label } from "@/app/componenets/ui/label";
 import { Input } from "@/app/componenets/ui/input";
 import { cn } from "@/lib/utils";
 
 export function LoginForm() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+
+    const validateEmail = (email: string) => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    };
+
+    const validateForm = () => {
+        let valid = true;
+        const newErrors: { email?: string; password?: string } = {};
+
+        if (!email) {
+            newErrors.email = "Email is required.";
+            valid = false;
+        } else if (!validateEmail(email)) {
+            newErrors.email = "Please enter a valid email address.";
+            valid = false;
+        }
+
+        if (!password) {
+            newErrors.password = "Password is required.";
+            valid = false;
+        } else if (password.length < 6) {
+            newErrors.password = "Password must be at least 6 characters long.";
+            valid = false;
+        }
+
+        setErrors(newErrors);
+        return valid;
+    };
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("Form submitted");
+        if (validateForm()) {
+            console.log("Form submitted");
+            console.log(email, password);
+        }
     };
 
     return (
@@ -25,11 +61,33 @@ export function LoginForm() {
                 <div className="mb-2 space-y-2">
                     <LabelInputContainer>
                         <Label htmlFor="email">Email Address</Label>
-                        <Input id="email" placeholder="example@gmail.com" type="email" aria-label="Email Address" />
+                        <Input
+                            id="email"
+                            placeholder="example@gmail.com"
+                            type="email"
+                            aria-label="Email Address"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className={errors.email ? "border-red-500" : ""}
+                        />
+                        {errors.email && (
+                            <span className="text-red-600 text-sm font-mono">{errors.email}</span>
+                        )}
                     </LabelInputContainer>
                     <LabelInputContainer className="mb-4">
                         <Label htmlFor="password">Password</Label>
-                        <Input id="password" placeholder="••••••••" type="password" aria-label="Password" />
+                        <Input
+                            id="password"
+                            placeholder="••••••••"
+                            type="password"
+                            aria-label="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className={errors.password ? "border-red-500" : ""}
+                        />
+                        {errors.password && (
+                            <span className="text-red-600 text-sm font-mono ">{errors.password}</span>
+                        )}
                     </LabelInputContainer>
                     <button
                         className="bg-gradient-to-br top-4 relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
