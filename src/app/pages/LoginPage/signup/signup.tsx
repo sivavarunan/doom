@@ -4,6 +4,8 @@ import { Label } from "@/app/componenets/ui/label";
 import { Input } from "@/app/componenets/ui/input";
 import { cn } from "@/lib/utils";
 import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/app/firebase";
 
 export function SignupForm() {
     const [firstname, setFirstname] = useState("");
@@ -24,7 +26,7 @@ export function SignupForm() {
         return re.test(email);
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         let formIsValid = true;
         const newErrors = { firstname: "", lastname: "", email: "", password: "", confirmPassword: "" };
@@ -73,7 +75,15 @@ export function SignupForm() {
         if (formIsValid) {
             console.log("Form submitted");
             console.log(firstname,lastname,email,password,confirmPassword)
-            // Further submit logic here
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                console.log("User registered:", user);
+                // Redirect or do something after successful signup
+            } catch (error) {
+                console.error("Error signing up:", error);
+                // Handle errors (e.g., display error message)
+            }
         }
     };
 
