@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/app/firebase";
 import { Label } from "@/app/componenets/ui/label";
 import { Input } from "@/app/componenets/ui/input";
 import { cn } from "@/lib/utils";
@@ -7,7 +9,7 @@ import { cn } from "@/lib/utils";
 export function LoginForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+    const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
 
     const validateEmail = (email: string) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -38,11 +40,20 @@ export function LoginForm() {
         return valid;
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (validateForm()) {
-            console.log("Form submitted");
-            console.log(email, password);
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                console.log("Logged in as:", userCredential.user);
+                // Redirect the user or perform other actions upon successful login
+            } catch (error: any) {
+                console.error("Error logging in:", error.message);
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    general: "Invalid Email or Password",
+                }));
+            }
         }
     };
 
@@ -58,6 +69,9 @@ export function LoginForm() {
                 <h3 className="text-neutral-600 mb-3 text-xl dark:text-neutral-300 font-bold">
                     Login
                 </h3>
+                {errors.general && (
+                    <div className="text-red-600 text-sm font-mono mb-4">{errors.general}</div>
+                )}
                 <div className="mb-2 space-y-2">
                     <LabelInputContainer>
                         <Label htmlFor="email">Email Address</Label>
