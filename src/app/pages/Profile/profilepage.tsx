@@ -12,6 +12,15 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
+// Mock function to simulate fetching user data
+const fetchUserData = async () => {
+    return {
+        firstName: "John",
+        lastName: "Doe",
+        email: "john.doe@example.com",
+    };
+};
+
 export function SidebarComp() {
     const links = [
         {
