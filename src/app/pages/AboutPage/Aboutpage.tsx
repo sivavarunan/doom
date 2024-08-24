@@ -198,7 +198,7 @@ const About = () => {
           <div className="flex flex-col gap-2 text-base text-neutral-700 dark:text-neutral-300">
             <div>Email: <a href="mailto:example@example.com" className="text-blue-500">Tharagan2001@gmail.com</a></div>
             <div>Phone: +94 768359459</div>
-            <div>Address: 12th, 36thlane, Colombo 6, Sri Lanka</div>
+            <div>Address: 12th, 36th lane, Colombo 6, Sri Lanka</div>
           </div>
 
           {/* Social Media Links */}

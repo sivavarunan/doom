@@ -127,7 +127,7 @@ const Settings = () => {
         </div>
   
         {/* Main Content Area */}
-        <div className="flex flex-col gap-4 md:gap-8 flex-1 p-4 md:p-6 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 w-full h-full">
+        <div className="flex flex-col gap-4 md:gap-8 flex-1 p-4 md:p-6  border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 w-full h-full">
           {/* Section 1 - Account Settings */}
           <div className="flex flex-col gap-2">
             <div className="h-6 w-1/3 rounded-lg bg-gray-100 dark:bg-neutral-800 mb-2 animate-pulse"></div>
