@@ -50,14 +50,14 @@ export function SidebarComp() {
   const [open, setOpen] = useState(false);
   return (
     <div
-    className={cn(
-      "flex flex-col md:flex-row bg-gray-100 dark:bg-gradient-to-t from-neutral-800 to-neutral-900 w-full h-screen overflow-hidden"
-    )}
-  >
+      className={cn(
+        "flex flex-col md:flex-row bg-gray-100 dark:bg-gradient-to-t from-neutral-800 to-neutral-900 w-full h-screen overflow-hidden"
+      )}
+    >
       <Sidebar open={open} setOpen={setOpen} >
-      
+
         <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden ">
             {open ? <Logo /> : <LogoIcon />}
             <div className="mt-8 flex flex-col gap-2">
               {links.map((link, idx) => (
@@ -65,7 +65,7 @@ export function SidebarComp() {
               ))}
             </div>
           </div>
-          
+
           <div>
             <SidebarLink
               link={{
@@ -86,13 +86,13 @@ export function SidebarComp() {
         </SidebarBody>
       </Sidebar>
       <div className="flex-1 overflow-y-scroll custom-scrollbar">
-      <div className="flex-1 overflow-auto">
-        <About />
+        <div className="flex-1 overflow-auto">
+          <About />
         </div>
       </div>
-      
+
     </div>
-    
+
   );
 }
 
@@ -130,7 +130,7 @@ const About = () => {
   return (
     <div className="flex flex-col p-4 md:p-10 w-full h-full">
       {/* Hero Section */}
-      <div className="relative w-full h-64 md:h-96 rounded-lg mb-10">
+      <div className="relative w-full h-52 rounded-lg mb-10">
         <div className="absolute inset-0 bg-gray-300 dark:bg-neutral-800 animate-pulse "></div>
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-sm">
           <h1 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-4 from-green-400 via-emerald-600 to-teal-700 text-5xl md:text-6xl mt-6 font-bold">
@@ -141,31 +141,31 @@ const About = () => {
 
       {/* Mission Statement */}
       <div className="flex flex-col md:flex-row gap-8 mb-10 bg-black bg-opacity-30 p-10 rounded-md">
-      <div className="flex flex-col gap-4 mb-10">
-        <h2 className="text-2xl md:text-4xl font-bold text-neutral-900 dark:text-neutral-200">
-          My Mission
-        </h2>
-        <p className="text-base text-neutral-700 dark:text-neutral-300">
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. At et facilis nesciunt laboriosam culpa officiis hic, numquam aliquid maiores deserunt accusamus perferendis, fuga alias! Quidem veniam nesciunt ipsa ducimus repellat?
-        </p>
-      </div>
+        <div className="flex flex-col gap-4 mb-10">
+          <h2 className="text-2xl md:text-4xl font-bold text-neutral-900 dark:text-neutral-200">
+            My Mission
+          </h2>
+          <p className="text-base text-neutral-700 dark:text-neutral-300">
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit. At et facilis nesciunt laboriosam culpa officiis hic, numquam aliquid maiores deserunt accusamus perferendis, fuga alias! Quidem veniam nesciunt ipsa ducimus repellat?
+          </p>
+        </div>
 
-      {/* Values Section */}
-      <div className="flex flex-col md:flex-row gap-4 mb-10">
-        {[...Array(3)].map((_, i) => (
-          <div
-            key={"values-section" + i}
-            className="flex-1 flex flex-col gap-2"
-          >
-            <h3 className="text-xl md:text-2xl font-semibold text-neutral-900 dark:text-neutral-200">
-              Value {i + 1}
-            </h3>
-            <p className="text-base text-neutral-700 dark:text-neutral-300">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            </p>
-          </div>
-        ))}
-      </div>
+        {/* Values Section */}
+        <div className="flex flex-col md:flex-row gap-4 mb-10">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={"values-section" + i}
+              className="flex-1 flex flex-col gap-2"
+            >
+              <h3 className="text-xl md:text-2xl font-semibold text-neutral-900 dark:text-neutral-200">
+                Value {i + 1}
+              </h3>
+              <p className="text-base text-neutral-700 dark:text-neutral-300">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Team and Contact Section */}
@@ -192,13 +192,13 @@ const About = () => {
 
         {/* Contact Info and Social Media */}
         <div className="flex-1 flex flex-col gap-4">
-          <h2 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-4 from-green-400 via-emerald-600 to-teal-700 text-4xl md:text-4xl font-bold">
+          <h2 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-6 from-green-300 via-emerald-600 to-teal-700 text-4xl md:text-4xl font-bold">
             Get in Touch
           </h2>
           <div className="flex flex-col gap-2 text-base text-neutral-700 dark:text-neutral-300">
-            <div>Email: <a href="mailto:example@example.com" className="text-blue-500">example@example.com</a></div>
-            <div>Phone: +123 456 789</div>
-            <div>Address: 123 Street, City, Country</div>
+            <div>Email: <a href="mailto:example@example.com" className="text-blue-500">Tharagan2001@gmail.com</a></div>
+            <div>Phone: +94 768359459</div>
+            <div>Address: 12th, 36thlane, Colombo 6, Sri Lanka</div>
           </div>
 
           {/* Social Media Links */}

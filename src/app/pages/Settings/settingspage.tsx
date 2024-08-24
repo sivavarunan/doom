@@ -114,7 +114,7 @@ export const LogoIcon = () => {
 // Dummy Profile component with content
 const Settings = () => {
     return (
-      <div className="flex flex-col md:flex-row flex-1 p-4 md:p-10">
+      <div className="flex flex-col md:flex-row flex-1 ">
         {/* Sidebar or Navigation */}
         <div className="flex flex-col p-4 md:p-6 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 md:w-1/4 w-full h-full">
           {/* Settings Categories */}
