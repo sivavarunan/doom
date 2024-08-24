@@ -5,7 +5,7 @@ import { Label } from "@/app/componenets/ui/label";
 import { Input } from "@/app/componenets/ui/input";
 import { cn } from "@/lib/utils";
 import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "@/app/firebase";
 
 export function SignupForm() {
@@ -23,7 +23,7 @@ export function SignupForm() {
         general: "",
     });
 
-    const router = useRouter(); 
+    const router = useRouter();
 
     const validateEmail = (email: string) => {
         const re = /\S+@\S+\.\S+/;
@@ -84,7 +84,7 @@ export function SignupForm() {
                 const user = userCredential.user;
                 console.log("User registered:", user);
                 router.push("/pages/LoginPage");
-                
+
             } catch (error: any) {
                 console.error("Error signing up:", error);
                 if (error.code === "auth/email-already-in-use") {
@@ -98,10 +98,24 @@ export function SignupForm() {
                         general: "An error occurred during signup. Please try again.",
                     }));
                 }
-                // Handle other errors (e.g., display error message)
+                // Handle other errors
             }
         }
     };
+    const handleGoogleSignIn = async () => {
+        const provider = new GoogleAuthProvider();
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+            console.log("User signed in with Google:", user);
+            router.push("/pages/LoginPage");
+        } catch (error: any) {
+            console.error("Error signing in with Google:", error);
+            alert(`Error: ${error.message}`); // Display the error message to the user
+            // Handle Google Sign-In errors
+        }
+    };
+    
 
     return (
         <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
@@ -196,6 +210,7 @@ export function SignupForm() {
                     <button
                         className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
                         type="button"
+                        onClick={handleGoogleSignIn}
                     >
                         <IconBrandGoogle className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
                         <span className="text-neutral-700 dark:text-neutral-300 text-sm">
