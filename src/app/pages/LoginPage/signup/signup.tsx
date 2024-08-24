@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Label } from "@/app/componenets/ui/label";
 import { Input } from "@/app/componenets/ui/input";
 import { cn } from "@/lib/utils";
@@ -19,7 +20,10 @@ export function SignupForm() {
         email: "",
         password: "",
         confirmPassword: "",
+        general: "",
     });
+
+    const router = useRouter(); 
 
     const validateEmail = (email: string) => {
         const re = /\S+@\S+\.\S+/;
@@ -29,7 +33,7 @@ export function SignupForm() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         let formIsValid = true;
-        const newErrors = { firstname: "", lastname: "", email: "", password: "", confirmPassword: "" };
+        const newErrors = { firstname: "", lastname: "", email: "", password: "", confirmPassword: "", general: "" };
 
         // First name validation
         if (!firstname.trim()) {
@@ -74,15 +78,27 @@ export function SignupForm() {
 
         if (formIsValid) {
             console.log("Form submitted");
-            console.log(firstname,lastname,email,password,confirmPassword)
+            console.log(firstname, lastname, email, password, confirmPassword);
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
                 console.log("User registered:", user);
-                // Redirect or do something after successful signup
-            } catch (error) {
+                router.push("/pages/LoginPage");
+                
+            } catch (error: any) {
                 console.error("Error signing up:", error);
-                // Handle errors (e.g., display error message)
+                if (error.code === "auth/email-already-in-use") {
+                    setErrors((prevErrors) => ({
+                        ...prevErrors,
+                        email: "Email is already in use.",
+                    }));
+                } else {
+                    setErrors((prevErrors) => ({
+                        ...prevErrors,
+                        general: "An error occurred during signup. Please try again.",
+                    }));
+                }
+                // Handle other errors (e.g., display error message)
             }
         }
     };
@@ -162,6 +178,7 @@ export function SignupForm() {
                     Sign up &rarr;
                     <BottomGradient />
                 </button>
+                {errors.general && <p className="text-red-600 text-sm font-mono mt-4">{errors.general}</p>}
 
                 <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
 
@@ -200,6 +217,7 @@ const BottomGradient = () => {
         </>
     );
 };
+
 
 const LabelInputContainer = ({
     children,
