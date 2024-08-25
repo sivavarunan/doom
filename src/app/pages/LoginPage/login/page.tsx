@@ -5,11 +5,14 @@ import { auth } from "@/app/firebase";
 import { Label } from "@/app/componenets/ui/label";
 import { Input } from "@/app/componenets/ui/input";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 export function LoginForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
+
+    const router = useRouter();
 
     const validateEmail = (email: string) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -46,7 +49,7 @@ export function LoginForm() {
             try {
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 console.log("Logged in as:", userCredential.user);
-                // Redirect the user or perform other actions upon successful login
+                router.push("/");
             } catch (error: any) {
                 console.error("Error logging in:", error.message);
                 setErrors((prevErrors) => ({

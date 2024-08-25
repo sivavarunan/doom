@@ -179,6 +179,7 @@ const About = () => {
               objectFit="cover"
               className="rounded-full"
               alt="Avatar"
+              sizes=""
             />
 
           </div>
