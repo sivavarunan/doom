@@ -53,9 +53,30 @@ export function LoginForm() {
         e.preventDefault();
         if (validateForm()) {
             try {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                console.log("Logged in as:", userCredential.user);
-                router.push("/");
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                const { token } = data;
+
+                if (token) {
+                    // Store the JWT token in localStorage
+                    localStorage.setItem('authToken', token);
+
+                    // Redirect to the home page
+                    router.push("/");
+                } else {
+                    throw new Error('No token received');
+                }
             } catch (error: any) {
                 console.error("Error logging in:", error.message);
                 setErrors((prevErrors) => ({
@@ -65,6 +86,9 @@ export function LoginForm() {
             }
         }
     };
+    
+    
+    
 
     return (
         <div className="max-w-md w-full mx-auto my-40 rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
