@@ -14,7 +14,7 @@ if (!getApps().length) {
 
 export async function POST(req: Request) {
     try {
-        const { email, password } = await req.json();
+        const { email } = await req.json();
         const auth = getAuth();
 
         const userCredential = await auth.getUserByEmail(email);
