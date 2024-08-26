@@ -12,20 +12,12 @@ if (!getApps().length) {
     });
 }
 
-// Debugging: Log environment variables
-console.log("Firebase Project ID:", process.env.FIREBASE_PROJECT_ID);
-console.log("Client Email:", process.env.FIREBASE_CLIENT_EMAIL);
-console.log("Private Key (masked):", process.env.FIREBASE_PRIVATE_KEY?.slice(0, 30) + '...'); // Mask for security
-
 export async function POST(req: Request) {
     try {
         const { email, password } = await req.json();
         const auth = getAuth();
 
-        // Sign in with Firebase Auth
         const userCredential = await auth.getUserByEmail(email);
-
-        // Create a custom token for the user
         const customToken = await auth.createCustomToken(userCredential.uid);
 
         return NextResponse.json({ token: customToken });

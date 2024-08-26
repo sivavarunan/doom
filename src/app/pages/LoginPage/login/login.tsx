@@ -53,29 +53,18 @@ export function LoginForm() {
         e.preventDefault();
         if (validateForm()) {
             try {
-                const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email, password }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
-                const data = await response.json();
-                const { token } = data;
-
-                if (token) {
-                    // Store the JWT token in localStorage
+                // Use Firebase Auth client SDK to sign in
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                
+                if (userCredential.user) {
+                    // Store the JWT token in localStorage (if needed)
+                    const token = await userCredential.user.getIdToken();
                     localStorage.setItem('authToken', token);
 
                     // Redirect to the home page
                     router.push("/");
                 } else {
-                    throw new Error('No token received');
+                    throw new Error('No user credential received');
                 }
             } catch (error: any) {
                 console.error("Error logging in:", error.message);
@@ -86,9 +75,6 @@ export function LoginForm() {
             }
         }
     };
-    
-    
-    
 
     return (
         <div className="max-w-md w-full mx-auto my-40 rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
