@@ -7,8 +7,23 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const data = await request.json();
+
+    // Simple validations
+    if (!data.name || typeof data.name !== 'string') {
+      return NextResponse.json({ error: 'Name is required and must be a string' }, { status: 400 });
+    }
+
+    if (!data.email || typeof data.email !== 'string' || !/^\S+@\S+\.\S+$/.test(data.email)) {
+      return NextResponse.json({ error: 'A valid email is required' }, { status: 400 });
+    }
+
+    if (!data.age || typeof data.age !== 'number' || data.age <= 0) {
+      return NextResponse.json({ error: 'Age is required and must be a positive number' }, { status: 400 });
+    }
+
     // Process the data (e.g., save to a database)
     return NextResponse.json({ message: 'POST request successful', data });
+
   } catch (error) {
     return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
   }
