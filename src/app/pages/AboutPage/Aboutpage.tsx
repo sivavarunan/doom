@@ -10,6 +10,7 @@ import {
   IconBrandLinkedin,
   IconBrandInstagram,
   IconBrandX,
+  IconWorld
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -30,6 +31,13 @@ export function SidebarComp() {
       href: "/pages/Profile",
       icon: (
         <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+      ),
+    },
+    {
+      label: "Community",
+      href: "/pages/CommunityPage",
+      icon: (
+        <IconWorld className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
@@ -141,34 +149,47 @@ const About = () => {
 
       {/* Mission Statement */}
       <div className="flex flex-col md:flex-row gap-8 mb-10 bg-black bg-opacity-30 p-10 rounded-md">
-        <div className="flex flex-col gap-4 mb-10">
-          <h2 className="text-2xl md:text-4xl font-bold text-neutral-900 dark:text-neutral-200">
+        <div className="flex flex-col gap-4 mb-10 md:flex-1">
+          <h2 className="text-2xl md:text-4xl font-bold bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-6 from-green-400 via-emerald-600 to-teal-700">
             My Mission
           </h2>
           <p className="text-base text-neutral-700 dark:text-neutral-300">
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. At et facilis nesciunt laboriosam culpa officiis hic, numquam aliquid maiores deserunt accusamus perferendis, fuga alias! Quidem veniam nesciunt ipsa ducimus repellat?
+            My mission is to build a robust Next.js web application, integrated with Firebase for secure authentication and real-time database management, and hosted on Vercel for optimal performance. This app will function as a seamless and interactive chatting platform, ensuring users can communicate effortlessly in a secure environment.
           </p>
         </div>
 
         {/* Values Section */}
-        <div className="flex flex-col md:flex-row gap-4 mb-10">
-          {[...Array(3)].map((_, i) => (
-            <div
-              key={"values-section" + i}
-              className="flex-1 flex flex-col gap-2"
-            >
-              <h3 className="text-xl md:text-2xl font-semibold text-neutral-900 dark:text-neutral-200">
-                Value {i + 1}
+        <div className="flex flex-col md:flex-1 gap-4">
+          {[
+            {
+              title: "Security",
+              description:
+                "Prioritizing user data protection through Firebase's reliable authentication and database solutions.",
+            },
+            {
+              title: "Performance",
+              description:
+                "Ensuring fast and efficient communication by hosting on Vercel for optimal app responsiveness.",
+            },
+            {
+              title: "User Experience",
+              description:
+                "Delivering a smooth and intuitive chatting interface that fosters effortless and enjoyable communication.",
+            },
+          ].map((value, i) => (
+            <div key={"values-section" + i} className="flex-1 flex flex-col gap-2">
+              <h3 className="text-xl md:text-2xl bg-clip-text bg-no-repeat font-semibold text-transparent bg-gradient-to-r py-6 from-green-400 via-emerald-600 to-teal-700">
+                {value.title}
               </h3>
               <p className="text-base text-neutral-700 dark:text-neutral-300">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                {value.description}
               </p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Team and Contact Section */}
+      {/*Contact Section */}
       <div className="flex flex-col md:flex-row gap-8 mb-10 bg-black bg-opacity-35 p-10 rounded-md">
         {/* Image and Name */}
         <div className="flex flex-col items-center w-full md:w-1/2 lg:w-1/3">
@@ -179,7 +200,6 @@ const About = () => {
               objectFit="cover"
               className="rounded-full"
               alt="Avatar"
-              sizes=""
             />
 
           </div>
@@ -193,7 +213,7 @@ const About = () => {
 
         {/* Contact Info and Social Media */}
         <div className="flex-1 flex flex-col gap-4">
-          <h2 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-6 from-green-300 via-emerald-600 to-teal-700 text-4xl md:text-4xl font-bold">
+          <h2 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-6 from-green-400 via-emerald-600 to-teal-700 text-4xl md:text-4xl font-bold">
             Get in Touch
           </h2>
           <div className="flex flex-col gap-2 text-base text-neutral-700 dark:text-neutral-300">

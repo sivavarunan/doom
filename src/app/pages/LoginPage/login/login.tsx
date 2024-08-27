@@ -62,7 +62,7 @@ export function LoginForm() {
                     localStorage.setItem('authToken', token);
 
                     // Redirect to the home page
-                    router.push("/");
+                    router.push("/pages/MainPage");
                 } else {
                     throw new Error('No user credential received');
                 }
