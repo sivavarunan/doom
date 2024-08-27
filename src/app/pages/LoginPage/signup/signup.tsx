@@ -6,6 +6,8 @@ import { Input } from "@/app/componenets/ui/input";
 import { cn } from "@/lib/utils";
 import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react";
 import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { setDoc, doc } from "firebase/firestore";
+import { db } from "@/app/firebase";
 import { auth } from "@/app/firebase";
 
 export function SignupForm() {
@@ -30,78 +32,85 @@ export function SignupForm() {
         return re.test(email);
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        let formIsValid = true;
-        const newErrors = { firstname: "", lastname: "", email: "", password: "", confirmPassword: "", general: "" };
+    
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    let formIsValid = true;
+    const newErrors = { firstname: "", lastname: "", email: "", password: "", confirmPassword: "", general: "" };
 
-        // First name validation
-        if (!firstname.trim()) {
-            newErrors.firstname = "First name is required.";
-            formIsValid = false;
-        }
+    // First name validation
+    if (!firstname.trim()) {
+        newErrors.firstname = "First name is required.";
+        formIsValid = false;
+    }
 
-        // Last name validation
-        if (!lastname.trim()) {
-            newErrors.lastname = "Last name is required.";
-            formIsValid = false;
-        }
+    // Last name validation
+    if (!lastname.trim()) {
+        newErrors.lastname = "Last name is required.";
+        formIsValid = false;
+    }
 
-        // Email validation
-        if (!email.trim()) {
-            newErrors.email = "Email is required.";
-            formIsValid = false;
-        } else if (!validateEmail(email)) {
-            newErrors.email = "Invalid email address.";
-            formIsValid = false;
-        }
+    // Email validation
+    if (!email.trim()) {
+        newErrors.email = "Email is required.";
+        formIsValid = false;
+    } else if (!validateEmail(email)) {
+        newErrors.email = "Invalid email address.";
+        formIsValid = false;
+    }
 
-        // Password validation
-        if (!password.trim()) {
-            newErrors.password = "Password is required.";
-            formIsValid = false;
-        } else if (password.length < 8) {
-            newErrors.password = "Password must be at least 8 characters long.";
-            formIsValid = false;
-        }
+    // Password validation
+    if (!password.trim()) {
+        newErrors.password = "Password is required.";
+        formIsValid = false;
+    } else if (password.length < 8) {
+        newErrors.password = "Password must be at least 8 characters long.";
+        formIsValid = false;
+    }
 
-        // Confirm password validation
-        if (!confirmPassword.trim()) {
-            newErrors.confirmPassword = "Please confirm your password.";
-            formIsValid = false;
-        } else if (password !== confirmPassword) {
-            newErrors.confirmPassword = "Passwords do not match.";
-            formIsValid = false;
-        }
+    // Confirm password validation
+    if (!confirmPassword.trim()) {
+        newErrors.confirmPassword = "Please confirm your password.";
+        formIsValid = false;
+    } else if (password !== confirmPassword) {
+        newErrors.confirmPassword = "Passwords do not match.";
+        formIsValid = false;
+    }
 
-        setErrors(newErrors);
+    setErrors(newErrors);
 
-        if (formIsValid) {
-            console.log("Form submitted");
-            console.log(firstname, lastname, email, password, confirmPassword);
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-                console.log("User registered:", user);
-                router.push("/pages/LoginPage");
+    if (formIsValid) {
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
 
-            } catch (error: any) {
-                console.error("Error signing up:", error);
-                if (error.code === "auth/email-already-in-use") {
-                    setErrors((prevErrors) => ({
-                        ...prevErrors,
-                        email: "Email is already in use.",
-                    }));
-                } else {
-                    setErrors((prevErrors) => ({
-                        ...prevErrors,
-                        general: "An error occurred during signup. Please try again.",
-                    }));
-                }
-                // Handle other errors
+            // Save additional user info in Firestore using uid as the document ID
+            await setDoc(doc(db, "users", user.uid), {
+                uid: user.uid,
+                firstname,
+                lastname,
+                email
+            });
+
+            console.log("User registered:", user);
+            router.push("/pages/LoginPage");
+
+        } catch (error: any) {
+            console.error("Error signing up:", error);
+            if (error.code === "auth/email-already-in-use") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    email: "Email is already in use.",
+                }));
+            } else {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    general: "An error occurred during signup. Please try again.",
+                }));
             }
         }
-    };
+    }
+};
     const handleGoogleSignIn = async () => {
         const provider = new GoogleAuthProvider();
         try {
