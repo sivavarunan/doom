@@ -1,17 +1,20 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "@/app/componenets/ui/Sidebar";
 import {
     IconArrowLeft,
     IconBrandTabler,
     IconSettings,
     IconUserBolt,
-    IconWorld
+    IconWorld,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { db } from '@/app/firebase';
+import { collection, getDocs } from 'firebase/firestore';
+import UserCard from '@/app/componenets/ui/usercard';
 
 export function SidebarComp() {
     const links = [
@@ -87,8 +90,13 @@ export function SidebarComp() {
                     </div>
                 </SidebarBody>
             </Sidebar>
-            <Dashboard />
+            <div className="flex-1 overflow-y-scroll custom-scrollbar">
+                <div className="flex-1 overflow-auto">
+                    <Community />
+                </div>
+            </div>
         </div>
+
     );
 }
 export const Logo = () => {
@@ -119,48 +127,98 @@ export const LogoIcon = () => {
     );
 };
 
-const Dashboard = () => {
+// Community component with content
+const Community = () => {
+    const [users, setUsers] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const validUsers = users.filter(user => user.uid);
+    console.log(users);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const usersCollection = collection(db, 'users');
+                const userSnapshot = await getDocs(usersCollection);
+                const userList = userSnapshot.docs.map((doc) => doc.data());
+                setUsers(userList);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUsers();
+    }, []);
+
+    const Spinner = () => (
+        <div className="flex justify-center items-center h-screen">
+            <div className="w-16 h-16 border-4 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
+        </div>
+    );
+
+    const handleAddFriend = (uid: string) => {
+        // add friend logic here
+        console.log(`Add friend with UID: ${uid}`);
+    };
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Spinner />
+            </div>
+        );
+    }
+
     return (
-        <div className="flex flex-col w-full h-full bg-neutral-50  dark:bg-neutral-800">
-            <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-gray-100 dark:bg-gradient-to-t from-neutral-800 to-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
+        <div className="dark:bg-neutral-800 bg-neutral-50">
+        <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-gray-100 dark:bg-gradient-to-t from-neutral-800 to-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
+            <div className="flex flex-col w-full h-full ">
+
+                {/* Header Section */}
                 <div className="relative w-full h-52 rounded-lg mb-10">
-                    <div className="absolute inset-0 bg-gray-300 dark:bg-neutral-800 animate-pulse "></div>
+                    <div className="absolute inset-0 bg-gray-300 dark:bg-neutral-800 animate-pulse"></div>
                     <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-sm">
                         <h1 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-4 from-green-400 via-emerald-600 to-teal-700 text-5xl md:text-6xl mt-6 font-bold">
-                            Dashboard
+                            Community
                         </h1>
                     </div>
-                    {/* Hero Section */}
+                </div>
+
+                {/* Main Content Layout */}
+                <div className="flex flex-col md:flex-row gap-4 w-full h-full">
+                    {/* Left Section */}
+                    <div className="flex-1 bg-gray-100 dark:bg-neutral-900 p-4 rounded-lg">
+                        <h1 className="text-2xl font-bold mb-4 text-black dark:text-white">Welcome to the Community</h1>
+                        <p className="text-lg text-gray-700 dark:text-gray-300">
+                            This is the left section.
+                        </p>
+                    </div>
+
+                    {/* Right Section */}
+                    <div className="flex-1 bg-gray-200 dark:bg-neutral-800 p-4 rounded-lg">
+                        <h2 className="text-xl font-semibold mb-4 text-black dark:text-white">Users</h2>
+                        <div className="grid grid-cols-1   gap-4">
+                            {validUsers.map((user) => (
+                                <UserCard
+                                    key={user.uid}
+                                    uid={user.uid}
+                                    profileImage={user.profileImage}
+                                    firstname={user.firstname}
+                                    lastname={user.lastname}
+                                    online={user.online}
+                                    onAddFriend={handleAddFriend}
+                                />
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
         </div>
     );
 };
 
 
-
-
-
-// Dummy dashboard component with content
-
-//  <div className="flex flex-1">
-//     <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
-//         <div className="flex gap-2">
-//             {[...new Array(4)].map((i) => (
-//                 <div
-//                     key={"first-array" + i}
-//                     className="h-20 w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse"
-//                 ></div>
-//             ))}
-//         </div>
-//         <div className="flex gap-2 flex-1">
-//             {[...new Array(2)].map((i) => (
-//                 <div
-//                     key={"second-array" + i}
-//                     className="h-full w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse"
-//                 ></div>
-//             ))}
-//         </div>
-//     </div>
-// </div> 
+export default Community;
 

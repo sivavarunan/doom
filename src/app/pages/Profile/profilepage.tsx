@@ -5,7 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { Sidebar, SidebarBody, SidebarLink } from "@/app/componenets/ui/Sidebar";
-import { IconArrowLeft, IconBrandTabler, IconSettings, IconUserBolt, IconEdit, IconCheck } from "@tabler/icons-react";
+import { IconArrowLeft, IconBrandTabler, IconSettings, IconUserBolt, IconEdit, IconCheck, IconWorld } from "@tabler/icons-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -22,6 +22,13 @@ export function SidebarComp() {
             label: "Profile",
             href: "/pages/Profile",
             icon: <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+        },
+        {
+            label: "Community",
+            href: "/pages/CommunityPage",
+            icon: (
+                <IconWorld className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+            ),
         },
         {
             label: "Settings",
