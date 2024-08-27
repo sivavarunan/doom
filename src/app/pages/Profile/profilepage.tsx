@@ -1,5 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import { auth, db } from "@/app/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import { Sidebar, SidebarBody, SidebarLink } from "@/app/componenets/ui/Sidebar";
 import {
     IconArrowLeft,
@@ -12,14 +15,6 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-// Mock function to simulate fetching user data
-const fetchUserData = async () => {
-    return {
-        firstName: "John",
-        lastName: "Doe",
-        email: "john.doe@example.com",
-    };
-};
 
 export function SidebarComp() {
     const links = [
@@ -120,63 +115,65 @@ export const LogoIcon = () => {
     );
 };
 
-// Dummy Profile component with content
+// Profile component with user details
 const Profile = () => {
-    return (
-      <div className="flex flex-col md:flex-row flex-1">
-        {/* Sidebar or Profile Summary */}
-        <div className="flex flex-col items-center  p-4 md:p-6 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 md:w-1/3 w-full h-full">
-          {/* Profile Picture */}
-          <div className="w-32 h-32 rounded-full bg-gray-100 dark:bg-neutral-800 mb-4 animate-pulse"></div>
-          
-          {/* User Name */}
-          <div className="h-6 w-3/4 rounded-lg bg-gray-100 dark:bg-neutral-800 mb-2 animate-pulse"></div>
-          
-          {/* Bio */}
-          <div className="h-4 w-2/3 rounded-lg bg-gray-100 dark:bg-neutral-800 mb-4 animate-pulse"></div>
-          
-          {/* Additional Info */}
-          <div className="flex gap-2 w-full justify-around">
-            <div className="h-12 w-12 rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
-            <div className="h-12 w-12 rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
-            <div className="h-12 w-12 rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
-          </div>
-        </div>
-  
-        {/* Main Content Area */}
-        <div className="flex flex-col gap-4 md:gap-8 flex-1 p-4 md:p-6  border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 w-full h-full">
-          {/* Section 1 */}
-          <div className="flex gap-4">
-            {[...Array(3)].map((_, i) => (
-              <div
-                key={"first-array" + i}
-                className="h-20 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"
-              ></div>
-            ))}
-          </div>
-  
-          {/* Section 2 */}
-          <div className="flex gap-4 flex-1">
-            {[...Array(2)].map((_, i) => (
-              <div
-                key={"second-array" + i}
-                className="h-full w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"
-              ></div>
-            ))}
-          </div>
-  
-          {/* Section 3 - Posts Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[...Array(6)].map((_, i) => (
-              <div
-                key={"third-array" + i}
-                className="h-32 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"
-              ></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  };
-  
+    const [currentUser, setCurrentUser] = useState<any>(null); 
+    const [userData, setUserData] = useState<any>(null);
 
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                setCurrentUser(user);
+
+                // Fetch additional user info from Firestore
+                const userDoc = doc(db, "users", user.uid);
+                try {
+                    const docSnap = await getDoc(userDoc);
+
+                    if (docSnap.exists()) {
+                        setUserData(docSnap.data());
+                        console.log("uid:", user.uid);
+                    } else {
+                        console.log("No user data found in Firestore for UID:", user.uid);
+                    }
+                } catch (error) {
+                    console.error("Error fetching user data from Firestore:", error);
+                }
+            } else {
+                console.log("No user is signed in");
+            }
+        });
+
+        // Clean up subscription on unmount
+        return () => unsubscribe();
+    }, []);
+
+    return (
+        <div className="flex flex-col md:flex-row flex-1">
+            {/* Sidebar or Profile Summary */}
+            <div className="flex flex-col items-center p-4 md:p-6 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 md:w-1/3 w-full h-full">
+                {/* Profile Picture */}
+                <div className="w-32 h-32 rounded-full bg-gray-100 dark:bg-neutral-800 mb-4">
+                    {/* Replace with an actual image source if available */}
+                </div>
+
+                {/* User Name */}
+                <div className="text-xl font-semibold text-black dark:text-white mb-2">
+                    {userData ? `${userData.firstname || 'N/A'} ${userData.lastname || 'N/A'}` : "Loading..."}
+                </div>
+
+                {/* Email */}
+                <div className="text-md text-gray-600 dark:text-gray-400 mb-4">
+                    {currentUser ? currentUser.email : "Loading..."}
+                </div>
+            </div>
+
+            {/* Main Content Area */}
+            <div className="flex flex-col gap-4 md:gap-8 flex-1 p-4 md:p-6 border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 w-full h-full">
+                {/* Additional content can go here */}
+            </div>
+        </div>
+    );
+};
+
+export default Profile;
