@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import { auth, db } from "@/app/firebase";
+import { auth, db, storage } from "@/app/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { Sidebar, SidebarBody, SidebarLink } from "@/app/componenets/ui/Sidebar";
 import { IconArrowLeft, IconBrandTabler, IconSettings, IconUserBolt, IconEdit, IconCheck } from "@tabler/icons-react";
 import Image from "next/image";
@@ -111,9 +112,11 @@ const Profile = () => {
         age: "",
         city: "",
         profession: "",
-        status: ""
+        status: "",
+        profileImage: "",
     });
     const [editFields, setEditFields] = useState<string[]>([]);
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -137,6 +140,33 @@ const Profile = () => {
 
         return () => unsubscribe();
     }, []);
+
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            const storageRef = ref(storage, `profileImages/${currentUser.uid}`);
+
+            setUploading(true);
+
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            uploadTask.on(
+                "state_changed",
+                (snapshot) => {
+                    // Optional: Add progress handling here
+                },
+                (error) => {
+                    console.error("Image upload failed:", error);
+                    setUploading(false);
+                },
+                async () => {
+                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                    await saveProfileImage(downloadURL);
+                    setUploading(false);
+                }
+            );
+        }
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -165,10 +195,53 @@ const Profile = () => {
         );
     };
 
+    const saveProfileImage = async (url: string) => {
+        if (currentUser) {
+            const userDoc = doc(db, "users", currentUser.uid);
+            try {
+                await setDoc(userDoc, { profileImage: url }, { merge: true });
+                setUserData({ ...userData, profileImage: url });
+                console.log("Profile image updated successfully");
+            } catch (error) {
+                console.error("Error updating profile image:", error);
+            }
+        }
+    };
+
     return (
         <div className="flex flex-col md:flex-row flex-1">
             <div className="flex flex-col items-center p-4 md:p-6 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 md:w-1/3 w-full h-full">
-                <div className="w-32 h-32 rounded-full bg-gray-100 dark:bg-neutral-800 mb-4"></div>
+                <div className="relative mb-4">
+                    <div className="w-32 h-32 rounded-full bg-gray-100 dark:bg-neutral-800 overflow-hidden mb-2">
+                        {userData.profileImage ? (
+                            <Image
+                                src={userData.profileImage}
+                                alt="Profile"
+                                className="object-cover w-full h-full"
+                                width={128}
+                                height={128}
+                            />
+                        ) : (
+                            <div className="w-full h-full bg-gray-300 flex items-center justify-center text-gray-500">
+                                No Image
+                            </div>
+                        )}
+                    </div>
+                    <label
+                        htmlFor="imageUpload"
+                        className="absolute bottom-0 right-0 bg-black text-white p-1 rounded-full cursor-pointer"
+                    >
+                        <IconEdit />
+                    </label>
+                    <input
+                        type="file"
+                        id="imageUpload"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                    />
+                    {uploading && <p className="text-sm text-gray-500 mt-2">Uploading...</p>}
+                </div>
 
                 <div className="text-xl font-semibold text-black dark:text-white mb-2 w-full text-center relative">
                     <span>{userData.firstname} {userData.lastname}</span>
