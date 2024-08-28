@@ -172,49 +172,49 @@ const Community = () => {
 
     return (
         <div className="dark:bg-neutral-800 bg-neutral-50">
-        <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-gray-100 dark:bg-gradient-to-t from-neutral-800 to-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
-            <div className="flex flex-col w-full h-full ">
+            <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-gray-100 dark:bg-gradient-to-t from-neutral-800 to-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
+                <div className="flex flex-col w-full h-full ">
 
-                {/* Header Section */}
-                <div className="relative w-full h-52 rounded-lg mb-10">
-                    <div className="absolute inset-0 bg-gray-300 dark:bg-neutral-800 animate-pulse"></div>
-                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-sm">
-                        <h1 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-4 from-green-400 via-emerald-600 to-teal-700 text-5xl md:text-6xl mt-6 font-bold">
-                            Community
-                        </h1>
-                    </div>
-                </div>
-
-                {/* Main Content Layout */}
-                <div className="flex flex-col md:flex-row gap-4 w-full h-full">
-                    {/* Left Section */}
-                    <div className="flex-1 bg-gray-100 dark:bg-neutral-900 p-4 rounded-lg">
-                        <h1 className="text-2xl font-bold mb-4 text-black dark:text-white">Welcome to the Community</h1>
-                        <p className="text-lg text-gray-700 dark:text-gray-300">
-                            This is the left section.
-                        </p>
+                    {/* Header Section */}
+                    <div className="relative w-full h-52 rounded-lg mb-10">
+                        <div className="absolute inset-0 bg-gray-300 dark:bg-neutral-800 animate-pulse"></div>
+                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-sm">
+                            <h1 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-4 from-green-400 via-emerald-600 to-teal-700 text-5xl md:text-6xl mt-6 font-bold">
+                                Community
+                            </h1>
+                        </div>
                     </div>
 
-                    {/* Right Section */}
-                    <div className="flex-1 bg-gray-200 dark:bg-neutral-800 p-4 rounded-lg">
-                        <h2 className="text-xl font-semibold mb-4 text-black dark:text-white">Users</h2>
-                        <div className="grid grid-cols-1   gap-4">
-                            {validUsers.map((user) => (
-                                <UserCard
-                                    key={user.uid}
-                                    uid={user.uid}
-                                    profileImage={user.profileImage}
-                                    firstname={user.firstname}
-                                    lastname={user.lastname}
-                                    online={user.online}
-                                    onAddFriend={handleAddFriend}
-                                />
-                            ))}
+                    {/* Main Content Layout */}
+                    <div className="flex flex-col md:flex-row gap-4 w-full h-full">
+                        {/* Left Section */}
+                        <div className="flex-1 bg-gray-100 dark:bg-neutral-900 p-4 rounded-lg">
+                            <h1 className="text-2xl font-bold mb-4 text-black dark:text-white">Welcome to the Community</h1>
+                            <p className="text-lg text-gray-700 dark:text-gray-300">
+                                This is the left section.
+                            </p>
+                        </div>
+
+                        {/* Right Section */}
+                        <div className="flex-1 bg-gray-200 dark:bg-neutral-800 p-4 rounded-lg">
+                            <h2 className="text-xl font-semibold mb-4 text-black dark:text-white">Users</h2>
+                            <div className="grid grid-cols-1   gap-4">
+                                {validUsers.map((user) => (
+                                    <UserCard
+                                        key={user.uid}
+                                        uid={user.uid}
+                                        profileImage={user.profileImage}
+                                        firstname={user.firstname}
+                                        lastname={user.lastname}
+                                        online={user.online}
+                                        onAddFriend={handleAddFriend}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
         </div>
     );
 };
