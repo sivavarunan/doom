@@ -8,12 +8,13 @@ import {
     IconUserBolt,
     IconWorld,
 } from "@tabler/icons-react";
+import { getAuth } from "firebase/auth";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/app/firebase';
-import { collection, getDocs } from 'firebase/firestore';
 import UserCard from '@/app/componenets/ui/usercard';
 
 export function SidebarComp() {
@@ -131,6 +132,7 @@ export const LogoIcon = () => {
 const Community = () => {
     const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const auth = getAuth(); // Initialize Firebase Auth
     const validUsers = users.filter(user => user.uid);
     console.log(users);
 
@@ -157,9 +159,34 @@ const Community = () => {
         </div>
     );
 
-    const handleAddFriend = (uid: string) => {
-        // add friend logic here
-        console.log(`Add friend with UID: ${uid}`);
+    const handleAddFriend = async (uid: string) => {
+        try {
+            const currentUser = auth.currentUser?.uid; // Get the current user's UID
+            
+            if (!currentUser) {
+                console.error('No current user found.');
+                return;
+            }
+
+            const friendsCollection = collection(db, 'friends');
+    
+            // Check if the friendship already exists
+            const q = query(friendsCollection, where('userId', '==', currentUser), where('friendId', '==', uid));
+            const querySnapshot = await getDocs(q);
+    
+            if (querySnapshot.empty) {
+                // If no existing friendship, add a new one
+                await addDoc(friendsCollection, {
+                    userId: currentUser,
+                    friendId: uid,
+                });
+                console.log(`Added friend with UID: ${uid}`);
+            } else {
+                console.log('Friendship already exists');
+            }
+        } catch (error) {
+            console.error('Error adding friend:', error);
+        }
     };
 
     if (loading) {
@@ -207,7 +234,7 @@ const Community = () => {
                                         firstname={user.firstname}
                                         lastname={user.lastname}
                                         online={user.online}
-                                        onAddFriend={handleAddFriend}
+                                        onAddFriend={() => handleAddFriend(user.uid)}
                                     />
                                 ))}
                             </div>
@@ -218,7 +245,5 @@ const Community = () => {
         </div>
     );
 };
-
-
 export default Community;
 
