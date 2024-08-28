@@ -132,7 +132,7 @@ export const LogoIcon = () => {
 const Community = () => {
     const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const auth = getAuth(); // Initialize Firebase Auth
+    const auth = getAuth(); 
     const validUsers = users.filter(user => user.uid);
     console.log(users);
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconUserPlus } from '@tabler/icons-react';
+import { IconUserPlus, IconMessageCircle } from '@tabler/icons-react';
 
 interface UserCardProps {
   uid: string;
@@ -8,9 +8,10 @@ interface UserCardProps {
   lastname: string;
   online: boolean;
   onAddFriend?: (uid: string) => void;
+  onChatStart?: () => void; 
 }
 
-const UserCard: React.FC<UserCardProps> = ({ uid, profileImage, firstname, lastname, online, onAddFriend }) => {
+const UserCard: React.FC<UserCardProps> = ({ uid, profileImage, firstname, lastname, online, onAddFriend, onChatStart }) => {
   return (
     <div className="flex items-center p-4 bg-neutral-700 dark:bg-gradient-to-l from-neutral-900 to-gray-800 shadow-md rounded-xl border-2 border-gray-700 transition-transform transform hover:scale-105">
       <img
@@ -25,15 +26,26 @@ const UserCard: React.FC<UserCardProps> = ({ uid, profileImage, firstname, lastn
             {online ? 'Online' : 'Offline'}
           </p>
         </div>
-        {onAddFriend && (
-          <button
-            className="text-green-400 hover:text-emerald-800 focus:outline-none"
-            onClick={() => onAddFriend(uid)}
-            aria-label="Add Friend"
-          >
-            <IconUserPlus stroke={1.25} size={24} />
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {onChatStart && (
+            <button
+              className="text-blue-400 hover:text-blue-600 focus:outline-none"
+              onClick={onChatStart}
+              aria-label="Start Chat"
+            >
+              <IconMessageCircle stroke={1.25} size={24} />
+            </button>
+          )}
+          {onAddFriend && (
+            <button
+              className="text-green-400 hover:text-emerald-800 focus:outline-none"
+              onClick={() => onAddFriend(uid)}
+              aria-label="Add Friend"
+            >
+              <IconUserPlus stroke={1.25} size={24} />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
