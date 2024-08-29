@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import { IconUser } from '@tabler/icons-react';
 
 interface FriendCardProps {
     uid: string;
@@ -26,9 +27,9 @@ const FriendCard: React.FC<FriendCardProps> = ({ uid, profileImage, firstname, l
                         height={400}
                     />
                 ) : (
-                    <div className="w-full h-full bg-gray-300 flex items-center justify-center text-gray-500">
-                        No Image
-                    </div>
+                    <div className='dark:bg-gradient-to-t from-neutral-900 to-black bg-white'>
+                    <IconUser stroke={1.5} className='w-12 h-12 rounded-full object-cover mr-4 ' /> 
+                 </div>
                 )}
             </div>
             <div className="ml-4">

@@ -177,15 +177,13 @@ const Community = () => {
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        // Filtering is handled in the useEffect based on searchTerm
     };
 
     const Spinner = () => (
         <div className="flex justify-center items-center h-screen">
-            <div className="w-16 h-16 border-4 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
+            <div className="w-16 h-16 border-4 border-solid border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
     );
-
     const handleAddFriend = async (uid: string) => {
         try {
             const currentUser = auth.currentUser?.uid;

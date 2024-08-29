@@ -192,14 +192,13 @@ const About = () => {
         {/* Image and Name */}
         <div className="flex flex-col items-center w-full md:w-1/2 lg:w-1/3">
           <div className="relative w-32 h-32 md:w-48 md:h-48 lg:w-56 lg:h-56 rounded-full overflow-hidden mb-4">
-            <img
+            <Image
               src="/myphoto.jpg"
-              // layout="fill"
-              // objectFit="cover"
+              layout="fill"
+              objectFit="cover"
               className="rounded-full"
               alt="Avatar"
             />
-
           </div>
           <h3 className="text-xl font-medium text-neutral-900 dark:text-neutral-200">
             T.Sivavarunan
@@ -222,16 +221,16 @@ const About = () => {
 
           {/* Social Media Links */}
           <div className="flex gap-4 mt-4">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-neutral-700 dark:text-neutral-200 hover:text-blue-600 dark:hover:text-blue-400">
+            <a href="https://facebook.com/sivavarunan.siva" target="_blank" rel="noopener noreferrer" className="text-neutral-700 dark:text-neutral-200 hover:text-blue-600 dark:hover:text-blue-400">
               <IconBrandFacebook className="h-6 w-6" />
             </a>
             <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-neutral-700 dark:text-neutral-200 hover:text-blue-400 dark:hover:text-blue-300">
               <IconBrandX className="h-6 w-6" />
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-neutral-700 dark:text-neutral-200 hover:text-blue-700 dark:hover:text-blue-500">
+            <a href="https://linkedin.com/in/thevarasa-sivavarunan-0b587a266" target="_blank" rel="noopener noreferrer" className="text-neutral-700 dark:text-neutral-200 hover:text-blue-700 dark:hover:text-blue-500">
               <IconBrandLinkedin className="h-6 w-6" />
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-neutral-700 dark:text-neutral-200 hover:text-pink-600 dark:hover:text-pink-400">
+            <a href="https://instagram.com/sivavarunan" target="_blank" rel="noopener noreferrer" className="text-neutral-700 dark:text-neutral-200 hover:text-pink-600 dark:hover:text-pink-400">
               <IconBrandInstagram className="h-6 w-6" />
             </a>
           </div>
