@@ -98,9 +98,7 @@ export function SidebarComp() {
           <About />
         </div>
       </div>
-
     </div>
-
   );
 }
 
