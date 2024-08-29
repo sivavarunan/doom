@@ -192,10 +192,10 @@ const About = () => {
         {/* Image and Name */}
         <div className="flex flex-col items-center w-full md:w-1/2 lg:w-1/3">
           <div className="relative w-32 h-32 md:w-48 md:h-48 lg:w-56 lg:h-56 rounded-full overflow-hidden mb-4">
-            <Image
+            <img
               src="/myphoto.jpg"
-              layout="fill"
-              objectFit="cover"
+              // layout="fill"
+              // objectFit="cover"
               className="rounded-full"
               alt="Avatar"
             />
