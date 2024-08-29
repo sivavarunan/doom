@@ -1,12 +1,12 @@
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { auth, db, storage } from '@/app/firebase';
+import { useRouter } from 'next/router';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, collection, query, where, getDocs, setDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import UserCard from '@/app/componenets/ui/usercard';
 import { IconEdit, IconCheck } from '@tabler/icons-react';
 import Image from 'next/image';
+import FriendCard from '@/app/componenets/ui/friendcard';
+import { auth, db, storage } from '@/app/firebase';
 
 const Profile = () => {
     const [currentUser, setCurrentUser] = useState<any>(null);
@@ -33,7 +33,6 @@ const Profile = () => {
                     const docSnap = await getDoc(userDoc);
                     if (docSnap.exists()) {
                         setUserData(docSnap.data());
-                        // Fetch friends once the user data is available
                         fetchFriends(user.uid);
                     } else {
                         console.log("No user data found in Firestore for UID:", user.uid);
@@ -51,19 +50,16 @@ const Profile = () => {
 
     const fetchFriends = async (uid: string) => {
         try {
-            // Fetch friends' UIDs
             const q = query(collection(db, "friends"), where("userId", "==", uid));
             const querySnapshot = await getDocs(q);
             const friendIds = querySnapshot.docs.map(doc => doc.data().friendId);
 
-            // Fetch details for each friend
             const friendsList = await Promise.all(friendIds.map(async (friendId) => {
                 const friendDoc = doc(db, "users", friendId);
                 const friendSnap = await getDoc(friendDoc);
                 return friendSnap.exists() ? friendSnap.data() : null;
             }));
 
-            // Filter out any null values (in case some friends' data do not exist)
             const filteredFriendsList = friendsList.filter(friend => friend !== null);
             setFriends(filteredFriendsList);
             console.log("Fetched friends list:", filteredFriendsList);
@@ -71,6 +67,7 @@ const Profile = () => {
             console.error("Error fetching friends list:", error);
         }
     };
+
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
@@ -82,9 +79,7 @@ const Profile = () => {
 
             uploadTask.on(
                 "state_changed",
-                (snapshot) => {
-                    // Optional: Add progress handling here
-                },
+                (snapshot) => {},
                 (error) => {
                     console.error("Image upload failed:", error);
                     setUploading(false);
@@ -139,8 +134,8 @@ const Profile = () => {
     };
 
     const startChat = (friendId: string) => {
-        console.log("Start chat with", friendId);
-        // router.push(`/chat?recipient=${friendId}`);
+        // router.push(`/chat/${friendId}`);
+        console.log('chat with :',friendId)
     };
 
     return (
@@ -200,56 +195,47 @@ const Profile = () => {
                                 <input
                                     type="text"
                                     name={field}
-                                    value={userData[field]}
+                                    value={userData[field] || ''}
                                     onChange={handleInputChange}
-                                    className="bg-gray-200 dark:bg-neutral-700 text-black dark:text-white p-2 rounded flex-grow"
+                                    className="flex-1 p-2 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 rounded-lg"
                                 />
-                                <IconCheck
-                                    className="cursor-pointer"
-                                    onClick={() => handleSaveProfile(field)}
-                                />
+                                <button onClick={() => handleSaveProfile(field)} className="text-green-500">
+                                    <IconCheck />
+                                </button>
                             </div>
                         ) : (
-                            <div className="flex items-center gap-2">
-                                <span className="flex-grow">{userData[field]}</span>
-                                <IconEdit
-                                    className="ml-2 cursor-pointer opacity-0 group-hover:opacity-100"
+                            <>
+                                <span>{userData[field]}</span>
+                                <button
                                     onClick={() => toggleEdit(field)}
-                                />
-                            </div>
+                                    className="absolute right-0 top-0 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-opacity opacity-0 group-hover:opacity-100"
+                                >
+                                    <IconEdit />
+                                </button>
+                            </>
                         )}
                     </div>
                 ))}
             </div>
 
-            {/* Friends List Section */}
-            <div className="md:w-2/3 w-full p-4 md:p-6 rounded-tr-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900">
+            <div className="flex flex-col md:w-2/3 w-full p-4 md:p-6 rounded-tr-2xl border-t border-l border-r border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 md:h-full custom-scrollbar">
                 <h2 className="text-xl font-semibold text-black dark:text-white mb-4">Friends</h2>
-
-                {friends.length > 0 ? (
-                    <ul>
-                        {friends.map((friend) => (
-                            <li key={friend.uid}>
-                                <UserCard
-                                    uid={friend.uid}
-                                    profileImage={friend.profileImage}
-                                    firstname={friend.firstname}
-                                    lastname={friend.lastname}
-                                    online={friend.online}
-                                    onChatStart={() => startChat(friend.uid)}
-                                />
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p className="text-gray-600 dark:text-gray-400">No friends added yet.</p>
-                )}
+                <div className="flex flex-col gap-4 overflow-y-auto">
+                    {friends.map((friend) => (
+                        <FriendCard
+                            key={friend.uid}
+                            uid={friend.uid}
+                            profileImage={friend.profileImage}
+                            firstname={friend.firstname}
+                            lastname={friend.lastname}
+                            online={friend.online}
+                            onChatStart={() => startChat(friend.uid)}
+                        />
+                    ))}
+                </div>
             </div>
-
         </div>
     );
 };
 
 export default Profile;
-
-
