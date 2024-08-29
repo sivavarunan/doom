@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, collection, query, where, getDocs, setDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
@@ -22,7 +22,7 @@ const Profile = () => {
     const [editFields, setEditFields] = useState<string[]>([]);
     const [friends, setFriends] = useState<any[]>([]);
     const [uploading, setUploading] = useState(false);
-    // const router = useRouter();
+    const router = useRouter();
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -134,7 +134,7 @@ const Profile = () => {
     };
 
     const startChat = (friendId: string) => {
-        // router.push(`/chat/${friendId}`);
+        router.push(`/pages/Chat/${friendId}`);
         console.log('chat with :',friendId)
     };
 

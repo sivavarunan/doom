@@ -15,9 +15,9 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/app/firebase';
+import { auth, db } from '@/app/firebase';
 import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/app/firebase';
+import { useParams, useRouter } from 'next/navigation';
 
 export function SidebarComp() {
     const links = [
@@ -151,7 +151,10 @@ const Chat = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-    const chatWithUserId = "USER_ID_2"; // Replace with the other user's ID you want to chat with
+    const params = useParams();
+
+    console.log('Params:', params); // Debugging log
+    const chatWithUserId = params?.id;
 
     useEffect(() => {
         const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
@@ -166,7 +169,7 @@ const Chat = () => {
     }, []);
 
     useEffect(() => {
-        if (currentUserId) {
+        if (currentUserId && chatWithUserId) {
             const q = query(
                 collection(db, 'messages'),
                 where('senderId', 'in', [currentUserId, chatWithUserId]),
@@ -184,7 +187,7 @@ const Chat = () => {
     }, [currentUserId, chatWithUserId]);
 
     const handleSendMessage = async () => {
-        if (newMessage.trim() === '' || !currentUserId) return;
+        if (newMessage.trim() === '' || !currentUserId || !chatWithUserId) return;
 
         await addDoc(collection(db, 'messages'), {
             senderId: currentUserId,
@@ -196,9 +199,12 @@ const Chat = () => {
         setNewMessage('');
     };
 
+    console.log('Current User ID:', currentUserId);
+    console.log('Chat With User ID:', chatWithUserId);
+
     return (
         <div className="dark:bg-neutral-800 bg-neutral-50">
-            <div className="p-3  rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-gray-100 dark:bg-gradient-to-t from-neutral-800 to-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
+            <div className="p-3 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-gray-100 dark:bg-gradient-to-t from-neutral-800 to-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
                 <div className="flex flex-col h-screen">
                     <div className="flex-1 overflow-y-auto p-4">
                         {messages.map((msg, index) => (
@@ -209,16 +215,16 @@ const Chat = () => {
                             </div>
                         ))}
                     </div>
-                    <div className="p-4  flex items-center sm:mb-10 md:mb-4 bg-transparent ">
+                    <div className="p-4 flex items-center sm:mb-10 md:mb-4 bg-transparent">
                         <input
                             type="text"
-                            className="flex-1 p-2 border-2  border-green-800 rounded-2xl focus:outline-none focus:ring-4 bg-neutral-950 focus:ring-emerald-700"
+                            className="flex-1 p-2 border-2 border-green-800 rounded-2xl focus:outline-none focus:ring-4 bg-neutral-950 focus:ring-emerald-700"
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                             placeholder="Type your message..."
                         />
                         <button
-                            className="ml-4 p-2 bg-emerald-700 text-white rounded-2xl hover:bg-emerald-900 "
+                            className="ml-4 p-2 bg-emerald-700 text-white rounded-2xl hover:bg-emerald-900"
                             onClick={handleSendMessage}
                         >
                             <IconSend stroke={2} className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
@@ -231,8 +237,4 @@ const Chat = () => {
 };
 
 export default Chat;
-
-
-
-
 
