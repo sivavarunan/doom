@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "@/app/componenets/ui/Sidebar";
 import {
     IconArrowLeft,
@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/app/firebase';
 import UserCard from '@/app/componenets/ui/usercard';
+import { PlaceholdersAndVanishInput } from "@/app/componenets/ui/searchbar";
 
 export function SidebarComp() {
     const links = [
@@ -132,9 +133,17 @@ export const LogoIcon = () => {
 const Community = () => {
     const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const auth = getAuth(); 
-    const validUsers = users.filter(user => user.uid);
-    console.log(users);
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
+    const auth = getAuth();
+
+    const placeholders = [
+        "Eren Yeager",
+        "NoobMaster69",
+        "Mikasa",
+        "DOGO420",
+        "username1234",
+    ];
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -143,6 +152,7 @@ const Community = () => {
                 const userSnapshot = await getDocs(usersCollection);
                 const userList = userSnapshot.docs.map((doc) => doc.data());
                 setUsers(userList);
+                setFilteredUsers(userList);
             } catch (error) {
                 console.error('Error fetching users:', error);
             } finally {
@@ -153,6 +163,23 @@ const Community = () => {
         fetchUsers();
     }, []);
 
+    useEffect(() => {
+        const results = users.filter(user =>
+            user.firstname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.lastname.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredUsers(results);
+    }, [searchTerm, users]);
+
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        // Filtering is handled in the useEffect based on searchTerm
+    };
+
     const Spinner = () => (
         <div className="flex justify-center items-center h-screen">
             <div className="w-16 h-16 border-4 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
@@ -161,25 +188,19 @@ const Community = () => {
 
     const handleAddFriend = async (uid: string) => {
         try {
-            const currentUser = auth.currentUser?.uid; // Get the current user's UID
-            
+            const currentUser = auth.currentUser?.uid;
+
             if (!currentUser) {
                 console.error('No current user found.');
                 return;
             }
 
             const friendsCollection = collection(db, 'friends');
-    
-            // Check if the friendship already exists
             const q = query(friendsCollection, where('userId', '==', currentUser), where('friendId', '==', uid));
             const querySnapshot = await getDocs(q);
-    
+
             if (querySnapshot.empty) {
-                // If no existing friendship, add a new one
-                await addDoc(friendsCollection, {
-                    userId: currentUser,
-                    friendId: uid,
-                });
+                await addDoc(friendsCollection, { userId: currentUser, friendId: uid });
                 console.log(`Added friend with UID: ${uid}`);
             } else {
                 console.log('Friendship already exists');
@@ -200,9 +221,7 @@ const Community = () => {
     return (
         <div className="dark:bg-neutral-800 bg-neutral-50">
             <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-gray-100 dark:bg-gradient-to-t from-neutral-800 to-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
-                <div className="flex flex-col w-full h-full ">
-
-                    {/* Header Section */}
+                <div className="flex flex-col w-full h-full">
                     <div className="relative w-full h-52 rounded-lg mb-10">
                         <div className="absolute inset-0 bg-gray-300 dark:bg-neutral-800 animate-pulse"></div>
                         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-sm">
@@ -221,12 +240,20 @@ const Community = () => {
                                 This is the left section.
                             </p>
                         </div>
-
-                        {/* Right Section */}
-                        <div className="flex-1 bg-gray-200 dark:bg-neutral-800 p-4 rounded-lg">
-                            <h2 className="text-xl font-semibold mb-4 text-black dark:text-white">Users</h2>
-                            <div className="grid grid-cols-1   gap-4">
-                                {validUsers.map((user) => (
+                        
+                        <div className="flex-1 bg-gray-200 dark:bg-neutral-950 p-4 rounded-lg">
+                        <h2 className="text-xl font-semibold mb-4 text-black dark:text-white ">Users</h2>
+                            
+                            <form onSubmit={handleSubmit} className="mb-4">
+                                <PlaceholdersAndVanishInput
+                                    placeholders={placeholders}
+                                    onChange={handleChange}
+                                    onSubmit={handleSubmit}
+                                />
+                            </form>
+                            
+                            <div className="grid grid-cols-1 gap-4">
+                                {filteredUsers.map((user) => (
                                     <UserCard
                                         key={user.uid}
                                         uid={user.uid}
@@ -245,5 +272,5 @@ const Community = () => {
         </div>
     );
 };
-export default Community;
 
+export default Community;
