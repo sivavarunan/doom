@@ -1,7 +1,7 @@
 import { useEffect, useState, FormEvent, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, collection, query, where, getDocs, setDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { IconEdit, IconCheck } from '@tabler/icons-react';
 import Image from 'next/image';
@@ -81,6 +81,28 @@ const Profile = () => {
             console.error("Error fetching friends list:", error);
         }finally {
             setLoading(false);
+        }
+    };
+
+    const removeFriend = async (friendId: string) => {
+        if (!currentUser) return;
+
+        try {
+            const q = query(collection(db, "friends"), where("userId", "==", currentUser.uid), where("friendId", "==", friendId));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                const friendDoc = querySnapshot.docs[0];
+                await deleteDoc(friendDoc.ref);
+                setFriends((prevFriends) => prevFriends.filter((friend) => friend.uid !== friendId));
+                setFilteredFriends((prevFriends) => prevFriends.filter((friend) => friend.uid !== friendId));
+
+                console.log("Friend removed successfully");
+            } else {
+                console.log("Friend not found");
+            }
+        } catch (error) {
+            console.error("Error removing friend:", error);
         }
     };
 
@@ -286,6 +308,7 @@ const Profile = () => {
                                 lastname={friend.lastname}
                                 online={friend.online}
                                 onChatStart={() => startChat(friend.uid)}
+                                onRemoveFriend={removeFriend} 
                             />
                         ))}
                     </div>

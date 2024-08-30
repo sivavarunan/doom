@@ -290,14 +290,14 @@ const Chat = () => {
                     <div className="p-4 flex items-center bg-transparent border-t border-neutral-200 dark:border-neutral-700 mb-10 md:mb-0">
                         <input
                             type="text"
-                            className="flex-1 p-2 border-2 border-green-800 rounded-2xl focus:outline-none focus:ring-4 bg-neutral-950 focus:ring-emerald-700"
+                            className="flex-1 p-2 border-2 border-green-800 rounded-3xl focus:outline-none focus:ring-4 bg-neutral-950 focus:ring-emerald-700"
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                             placeholder="Type your message..."
                             onKeyDown={handleKeyDown}
                         />
                         <button
-                            className="ml-4 p-2 bg-emerald-700 text-white rounded-2xl hover:bg-emerald-900"
+                            className="ml-4 p-2 bg-emerald-700 text-white rounded-3xl hover:bg-emerald-900"
                             onClick={handleSendMessage}
                         >
                             <IconSend stroke={2} className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
