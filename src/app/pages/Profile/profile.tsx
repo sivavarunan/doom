@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, FormEvent, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, collection, query, where, getDocs, setDoc } from 'firebase/firestore';
@@ -23,7 +23,17 @@ const Profile = () => {
     const [editFields, setEditFields] = useState<string[]>([]);
     const [friends, setFriends] = useState<any[]>([]);
     const [uploading, setUploading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [filteredFriends, setFilteredFriends] = useState<any[]>([]);
     const router = useRouter();
+
+    useEffect(() => {
+        const results = friends.filter(friend =>
+            friend.firstname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            friend.lastname.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredFriends(results);
+    }, [searchTerm, friends]);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -48,6 +58,8 @@ const Profile = () => {
 
         return () => unsubscribe();
     }, []);
+
+
 
     const fetchFriends = async (uid: string) => {
         try {
@@ -139,6 +151,24 @@ const Profile = () => {
         console.log('chat with :', friendId)
     };
 
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+    };
+
+    const placeholders = [
+        "Eren Yeager",
+        "NoobMaster69",
+        "Mikasa",
+        "Enter the friend name to filter..",
+        "username1234",
+        "Looser",
+    ];
+
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(event.target.value);
+    };
+
+
 
     return (
         <div className="dark:bg-neutral-800 bg-neutral-50">
@@ -223,8 +253,14 @@ const Profile = () => {
 
                 <div className="flex flex-col md:w-2/3 w-full pl-4 rounded-tr-2xl border-t border-l border-r border-neutral-200 dark:border-neutral-700 bg-white dark:bg-gradient-to-t from-neutral-800 to-neutral-900 h-screen custom-scrollbar">
                     <h2 className="text-2xl font-semibold text-emerald-700 my-4">Friends</h2>
+                    <form onSubmit={handleSubmit} className="mb-4">
+                        <PlaceholdersAndVanishInput
+                            placeholders={placeholders}
+                            onChange={handleChange}
+                            onSubmit={handleSubmit} />
+                    </form>
                     <div className="flex gap-4 overflow-y-auto">
-                        {friends.map((friend) => (
+                        {filteredFriends.map((friend) => (
                             <FriendCard
                                 key={friend.uid}
                                 uid={friend.uid}
@@ -236,8 +272,9 @@ const Profile = () => {
                             />
                         ))}
                     </div>
+
                     <div className='border-t-2 border-neutral-700 mt-8 mr-8'>
-                    <h2 className="text-2xl font-semibold text-emerald-700 my-4">Other</h2>
+                        <h2 className="text-2xl font-semibold text-emerald-700 my-4">Other</h2>
                     </div>
                 </div>
             </div>
