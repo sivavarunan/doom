@@ -165,6 +165,7 @@ const Chat = () => {
     const params = useParams();
     const chatWithUserId = typeof params?.id === 'string' ? params.id : '';
     const endOfMessagesRef = useRef<HTMLDivElement>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
@@ -214,9 +215,10 @@ const Chat = () => {
                 } catch (error) {
                     console.error("Error fetching user data from Firestore:", error);
                     setReceiverName('Error fetching name');
+                } finally {
+                    setLoading(false);
                 }
             };
-
             fetchUserData();
         }
     }, [chatWithUserId]);
@@ -234,11 +236,18 @@ const Chat = () => {
         setNewMessage('');
     };
 
+    const Spinner = () => (
+        <div className="flex justify-center items-center h-screen">
+            <div className="w-16 h-16 border-4 border-solid border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+    );
+
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             handleSendMessage();
         }
     };
+
 
     const formatTimestamp = (timestamp: any) => {
         if (!timestamp) return 'Invalid date'; // Handle null or undefined timestamp
@@ -251,6 +260,14 @@ const Chat = () => {
             endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages]);
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Spinner />
+            </div>
+        );
+    }
 
     return (
         <div className="dark:bg-neutral-800 bg-neutral-50 flex flex-col h-screen">
@@ -278,7 +295,7 @@ const Chat = () => {
                         ))}
                     </div >
                     <div ref={endOfMessagesRef} />
-                    
+
                     <div className="p-4 flex items-center bg-transparent border-t border-neutral-200 dark:border-neutral-700 mb-10 md:mb-0">
                         <input
                             type="text"
@@ -294,7 +311,7 @@ const Chat = () => {
                         >
                             <IconSend stroke={2} className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
                         </button>
-                        <FloatingDockComp className="ml-4" /> 
+                        <FloatingDockComp className="ml-4" />
                     </div>
                 </div>
             </div>
