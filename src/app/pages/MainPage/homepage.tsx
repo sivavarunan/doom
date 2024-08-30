@@ -12,6 +12,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { Bento } from "./bentogrid";
+
 
 export function SidebarComp() {
     const links = [
@@ -87,7 +89,11 @@ export function SidebarComp() {
                     </div>
                 </SidebarBody>
             </Sidebar>
-            <Dashboard />
+            <div className="flex-1 overflow-y-scroll dark:custom-scrollbar">
+                <div className="flex-1 overflow-auto">
+                    <Dashboard />
+                </div>
+            </div>
         </div>
     );
 }
@@ -124,43 +130,20 @@ const Dashboard = () => {
         <div className="flex flex-col w-full h-full bg-neutral-50  dark:bg-neutral-800">
             <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-gray-100 dark:bg-gradient-to-t from-neutral-800 to-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
                 <div className="relative w-full h-52 rounded-lg mb-10">
-                    <div className="absolute inset-0 bg-gray-300 dark:bg-neutral-800 animate-pulse "></div>
-                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-sm">
+                    <div className="absolute inset-0 bg-white dark:bg-neutral-950 animate-pulse "></div>
+                    <div className="absolute inset-0  dark:bg-inherit  bg-opacity-50 flex items-center justify-center rounded-sm">
                         <h1 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-4 from-green-400 via-emerald-600 to-teal-700 text-5xl md:text-6xl mt-6 font-bold">
                             Dashboard
                         </h1>
                     </div>
-                    {/* Hero Section */}
+
+                </div>
+                {/* Hero Section */}
+                <div className="">
+                    <Bento />
                 </div>
             </div>
         </div>
     );
 };
-
-
-
-
-
-// Dummy dashboard component with content
-
-//  <div className="flex flex-1">
-//     <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
-//         <div className="flex gap-2">
-//             {[...new Array(4)].map((i) => (
-//                 <div
-//                     key={"first-array" + i}
-//                     className="h-20 w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse"
-//                 ></div>
-//             ))}
-//         </div>
-//         <div className="flex gap-2 flex-1">
-//             {[...new Array(2)].map((i) => (
-//                 <div
-//                     key={"second-array" + i}
-//                     className="h-full w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse"
-//                 ></div>
-//             ))}
-//         </div>
-//     </div>
-// </div> 
 
