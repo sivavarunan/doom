@@ -23,6 +23,7 @@ const Profile = () => {
     const [editFields, setEditFields] = useState<string[]>([]);
     const [friends, setFriends] = useState<any[]>([]);
     const [uploading, setUploading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [filteredFriends, setFilteredFriends] = useState<any[]>([]);
     const router = useRouter();
@@ -78,6 +79,8 @@ const Profile = () => {
             console.log("Fetched friends list:", filteredFriendsList);
         } catch (error) {
             console.error("Error fetching friends list:", error);
+        }finally {
+            setLoading(false);
         }
     };
 
@@ -167,6 +170,20 @@ const Profile = () => {
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
     };
+
+    const Spinner = () => (
+        <div className="flex justify-center items-center h-screen">
+            <div className="w-16 h-16 border-4 border-solid border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+    );
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Spinner />
+            </div>
+        );
+    }
 
 
 
