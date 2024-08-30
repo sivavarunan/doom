@@ -282,7 +282,7 @@ const Chat = () => {
                         {messages.map((msg, index) => (
                             <div key={index} className={`flex ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'} mb-4`}>
                                 <div className={`relative ${msg.senderId === currentUserId ? 'ml-auto' : 'mr-auto'}`}>
-                                    <div className={`bg-${msg.senderId === currentUserId ? 'emerald-800' : 'gray-300'} text-md text-black px-10 py-2 rounded-3xl font-mono`}>
+                                    <div className={`bg-${msg.senderId === currentUserId ? 'emerald-700' : 'gray-300'} text-md text-black px-10 py-2 rounded-3xl font-mono`}>
                                         <span>{msg.message}</span>
                                     </div>
                                     <div className={`flex items-end ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'} mt-1`}>
