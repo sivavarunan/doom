@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, KeyboardEvent } from 'react';
 import { Sidebar, SidebarBody, SidebarLink } from "@/app/componenets/ui/Sidebar";
 import {
     IconArrowLeft,
@@ -238,6 +238,7 @@ const Chat = () => {
             handleSendMessage();
         }
     };
+    
 
     const formatTimestamp = (timestamp: any) => {
         if (!timestamp) return 'Invalid date'; // Handle null or undefined timestamp
@@ -258,7 +259,7 @@ const Chat = () => {
                         {messages.map((msg, index) => (
                             <div key={index} className={`flex ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'} mb-4`}>
                                 <div className={`relative ${msg.senderId === currentUserId ? 'ml-auto' : 'mr-auto'}`}>
-                                    <div className={`bg-emerald-800 text-md text-black px-6 py-2 rounded-3xl font-mono`}>
+                                    <div className={`bg-${msg.senderId === currentUserId ? 'emerald-800' : 'gray-300'} text-md text-black px-6 py-2 rounded-3xl font-mono`}>
                                         <span>{msg.message}</span>
                                     </div>
                                     <div className={`flex items-end ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'} mt-1`}>
@@ -278,6 +279,7 @@ const Chat = () => {
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                             placeholder="Type your message..."
+                            onKeyDown={handleKeyDown}
                         />
                         <button
                             className="ml-4 p-2 bg-emerald-700 text-white rounded-2xl hover:bg-emerald-900"
