@@ -17,6 +17,8 @@ import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/app/firebase';
 import UserCard from '@/app/componenets/ui/usercard';
 import { PlaceholdersAndVanishInput } from "@/app/componenets/ui/searchbar";
+import { toast, Slide } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export function SidebarComp() {
     const links = [
@@ -200,6 +202,16 @@ const Community = () => {
             if (querySnapshot.empty) {
                 await addDoc(friendsCollection, { userId: currentUser, friendId: uid });
                 console.log(`Added friend with UID: ${uid}`);
+                toast.success("Freind added", {
+                    position: "bottom-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    transition: Slide,
+                });
             } else {
                 console.log('Friendship already exists');
             }

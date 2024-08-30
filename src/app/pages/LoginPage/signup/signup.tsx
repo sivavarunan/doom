@@ -9,6 +9,8 @@ import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } f
 import { setDoc, doc } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import { auth } from "@/app/firebase";
+import { toast, Slide } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export function SignupForm() {
     const [firstname, setFirstname] = useState("");
@@ -93,6 +95,16 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             });
 
             console.log("User registered:", user);
+            toast.success("Sign up successful", {
+                position: "bottom-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                transition: Slide,
+            });
             router.push("/pages/LoginPage");
 
         } catch (error: any) {
@@ -124,7 +136,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             // Handle Google Sign-In errors
         }
     };
-    
 
     return (
         <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">

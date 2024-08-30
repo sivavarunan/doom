@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react';
-import { ToastContainer, toast, Slide } from 'react-toastify';
+import { toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BackgroundBeamsWithCollision } from "@/app/componenets/ui/background-beams-with-collision";
 import { useRouter } from 'next/navigation';
@@ -47,8 +47,6 @@ export default function Home() {
                     </button>
                 </div>
             </h2>
-            
-            <ToastContainer />
         </BackgroundBeamsWithCollision>
     );
 }

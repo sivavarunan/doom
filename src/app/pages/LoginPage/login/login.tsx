@@ -6,7 +6,8 @@ import { Label } from "@/app/componenets/ui/label";
 import { Input } from "@/app/componenets/ui/input";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-
+import { toast, Slide } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 interface Errors {
     email?: string;
     password?: string;
@@ -60,8 +61,16 @@ export function LoginForm() {
                     // Store the JWT token in localStorage (if needed)
                     const token = await userCredential.user.getIdToken();
                     localStorage.setItem('authToken', token);
-
-                    // Redirect to the home page
+                    toast.success("Login successful", {
+                        position: "bottom-right",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        transition: Slide,
+                    });
                     router.push("/pages/MainPage");
                 } else {
                     throw new Error('No user credential received');
