@@ -74,7 +74,7 @@ export function SidebarComp() {
                     </div>
                 </SidebarBody>
             </Sidebar>
-            <div className="flex-1 overflow-y-scroll custom-scrollbar">
+            <div className="flex-1 overflow-y-scroll dark:custom-scrollbar">
                 <div className="flex-1 overflow-auto">
                     <Profile />
                 </div>

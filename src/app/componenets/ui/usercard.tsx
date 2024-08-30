@@ -14,7 +14,7 @@ interface UserCardProps {
 
 const UserCard: React.FC<UserCardProps> = ({ uid, profileImage, firstname, lastname, online, onAddFriend, onChatStart }) => {
   return (
-    <div className="flex items-center p-3 bg-neutral-700 dark:bg-gradient-to-l from-neutral-950 to-gray-900 shadow-md rounded-xl border-2 border-gray-800 transition-transform transform hover:scale-105">
+    <div className="flex items-center p-3 dark:bg-neutral-700 dark:bg-gradient-to-l from-neutral-950 to-gray-900 shadow-md rounded-xl border-2 border-gray-800 transition-transform transform hover:scale-105">
       {profileImage ? (<Image
         src={profileImage}
         width={400}

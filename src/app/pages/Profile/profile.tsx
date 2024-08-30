@@ -18,6 +18,7 @@ const Profile = () => {
         lastname: "",
         age: "",
         city: "",
+        country: "",
         profession: "",
         status: "",
         profileImage: "",
@@ -205,6 +206,12 @@ const Profile = () => {
         setSearchTerm(event.target.value);
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleInputChange(e as any);
+        }
+    };
+
     const Spinner = () => (
         <div className="flex justify-center items-center h-screen">
             <div className="w-16 h-16 border-4 border-solid border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
@@ -224,7 +231,7 @@ const Profile = () => {
     return (
         <div className="dark:bg-neutral-800 bg-neutral-50">
             <div className="flex flex-col md:flex-row flex-1">
-                <div className="flex flex-col items-center p-4 md:p-6 rounded-tl-2xl border border-b-0 border-neutral-200 bg-gradient-to-t from-neutral-800 to-neutral-900 dark:border-neutral-700 md:w-1/3 w-full h-screen">
+                <div className="flex flex-col items-center p-4 md:p-6 rounded-tl-2xl border border-b-0 border-neutral-200 dark:bg-gradient-to-t from-neutral-800 to-neutral-900 dark:border-neutral-700 md:w-1/3 w-full h-screen">
                     {/* Profile Section */}
                     <div className="relative mb-4">
                         <div className="w-32 h-32 rounded-full bg-gray-100 dark:bg-neutral-800 overflow-hidden mb-2">
@@ -269,20 +276,22 @@ const Profile = () => {
                     {[
                         { label: "Age", field: "age" },
                         { label: "City", field: "city" },
+                        { label: "Country", field: "country" },
                         { label: "Profession", field: "profession" },
                         { label: "Status", field: "status" },
                     ].map(({ label, field }) => (
                         <div key={field} className="text-md text-gray-600 dark:text-gray-400 mb-4 w-full text-left relative group">
                             <span className="font-semibold text-black dark:text-white">{label}:</span>{" "}
                             {editFields.includes(field) ? (
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        type="text"
-                                        name={field}
-                                        value={userData[field] || ''}
-                                        onChange={handleInputChange}
-                                        className="flex-1 p-2 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 rounded-lg"
-                                    />
+                               <div className="flex items-center gap-2">
+                               <input
+                                   type="text"
+                                   name={field}
+                                   value={userData[field] || ''}
+                                   onChange={handleInputChange}
+                                   onKeyDown={handleKeyDown}  
+                                   className="flex-1 p-2 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 rounded-lg"
+                               />
                                     <button onClick={() => handleSaveProfile(field)} className="text-green-500">
                                         <IconCheck />
                                     </button>
@@ -302,7 +311,7 @@ const Profile = () => {
                     ))}
                 </div>
 
-                <div className="flex flex-col md:w-2/3 w-full pl-4 rounded-tr-2xl border-t border-l border-r border-neutral-200 dark:border-neutral-700 bg-white dark:bg-gradient-to-t from-neutral-800 to-neutral-900 h-screen custom-scrollbar">
+                <div className="flex flex-col md:w-2/3 w-full pl-4 rounded-tr-2xl border-t border-l border-r border-neutral-200 dark:border-neutral-700 bg-white dark:bg-gradient-to-t from-neutral-800 to-neutral-900 h-screen dark:custom-scrollbar">
                     <h2 className="text-2xl font-semibold text-emerald-700 my-4">Friends</h2>
                     <form onSubmit={handleSubmit} className="mb-4">
                         <PlaceholdersAndVanishInput

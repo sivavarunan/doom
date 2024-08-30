@@ -277,7 +277,7 @@ const Chat = () => {
                                         <span>{msg.message}</span>
                                     </div>
                                     <div className={`flex items-end ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'} mt-1`}>
-                                        <span className="text-xs text-white bg-black bg-opacity-5 px-2 py-1 rounded-3xl whitespace-nowrap">
+                                        <span className="text-xs dark:text-white bg-black bg-opacity-5 px-2 py-1 rounded-3xl whitespace-nowrap">
                                             {formatTimestamp(msg.timestamp)}
                                         </span>
                                     </div>
@@ -290,7 +290,7 @@ const Chat = () => {
                     <div className="p-4 flex items-center bg-transparent border-t border-neutral-200 dark:border-neutral-700 mb-10 md:mb-0">
                         <input
                             type="text"
-                            className="flex-1 p-2 border-2 border-green-800 rounded-3xl focus:outline-none focus:ring-4 bg-neutral-950 focus:ring-emerald-700"
+                            className="flex-1 p-2 border-2 border-green-800 rounded-3xl focus:outline-none focus:ring-4 dark:bg-neutral-950 focus:ring-emerald-700"
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                             placeholder="Type your message..."
