@@ -42,7 +42,7 @@ export function SidebarComp() {
     return (
         <div
             className={cn(
-                "flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full h-screen overflow-hidden"
+                "flex flex-col md:flex-row bg-gray-100 dark:bg-gradient-to-t from-neutral-800 to-neutral-900 w-full h-screen overflow-hidden"
             )}
         >
             <Sidebar open={open} setOpen={setOpen}>
@@ -74,7 +74,11 @@ export function SidebarComp() {
                     </div>
                 </SidebarBody>
             </Sidebar>
-            <Profile />
+            <div className="flex-1 overflow-y-scroll custom-scrollbar">
+                <div className="flex-1 overflow-auto">
+                    <Profile />
+                </div>
+            </div>
         </div>
     );
 }
