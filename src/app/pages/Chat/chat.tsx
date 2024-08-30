@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, KeyboardEvent } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Sidebar, SidebarBody, SidebarLink } from "@/app/componenets/ui/Sidebar";
 import {
     IconArrowLeft,
@@ -164,6 +164,7 @@ const Chat = () => {
     const [receiverName, setReceiverName] = useState<string>('');
     const params = useParams();
     const chatWithUserId = typeof params?.id === 'string' ? params.id : '';
+    const endOfMessagesRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
@@ -238,13 +239,18 @@ const Chat = () => {
             handleSendMessage();
         }
     };
-    
 
     const formatTimestamp = (timestamp: any) => {
         if (!timestamp) return 'Invalid date'; // Handle null or undefined timestamp
         const date = timestamp.toDate(); // Convert Firestore timestamp to JS Date
         return format(date, 'p, MMM d'); // Format as "12:00 PM, Jan 1"
     };
+
+    useEffect(() => {
+        if (endOfMessagesRef.current) {
+            endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages]);
 
     return (
         <div className="dark:bg-neutral-800 bg-neutral-50 flex flex-col h-screen">
@@ -259,7 +265,7 @@ const Chat = () => {
                         {messages.map((msg, index) => (
                             <div key={index} className={`flex ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'} mb-4`}>
                                 <div className={`relative ${msg.senderId === currentUserId ? 'ml-auto' : 'mr-auto'}`}>
-                                    <div className={`bg-${msg.senderId === currentUserId ? 'emerald-800' : 'gray-300'} text-md text-black px-6 py-2 rounded-3xl font-mono`}>
+                                    <div className={`bg-${msg.senderId === currentUserId ? 'emerald-800' : 'gray-300'} text-md text-black px-10 py-2 rounded-3xl font-mono`}>
                                         <span>{msg.message}</span>
                                     </div>
                                     <div className={`flex items-end ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'} mt-1`}>
@@ -268,11 +274,12 @@ const Chat = () => {
                                         </span>
                                     </div>
                                 </div>
-                            </div>
+                            </div >
                         ))}
-                    </div>
-
-                    <div className="p-4 flex items-center bg-transparent border-t border-neutral-200 dark:border-neutral-700">
+                    </div >
+                    <div ref={endOfMessagesRef} />
+                    
+                    <div className="p-4 flex items-center bg-transparent border-t border-neutral-200 dark:border-neutral-700 mb-10 md:mb-0">
                         <input
                             type="text"
                             className="flex-1 p-2 border-2 border-green-800 rounded-2xl focus:outline-none focus:ring-4 bg-neutral-950 focus:ring-emerald-700"
