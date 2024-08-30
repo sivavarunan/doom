@@ -21,7 +21,7 @@ export default function RootLayout({
       <body className={inter.className}>
         {children}
         <ToastContainer
-        theme="dark"
+          theme="colored"
           position="bottom-right"
           autoClose={5000}
           hideProgressBar={false}

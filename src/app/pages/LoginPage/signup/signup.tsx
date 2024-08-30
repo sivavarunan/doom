@@ -9,7 +9,7 @@ import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } f
 import { setDoc, doc } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import { auth } from "@/app/firebase";
-import { toast, Slide } from 'react-toastify';
+import { toast, Bounce, Zoom } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export function SignupForm() {
@@ -103,12 +103,22 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                 pauseOnHover: true,
                 draggable: true,
                 progress: undefined,
-                transition: Slide,
+                transition: Zoom,
             });
             router.push("/pages/LoginPage");
 
         } catch (error: any) {
             console.error("Error signing up:", error);
+            toast.error("Signup failed", {
+                position: "bottom-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                transition: Bounce,
+            });
             if (error.code === "auth/email-already-in-use") {
                 setErrors((prevErrors) => ({
                     ...prevErrors,

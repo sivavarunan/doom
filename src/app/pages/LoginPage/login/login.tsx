@@ -6,7 +6,7 @@ import { Label } from "@/app/componenets/ui/label";
 import { Input } from "@/app/componenets/ui/input";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { toast, Slide } from 'react-toastify';
+import { toast, Bounce, Zoom } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 interface Errors {
     email?: string;
@@ -69,7 +69,7 @@ export function LoginForm() {
                         pauseOnHover: true,
                         draggable: true,
                         progress: undefined,
-                        transition: Slide,
+                        transition: Zoom,
                     });
                     router.push("/pages/MainPage");
                 } else {
@@ -77,9 +77,20 @@ export function LoginForm() {
                 }
             } catch (error: any) {
                 console.error("Error logging in:", error.message);
+                toast.error("Login failed", {
+                    position: "bottom-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    transition: Bounce,
+                });
                 setErrors((prevErrors) => ({
                     ...prevErrors,
                     general: "Invalid Email or Password",
+                    
                 }));
             }
         }

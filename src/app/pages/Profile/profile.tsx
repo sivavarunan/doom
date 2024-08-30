@@ -8,6 +8,8 @@ import Image from 'next/image';
 import FriendCard from '@/app/componenets/ui/friendcard';
 import { auth, db, storage } from '@/app/firebase';
 import { PlaceholdersAndVanishInput } from "@/app/componenets/ui/searchbar";
+import { toast, Flip, } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Profile = () => {
     const [currentUser, setCurrentUser] = useState<any>(null);
@@ -98,6 +100,16 @@ const Profile = () => {
                 setFilteredFriends((prevFriends) => prevFriends.filter((friend) => friend.uid !== friendId));
 
                 console.log("Friend removed successfully");
+                toast.error("Freind Removed", {
+                    position: "bottom-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    transition: Flip,
+                });
             } else {
                 console.log("Friend not found");
             }
