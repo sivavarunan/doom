@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Sidebar, SidebarBody, SidebarLink } from "@/app/componenets/ui/Sidebar";
 import {
@@ -7,7 +8,6 @@ import {
     IconSettings,
     IconUserBolt,
     IconWorld,
-    IconMessage,
     IconSend,
 } from "@tabler/icons-react";
 import Link from "next/link";
@@ -20,8 +20,6 @@ import { collection, doc, getDoc, onSnapshot, query, where, orderBy, addDoc, ser
 import { useParams } from 'next/navigation';
 import { format } from 'date-fns';
 import { FloatingDockComp } from "@/app/componenets/ui/floatingdockcomp";
-
-
 
 export function SidebarComp() {
     const links = [
@@ -46,13 +44,6 @@ export function SidebarComp() {
                 <IconWorld className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
             ),
         },
-        // {
-        //     label: "Chat",
-        //     href: "/pages/Chat",
-        //     icon: (
-        //         <IconMessage stroke={2} className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-        //     ),
-        // },
         {
             label: "Settings",
             href: "/pages/Settings",

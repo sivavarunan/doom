@@ -1,6 +1,8 @@
-
 'use client'
-import React from "react";
+
+import React from 'react';
+import { ToastContainer, toast, Slide } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { BackgroundBeamsWithCollision } from "@/app/componenets/ui/background-beams-with-collision";
 import { useRouter } from 'next/navigation';
 import { FlipWords } from "@/app/componenets/ui/flip-words";
@@ -9,6 +11,17 @@ export default function Home() {
     const router = useRouter();
 
     const handleClick = () => {
+        toast.success("Redirecting to MainPage...", {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            transition: Slide,
+        });
+        
         router.push('/pages/MainPage');
     };
 
@@ -34,6 +47,8 @@ export default function Home() {
                     </button>
                 </div>
             </h2>
+            
+            <ToastContainer />
         </BackgroundBeamsWithCollision>
     );
 }
