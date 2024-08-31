@@ -220,7 +220,7 @@ const Community = () => {
                         <div className="flex-1 bg-gray-100 dark:bg-neutral-900 p-4 rounded-lg">
                             <h1 className="text-3xl font-bold mb-2 text-black dark:text-white">Welcome to the Community</h1>
                             <p className="text-lg mb-2 dark:text-neutral-400">We connect people all around the Globe</p>
-                            <div className="w-full h-96 flex justify-center items-center">
+                            <div className=" flex justify-center items-center">
                                 <Globe className="mt-4" />
                             </div>
                         </div>

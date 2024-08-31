@@ -21,8 +21,8 @@ export const Globe = ({ className }: { className?: string }) => {
       mapSamples: 16000,
       mapBrightness: 6,
       baseColor: [0.3, 0.3, 0.3],
-      markerColor: [0.1, 0.8, 1],
-      glowColor: [1, 1, 1],
+      markerColor: [0.31, 0.78, 0.47],  // Emerald Green
+      glowColor: [0.83, 0.83, 0.83],    // Light Gray
       markers: [
         // longitude latitude
         { location: [34.0522, -118.2437], size: 0.04 }, // Los Angeles, California
@@ -32,7 +32,7 @@ export const Globe = ({ className }: { className?: string }) => {
         // Called on every animation frame.
         // `state` will be an empty object, return updated params.
         state.phi = phi;
-        phi += 0.01;
+        phi += 0.006;
       },
     });
 
@@ -44,7 +44,7 @@ export const Globe = ({ className }: { className?: string }) => {
   return (
     <canvas
       ref={canvasRef}
-      style={{ width: 700, height: 700, maxWidth: "100%", aspectRatio: 1 }}
+      style={{ width: 600, height: 600, maxWidth: "100%", aspectRatio: 1 }}
       className={className}
     />
   );
