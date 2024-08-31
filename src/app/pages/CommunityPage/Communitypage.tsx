@@ -246,15 +246,15 @@ const Community = () => {
                     <div className="flex flex-col md:flex-row gap-4 w-full h-full">
                         {/* Left Section */}
                         <div className="flex-1 bg-gray-100 dark:bg-neutral-900 p-4 rounded-lg">
-                            <h1 className="text-2xl font-bold mb-4 text-black dark:text-white">Welcome to the Community</h1>
-                            <p className="mb-4">We connect people all around the Globe</p>
+                            <h1 className="text-3xl font-bold mb-2 text-black dark:text-white">Welcome to the Community</h1>
+                            <p className="text-lg mb-2 dark:text-neutral-400">We connect people all around the Globe</p>
                             <div className="w-full h-96 flex justify-center items-center">
                                 <Globe className="mt-4"/>
                             </div>
                             
                         </div>
 
-                        <div className="flex-1 bg-gray-200 dark:bg-neutral-950 p-4 rounded-lg">
+                        <div className="flex-1 bg-gray-200 dark:bg-neutral-900 p-4 rounded-lg">
                             <h2 className="text-xl font-semibold mb-4 text-black dark:text-white ">Users</h2>
 
                             <form onSubmit={handleSubmit} className="mb-4">
