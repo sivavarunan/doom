@@ -12,10 +12,10 @@ import {
   IconBrandX,
   IconWorld
 } from "@tabler/icons-react";
-import Link from "next/link";
-import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/app/componenets/logo";
+import { LogoIcon } from "@/app/componenets/LogoIcon";
 
 export function SidebarComp() {
   const links = [
@@ -102,43 +102,14 @@ export function SidebarComp() {
   );
 }
 
-export const Logo = () => {
-  return (
-    <Link
-      href="/"
-      className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
-    >
-      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="font-medium text-black dark:text-white whitespace-pre"
-      >
-        DOOM
-      </motion.span>
-    </Link>
-  );
-};
-
-export const LogoIcon = () => {
-  return (
-    <Link
-      href="#"
-      className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
-    >
-      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
-    </Link>
-  );
-};
-
 // About component
 const About = () => {
   return (
     <div className="flex flex-col p-4 md:p-10 w-full h-full">
       {/* Hero Section */}
       <div className="relative w-full h-52 rounded-lg mb-10">
-      <div className="absolute inset-0 bg-white dark:bg-neutral-950 animate-pulse "></div>
-      <div className="absolute inset-0  dark:bg-inherit  bg-opacity-50 flex items-center justify-center rounded-sm">
+        <div className="absolute inset-0 bg-white dark:bg-neutral-950 animate-pulse "></div>
+        <div className="absolute inset-0  dark:bg-inherit  bg-opacity-50 flex items-center justify-center rounded-sm">
           <h1 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-4 from-green-400 via-emerald-600 to-teal-700 text-5xl md:text-6xl mt-6 font-bold">
             About Me
           </h1>

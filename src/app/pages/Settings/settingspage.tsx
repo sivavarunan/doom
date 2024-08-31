@@ -12,6 +12,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/app/componenets/logo";
+import { LogoIcon } from "@/app/componenets/LogoIcon";
 
 export function SidebarComp() {
     const links = [
@@ -91,82 +93,55 @@ export function SidebarComp() {
         </div>
     );
 }
-export const Logo = () => {
-    return (
-        <Link
-            href="/"
-            className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
-        >
-            <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
-            <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="font-medium text-black dark:text-white whitespace-pre"
-            >
-                DOOM
-            </motion.span>
-        </Link>
-    );
-};
-export const LogoIcon = () => {
-    return (
-        <Link
-            href="#"
-            className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
-        >
-            <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
-        </Link>
-    );
-};
 
 // Dummy Profile component with content
 const Settings = () => {
     return (
-      <div className="flex flex-col md:flex-row flex-1 ">
-        {/* Sidebar or Navigation */}
-        <div className="flex flex-col p-4 md:p-6 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 md:w-1/4 w-full h-full">
-          {/* Settings Categories */}
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={"settings-category" + i}
-              className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 mb-4 animate-pulse"
-            ></div>
-          ))}
+        <div className="flex flex-col md:flex-row flex-1 ">
+            {/* Sidebar or Navigation */}
+            <div className="flex flex-col p-4 md:p-6 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 md:w-1/4 w-full h-full">
+                {/* Settings Categories */}
+                {[...Array(5)].map((_, i) => (
+                    <div
+                        key={"settings-category" + i}
+                        className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 mb-4 animate-pulse"
+                    ></div>
+                ))}
+            </div>
+
+            {/* Main Content Area */}
+            <div className="flex flex-col gap-4 md:gap-8 flex-1 p-4 md:p-6  border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 w-full h-full">
+                {/* Section 1 - Account Settings */}
+                <div className="flex flex-col gap-2">
+                    <div className="h-6 w-1/3 rounded-lg bg-gray-100 dark:bg-neutral-800 mb-2 animate-pulse"></div>
+                    <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
+                    <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
+                </div>
+
+                {/* Section 2 - Privacy Settings */}
+                <div className="flex flex-col gap-2">
+                    <div className="h-6 w-1/3 rounded-lg bg-gray-100 dark:bg-neutral-800 mb-2 animate-pulse"></div>
+                    <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
+                    <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
+                </div>
+
+                {/* Section 3 - Notification Settings */}
+                <div className="flex flex-col gap-2">
+                    <div className="h-6 w-1/3 rounded-lg bg-gray-100 dark:bg-neutral-800 mb-2 animate-pulse"></div>
+                    <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
+                    <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
+                    <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
+                </div>
+
+                {/* Section 4 - Other Settings */}
+                <div className="flex flex-col gap-2">
+                    <div className="h-6 w-1/3 rounded-lg bg-gray-100 dark:bg-neutral-800 mb-2 animate-pulse"></div>
+                    <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
+                    <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
+                </div>
+            </div>
         </div>
-  
-        {/* Main Content Area */}
-        <div className="flex flex-col gap-4 md:gap-8 flex-1 p-4 md:p-6  border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 w-full h-full">
-          {/* Section 1 - Account Settings */}
-          <div className="flex flex-col gap-2">
-            <div className="h-6 w-1/3 rounded-lg bg-gray-100 dark:bg-neutral-800 mb-2 animate-pulse"></div>
-            <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
-            <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
-          </div>
-  
-          {/* Section 2 - Privacy Settings */}
-          <div className="flex flex-col gap-2">
-            <div className="h-6 w-1/3 rounded-lg bg-gray-100 dark:bg-neutral-800 mb-2 animate-pulse"></div>
-            <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
-            <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
-          </div>
-  
-          {/* Section 3 - Notification Settings */}
-          <div className="flex flex-col gap-2">
-            <div className="h-6 w-1/3 rounded-lg bg-gray-100 dark:bg-neutral-800 mb-2 animate-pulse"></div>
-            <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
-            <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
-            <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
-          </div>
-  
-          {/* Section 4 - Other Settings */}
-          <div className="flex flex-col gap-2">
-            <div className="h-6 w-1/3 rounded-lg bg-gray-100 dark:bg-neutral-800 mb-2 animate-pulse"></div>
-            <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
-            <div className="h-10 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
-          </div>
-        </div>
-      </div>
     );
-  };
-  
+};
+
 

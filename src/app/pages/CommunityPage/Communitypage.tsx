@@ -9,8 +9,6 @@ import {
     IconWorld,
 } from "@tabler/icons-react";
 import { getAuth } from "firebase/auth";
-import Link from "next/link";
-import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
@@ -20,6 +18,8 @@ import { PlaceholdersAndVanishInput } from "@/app/componenets/ui/searchbar";
 import { toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Globe } from "@/app/componenets/ui/Globe"
+import { Logo } from "@/app/componenets/logo";
+import { LogoIcon } from "@/app/componenets/LogoIcon";
 
 export function SidebarComp() {
     const links = [
@@ -104,34 +104,6 @@ export function SidebarComp() {
 
     );
 }
-export const Logo = () => {
-    return (
-        <Link
-            href="/"
-            className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
-        >
-            <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
-            <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="font-medium text-black dark:text-white whitespace-pre"
-            >
-                DOOM
-            </motion.span>
-        </Link>
-    );
-};
-export const LogoIcon = () => {
-    return (
-        <Link
-            href="#"
-            className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
-        >
-            <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
-        </Link>
-    );
-};
-
 
 const Community = () => {
     const [users, setUsers] = useState<any[]>([]);
@@ -249,14 +221,11 @@ const Community = () => {
                             <h1 className="text-3xl font-bold mb-2 text-black dark:text-white">Welcome to the Community</h1>
                             <p className="text-lg mb-2 dark:text-neutral-400">We connect people all around the Globe</p>
                             <div className="w-full h-96 flex justify-center items-center">
-                                <Globe className="mt-4"/>
+                                <Globe className="mt-4" />
                             </div>
-                            
                         </div>
-
                         <div className="flex-1 bg-gray-200 dark:bg-neutral-900 p-4 rounded-lg">
                             <h2 className="text-xl font-semibold mb-4 text-black dark:text-white ">Users</h2>
-
                             <form onSubmit={handleSubmit} className="mb-4">
                                 <PlaceholdersAndVanishInput
                                     placeholders={placeholders}
@@ -264,7 +233,6 @@ const Community = () => {
                                     onSubmit={handleSubmit}
                                 />
                             </form>
-
                             <div className="grid grid-cols-1 gap-4">
                                 {filteredUsers.map((user) => (
                                     <UserCard

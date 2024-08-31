@@ -11,7 +11,6 @@ import {
     IconSend,
 } from "@tabler/icons-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { onAuthStateChanged } from 'firebase/auth';
@@ -20,6 +19,8 @@ import { collection, doc, getDoc, onSnapshot, query, where, orderBy, addDoc, ser
 import { useParams } from 'next/navigation';
 import { format } from 'date-fns';
 import { FloatingDockComp } from "@/app/componenets/ui/floatingdockcomp";
+import { Logo } from "@/app/componenets/logo";
+import { LogoIcon } from '@/app/componenets/LogoIcon';
 
 export function SidebarComp() {
     const links = [
@@ -106,34 +107,6 @@ export function SidebarComp() {
     );
 }
 
-const Logo = () => {
-    return (
-        <Link
-            href="/"
-            className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
-        >
-            <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
-            <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="font-medium text-black dark:text-white whitespace-pre"
-            >
-                DOOM
-            </motion.span>
-        </Link>
-    );
-};
-
-const LogoIcon = () => {
-    return (
-        <Link
-            href="#"
-            className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
-        >
-            <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
-        </Link>
-    );
-};
 
 interface Message {
     senderId: string;
