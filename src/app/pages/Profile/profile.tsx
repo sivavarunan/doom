@@ -8,7 +8,7 @@ import Image from 'next/image';
 import FriendCard from '@/app/componenets/ui/friendcard';
 import { auth, db, storage } from '@/app/firebase';
 import { PlaceholdersAndVanishInput } from "@/app/componenets/ui/searchbar";
-import { toast, Flip, } from 'react-toastify';
+import { toast, Flip } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Profile = () => {
