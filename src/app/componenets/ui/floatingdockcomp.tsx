@@ -3,7 +3,6 @@ import { FloatingDock } from "./floating-doc";
 import {
   IconBrandGithub,
   IconBrandX,
-  IconExchange,
   IconHome,
   IconNewSection,
   IconTerminal2,
