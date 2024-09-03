@@ -173,10 +173,10 @@ export function SidebarComp() {
 const Dashboard = () => {
     return (
         <div className="flex flex-col w-full h-full bg-neutral-50 dark:bg-gradient-to-b from-emerald-950 to-neutral-950">
-            <div className="p-2 md:px-20 md:py-10 rounded-tl-2xl border-2 border-neutral-700 dark:border-2 dark:border-neutral-950 bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 flex flex-col gap-2 flex-1 w-full h-full">
+            <div className="p-2 md:px-20 md:py-10 rounded-tl-2xl border-2 border-neutral-900 dark:border-2 dark:border-neutral-950 bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 flex flex-col gap-2 flex-1 w-full h-full">
                 <div className="relative w-full h-52 rounded-lg mb-10">
-                    <div className="absolute inset-0 bg-white dark:bg-neutral-950 animate-pulse "></div>
-                    <div className="absolute inset-0 dark:bg-inherit bg-opacity-50 flex items-center justify-center rounded-sm">
+                    <div className="absolute inset-0 bg-white dark:bg-neutral-950 animate-pulse rounded-2xl"></div>
+                    <div className="absolute inset-0 dark:bg-inherit bg-opacity-50 flex items-center justify-center rounded-2xl">
                         <h1 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-4 from-green-400 via-emerald-600 to-teal-700 text-5xl md:text-6xl mt-6 font-bold">
                             Dashboard
                         </h1>

@@ -63,8 +63,6 @@ const Profile = () => {
         return () => unsubscribe();
     }, []);
 
-
-
     const fetchFriends = async (uid: string) => {
         try {
             const q = query(collection(db, "friends"), where("userId", "==", uid));
@@ -82,7 +80,7 @@ const Profile = () => {
             console.log("Fetched friends list:", filteredFriendsList);
         } catch (error) {
             console.error("Error fetching friends list:", error);
-        }finally {
+        } finally {
             setLoading(false);
         }
     };
@@ -212,16 +210,42 @@ const Profile = () => {
         }
     };
 
-    const Spinner = () => (
-        <div className="flex justify-center items-center h-screen">
-            <div className="w-16 h-16 border-4 border-solid border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-    );
-
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-screen">
-                <Spinner />
+            <div>
+                <div className="flex flex-col md:flex-row flex-1 ">
+                    <div className="flex flex-col p-4 md:p-6 rounded-tl-2xl border-2 border-neutral-200 dark:border-neutral-900 md:w-1/4 w-full h-screen">
+                        {[...Array(5)].map((_, i) => (
+                            <div
+                                key={"settings-category" + i}
+                                className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  mb-4 animate-pulse"
+                            ></div>
+                        ))}
+                    </div>
+                    <div className="flex flex-col gap-4 md:gap-8 flex-1 p-4 md:p-6  border-2 border-neutral-200 dark:border-neutral-900  w-full h-full">
+                        <div className="flex flex-col gap-2">
+                            <div className="h-6 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600 mb-2 animate-pulse"></div>
+                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
+                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  animate-pulse"></div>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <div className="h-6 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600  mb-2 animate-pulse"></div>
+                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  animate-pulse"></div>
+                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  animate-pulse"></div>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <div className="h-6 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600  mb-2 animate-pulse"></div>
+                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  animate-pulse"></div>
+                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  animate-pulse"></div>
+                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  animate-pulse"></div>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <div className="h-6 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600  mb-2 animate-pulse"></div>
+                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  animate-pulse"></div>
+                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  animate-pulse"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -283,15 +307,15 @@ const Profile = () => {
                         <div key={field} className="text-md text-gray-600 dark:text-gray-400 mb-4 w-full text-left relative group">
                             <span className="font-semibold text-black dark:text-white">{label}:</span>{" "}
                             {editFields.includes(field) ? (
-                               <div className="flex items-center gap-2">
-                               <input
-                                   type="text"
-                                   name={field}
-                                   value={userData[field] || ''}
-                                   onChange={handleInputChange}
-                                   onKeyDown={handleKeyDown}  
-                                   className="flex-1 p-2 bg-white dark:bg-neutral-950 border border-gray-300 dark:border-neutral-600 rounded-3xl"
-                               />
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="text"
+                                        name={field}
+                                        value={userData[field] || ''}
+                                        onChange={handleInputChange}
+                                        onKeyDown={handleKeyDown}
+                                        className="flex-1 p-2 bg-white dark:bg-neutral-950 border border-gray-300 dark:border-neutral-600 rounded-3xl"
+                                    />
                                     <button onClick={() => handleSaveProfile(field)} className="text-green-500">
                                         <IconCheck />
                                     </button>
@@ -329,7 +353,7 @@ const Profile = () => {
                                 lastname={friend.lastname}
                                 online={friend.online}
                                 onChatStart={() => startChat(friend.uid)}
-                                onRemoveFriend={removeFriend} 
+                                onRemoveFriend={removeFriend}
                             />
                         ))}
                     </div>
