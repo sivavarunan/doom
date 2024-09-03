@@ -229,12 +229,12 @@ const Profile = () => {
 
 
     return (
-        <div className="dark:bg-neutral-800 bg-neutral-50">
+        <div className="dark:bg-gradient-to-b from-emerald-950 to-neutral-950 bg-neutral-50">
             <div className="flex flex-col md:flex-row flex-1">
-                <div className="flex flex-col items-center p-4 md:p-6 rounded-tl-2xl border border-b-0 border-neutral-200 dark:bg-gradient-to-t from-neutral-800 to-neutral-900 dark:border-neutral-700 md:w-1/3 w-full h-screen">
+                <div className="flex flex-col items-center p-4 md:p-6 rounded-tl-2xl border border-b-0 border-neutral-200 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 dark:border-neutral-600 md:w-1/3 w-full h-screen">
                     {/* Profile Section */}
                     <div className="relative mb-4">
-                        <div className="w-32 h-32 rounded-full bg-gray-100 dark:bg-neutral-800 overflow-hidden mb-2">
+                        <div className="w-32 h-32 rounded-full bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 overflow-hidden mb-2">
                             {userData.profileImage ? (
                                 <Image
                                     src={userData.profileImage}
@@ -290,7 +290,7 @@ const Profile = () => {
                                    value={userData[field] || ''}
                                    onChange={handleInputChange}
                                    onKeyDown={handleKeyDown}  
-                                   className="flex-1 p-2 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 rounded-lg"
+                                   className="flex-1 p-2 bg-white dark:bg-neutral-950 border border-gray-300 dark:border-neutral-600 rounded-3xl"
                                />
                                     <button onClick={() => handleSaveProfile(field)} className="text-green-500">
                                         <IconCheck />
@@ -311,7 +311,7 @@ const Profile = () => {
                     ))}
                 </div>
 
-                <div className="flex flex-col md:w-2/3 w-full pl-4 rounded-tr-2xl border-t border-l border-r border-neutral-200 dark:border-neutral-700 bg-white dark:bg-gradient-to-t from-neutral-800 to-neutral-900 h-screen dark:custom-scrollbar">
+                <div className="flex flex-col md:w-2/3 w-full pl-4 rounded-tr-2xl border-t border-l border-r border-neutral-200 dark:border-neutral-600 bg-white dark:bg-gradient-to-b from-emerald-950 to-neutral-950 h-screen dark:custom-scrollbar">
                     <h2 className="text-2xl font-semibold text-emerald-700 my-4">Friends</h2>
                     <form onSubmit={handleSubmit} className="mb-4">
                         <PlaceholdersAndVanishInput

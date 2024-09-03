@@ -132,7 +132,7 @@ export function SidebarComp() {
     return (
         <div
             className={cn(
-                "flex flex-col md:flex-row bg-gray-100 dark:bg-gradient-to-t from-neutral-800 to-neutral-900 w-full h-screen overflow-hidden"
+                "flex flex-col md:flex-row bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 w-full h-screen overflow-hidden"
             )}
         >
             <Sidebar open={open} setOpen={setOpen}>
@@ -271,8 +271,8 @@ const Community = () => {
     }
 
     return (
-        <div className="dark:bg-neutral-800 bg-neutral-50">
-            <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-gray-100 dark:bg-gradient-to-t from-neutral-800 to-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
+        <div className="dark:bg-gradient-to-b from-emerald-950 to-neutral-950 bg-neutral-50">
+            <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-600 bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 flex flex-col gap-2 flex-1 w-full h-full">
                 <div className="flex flex-col w-full h-full">
                     <div className="relative w-full h-52 rounded-lg mb-10">
                         <div className="absolute inset-0 bg-white dark:bg-neutral-950 animate-pulse "></div>
@@ -286,14 +286,14 @@ const Community = () => {
                     {/* Main Content Layout */}
                     <div className="flex flex-col md:flex-row gap-4 w-full h-full">
                         {/* Left Section */}
-                        <div className="flex-1 bg-gray-100 dark:bg-neutral-900 p-4 rounded-lg">
+                        <div className="flex-1 bg-gray-100 dark:bg-neutral-900 dark:bg-opacity-40 p-4 rounded-lg">
                             <h1 className="text-3xl font-bold mb-2 text-black dark:text-white">Welcome to the Community</h1>
                             <p className="text-lg mb-2 dark:text-neutral-400">We connect people all around the Globe</p>
                             <div className=" flex justify-center items-center">
                                 <Globe className="mt-4" />
                             </div>
                         </div>
-                        <div className="flex-1 bg-gray-200 dark:bg-neutral-900 p-4 rounded-lg">
+                        <div className="flex-1 bg-gray-200 dark:bg-neutral-900 dark:bg-opacity-40 p-4 rounded-lg">
                             <h2 className="text-xl font-semibold mb-4 text-black dark:text-white ">Users</h2>
                             <form onSubmit={handleSubmit} className="mb-4">
                                 <PlaceholdersAndVanishInput

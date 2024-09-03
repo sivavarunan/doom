@@ -136,7 +136,7 @@ export function SidebarComp() {
     return (
         <div
             className={cn(
-                "flex flex-col md:flex-row bg-gray-100 dark:bg-gradient-to-t from-neutral-800 to-neutral-900 w-full h-screen overflow-hidden"
+                "flex flex-col md:flex-row bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-900 w-full h-screen overflow-hidden"
             )}
         >
             <Sidebar open={open} setOpen={setOpen}>
@@ -304,9 +304,9 @@ const Chat = () => {
     }
 
     return (
-        <div className="dark:bg-neutral-800 bg-neutral-50 flex flex-col h-screen">
+        <div className="dark:bg-gradient-to-b from-emerald-950 to-neutral-900 bg-neutral-50 flex flex-col h-screen">
             {/* Sticky Header */}
-            <div className="rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-gray-100 dark:bg-gradient-to-t from-neutral-800 to-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
+            <div className="rounded-tl-2xl border border-neutral-200 dark:border-neutral-600 bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 flex flex-col gap-2 flex-1 w-full h-full">
                 <header className="sticky top-0 p-4 rounded-tl-2xl flex items-center justify-between border-b-2 border-b-neutral-950 dark:bg-gradient-to-t from-gray-900 to-neutral-950">
                     <h1 className="text-lg font-semibold text-black dark:text-white">{receiverName}</h1>
                 </header>
