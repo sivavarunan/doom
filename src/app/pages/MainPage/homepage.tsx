@@ -146,7 +146,7 @@ export function SidebarComp() {
                         <SidebarLink
                             link={{
                                 label: "About",
-                                href: "/Pages/AboutPage",
+                                href: "/pages/AboutPage",
                                 icon: (
                                     <Image
                                         src="/anime.jpg"
