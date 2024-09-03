@@ -231,7 +231,7 @@ const Profile = () => {
     return (
         <div className="dark:bg-gradient-to-b from-emerald-950 to-neutral-950 bg-neutral-50">
             <div className="flex flex-col md:flex-row flex-1">
-                <div className="flex flex-col items-center p-4 md:p-6 rounded-tl-2xl border border-b-0 border-neutral-200 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 dark:border-neutral-600 md:w-1/3 w-full h-screen">
+                <div className="flex flex-col items-center p-4 md:p-6 rounded-tl-2xl border border-b-0 border-neutral-700 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 dark:border-2 dark:border-neutral-950 md:w-1/3 w-full h-screen">
                     {/* Profile Section */}
                     <div className="relative mb-4">
                         <div className="w-32 h-32 rounded-full bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 overflow-hidden mb-2">
@@ -311,7 +311,7 @@ const Profile = () => {
                     ))}
                 </div>
 
-                <div className="flex flex-col md:w-2/3 w-full pl-4 rounded-tr-2xl border-t border-l border-r border-neutral-200 dark:border-neutral-600 bg-white dark:bg-gradient-to-b from-emerald-950 to-neutral-950 h-screen dark:custom-scrollbar">
+                <div className="flex flex-col md:w-2/3 w-full pl-4 rounded-tr-2xl border-t border-l border-r border-neutral-700  dark:border-neutral-950 bg-white dark:bg-gradient-to-b from-emerald-950 to-neutral-950 h-screen dark:custom-scrollbar">
                     <h2 className="text-2xl font-semibold text-emerald-700 my-4">Friends</h2>
                     <form onSubmit={handleSubmit} className="mb-4">
                         <PlaceholdersAndVanishInput
@@ -334,7 +334,7 @@ const Profile = () => {
                         ))}
                     </div>
 
-                    <div className='border-t-2 border-neutral-700 mt-8 mr-8'>
+                    <div className='border-t-2 dark:border-neutral-950 border-neutral-700 mt-8 mr-8'>
                         <h2 className="text-2xl font-semibold text-emerald-700 my-4">Other</h2>
                     </div>
                 </div>

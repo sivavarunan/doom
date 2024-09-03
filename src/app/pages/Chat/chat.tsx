@@ -306,8 +306,8 @@ const Chat = () => {
     return (
         <div className="dark:bg-gradient-to-b from-emerald-950 to-neutral-900 bg-neutral-50 flex flex-col h-screen">
             {/* Sticky Header */}
-            <div className="rounded-tl-2xl border border-neutral-200 dark:border-neutral-600 bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 flex flex-col gap-2 flex-1 w-full h-full">
-                <header className="sticky top-0 p-4 rounded-tl-2xl flex items-center justify-between border-b-2 border-b-neutral-950 dark:bg-gradient-to-t from-gray-900 to-neutral-950">
+            <div className="rounded-tl-2xl border-2 border-neutral-700 dark:border-neutral-950 bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 flex flex-col gap-2 flex-1 w-full h-full">
+                <header className="sticky top-0 p-4 rounded-tl-2xl flex items-center justify-between border-b-2 border-b-neutral-950 dark:bg-black dark:bg-opacity-40">
                     <h1 className="text-lg font-semibold text-black dark:text-white">{receiverName}</h1>
                 </header>
 
@@ -330,7 +330,7 @@ const Chat = () => {
                     </div >
                     <div ref={endOfMessagesRef} />
 
-                    <div className="p-4 flex items-center bg-transparent border-t border-neutral-200 dark:border-neutral-700 mb-10 md:mb-0">
+                    <div className="p-4 flex items-center bg-transparent border-t-2 border-neutral-700 dark:border-neutral-950 mb-10 md:mb-0">
                         <input
                             type="text"
                             className="flex-1 p-2 border-2 border-green-800 rounded-3xl focus:outline-none focus:ring-4 dark:bg-neutral-950 focus:ring-emerald-700"
