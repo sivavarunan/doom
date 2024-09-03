@@ -14,14 +14,14 @@ import Image from "next/image";
 
 export function Bento() {
   return (
-    <BentoGrid className="max-screen mx-auto md:auto-rows-[20rem]">
+    <BentoGrid className="max-screen mx-auto md:auto-rows-[20rem] ">
       {items.map((item, i) => (
         <BentoGridItem
           key={i}
           title={item.title}
           description={item.description}
           header={item.header}
-          className={cn("[&>p:text-lg]", item.className)}
+          className={cn("[&>p:text-lg] dark:bg-black dark:bg-opacity-40", item.className)}
           icon={item.icon}
         />
       ))}
@@ -56,6 +56,7 @@ const SkeletonOne = () => {
   };
 
   return (
+    
     <motion.div
       initial="initial"
       whileHover="animate"

@@ -15,8 +15,8 @@ interface FriendCardProps {
 const FriendCard: React.FC<FriendCardProps> = ({ uid, profileImage, firstname, lastname, online, onChatStart, onRemoveFriend }) => {
     return (
         <div
-            className="relative flex items-center justify-between p-4 mb-4 rounded-xl shadow-md cursor-pointer bg-white border-2 border-neutral-950 dark:bg-gradient-to-t from-neutral-900 to-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 w-96"
-        >
+            className="relative flex items-center justify-between p-4 mb-4 rounded-xl shadow-md cursor-pointer bg-white border-2 border-neutral-950 dark:bg-gradient-to-t from-neutral-950 to-neutral-900  hover:bg-gray-100 dark:hover:bg-neutral-700 w-96"
+        > 
             <div className="flex items-center">
                 <div className="w-12 h-12 rounded-full overflow-hidden">
                     {profileImage ? (
