@@ -15,7 +15,7 @@ interface FriendCardProps {
 const FriendCard: React.FC<FriendCardProps> = ({ uid, profileImage, firstname, lastname, online, onChatStart, onRemoveFriend }) => {
     return (
         <div
-            className="relative flex items-center justify-between p-4 mb-4 rounded-xl shadow-md cursor-pointer bg-white border-2 border-neutral-950 dark:bg-gradient-to-t from-neutral-950 to-neutral-900  hover:bg-gray-100 dark:hover:bg-neutral-700 w-96"
+            className="relative flex items-center justify-between p-4 mb-4 rounded-xl shadow-md cursor-pointer bg-white border-2 border-neutral-950 dark:bg-gradient-to-t from-neutral-950 to-neutral-900 hover:bg-gray-100 dark:hover:bg-neutral-700 w-96"
         > 
             <div className="flex items-center">
                 <div className="w-12 h-12 rounded-full overflow-hidden">
@@ -28,8 +28,8 @@ const FriendCard: React.FC<FriendCardProps> = ({ uid, profileImage, firstname, l
                             height={400}
                         />
                     ) : (
-                        <div className='dark:bg-gradient-to-t from-neutral-900 to-black bg-white'>
-                            <IconUser stroke={1.5} className='w-12 h-12 rounded-full object-cover mr-4 ' />
+                        <div className='dark:bg-gradient-to-t from-neutral-900 to-black bg-white flex items-center justify-center'>
+                            <IconUser stroke={1.5} className='w-12 h-12 rounded-full object-cover' />
                         </div>
                     )}
                 </div>
@@ -45,6 +45,7 @@ const FriendCard: React.FC<FriendCardProps> = ({ uid, profileImage, firstname, l
                         e.stopPropagation();
                         onChatStart();
                     }}
+                    aria-label={`Start chat with ${firstname} ${lastname}`}
                 >
                     <IconMessage size={20} />
                 </button>
@@ -54,6 +55,7 @@ const FriendCard: React.FC<FriendCardProps> = ({ uid, profileImage, firstname, l
                         e.stopPropagation();
                         onRemoveFriend(uid);
                     }}
+                    aria-label={`Remove ${firstname} ${lastname} from friends`}
                 >
                     <IconTrash size={20} />
                 </button>

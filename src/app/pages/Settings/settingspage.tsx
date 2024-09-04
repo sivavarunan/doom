@@ -174,30 +174,30 @@ export function SidebarComp() {
 const Settings = () => {
   return (
     // <div className="flex flex-col w-full h-auto bg-neutral-50 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 p-6">
-      <div className="flex flex-col p-4 md:p-6 rounded-tl-2xl border-2 border-neutral-900 dark:border-neutral-900  w-full h-auto">
+    <div className="flex flex-col p-4 md:p-6 rounded-tl-2xl border-2 border-neutral-900 dark:border-neutral-900  w-full h-auto">
 
-        <SettingsSection title="Account Settings" description="Manage your account details">
-          <SettingItem label="Change Email" description="Update your email address" />
-          <SettingItem label="Change Password" description="Update your account password" />
-        </SettingsSection>
-
-
-        <SettingsSection title="Privacy Settings" description="Control your privacy options">
-          <SettingItem label="Two-Factor Authentication" description="Enable or disable 2FA" toggle />
-          <SettingItem label="Manage Sessions" description="View and manage your active sessions" />
-        </SettingsSection>
-
-        <SettingsSection title="Notification Settings" description="Customize your notifications">
-          <SettingItem label="Email Notifications" description="Receive notifications via email" toggle />
-          <SettingItem label="Push Notifications" description="Receive notifications on your device" toggle />
-        </SettingsSection>
+      <SettingsSection title="Account Settings" description="Manage your account details">
+        <SettingItem label="Change Email" description="Update your email address" />
+        <SettingItem label="Change Password" description="Update your account password" />
+      </SettingsSection>
 
 
-        <SettingsSection title="General Settings" description="General app preferences">
-          <SettingItem label="Dark Mode" description="Enable dark theme" toggle />
-          <SettingItem label="Language" description="Select your preferred language" />
-        </SettingsSection>
-      </div>
+      <SettingsSection title="Privacy Settings" description="Control your privacy options">
+        <SettingItem label="Two-Factor Authentication" description="Enable or disable 2FA" toggle />
+        <SettingItem label="Manage Sessions" description="View and manage your active sessions" />
+      </SettingsSection>
+
+      <SettingsSection title="Notification Settings" description="Customize your notifications">
+        <SettingItem label="Email Notifications" description="Receive notifications via email" toggle />
+        <SettingItem label="Push Notifications" description="Receive notifications on your device" toggle />
+      </SettingsSection>
+
+
+      <SettingsSection title="General Settings" description="General app preferences">
+        <SettingItem label="Dark Mode" description="Enable dark theme" toggle />
+        <SettingItem label="Language" description="Select your preferred language" />
+      </SettingsSection>
+    </div>
     // </div>
   );
 };
