@@ -214,6 +214,12 @@ const SettingsSection = ({ title, description, children }: { title: string; desc
 };
 
 const SettingItem = ({ label, description, toggle }: { label: string; description: string; toggle?: boolean }) => {
+  const [isToggled, setIsToggled] = useState(false);
+
+  const handleToggle = () => {
+    setIsToggled((prev) => !prev);
+  };
+
   return (
     <div className="flex justify-between items-center bg-white dark:bg-neutral-950 dark:bg-opacity-50 p-4 rounded-lg shadow-sm overflow-hidden">
       <div className="flex flex-col justify-center">
@@ -222,12 +228,16 @@ const SettingItem = ({ label, description, toggle }: { label: string; descriptio
       </div>
       {toggle && (
         <label className="relative flex items-center ml-4 cursor-pointer">
-          <input type="checkbox" className="sr-only peer" />
+          <input
+            type="checkbox"
+            className="sr-only peer"
+            checked={isToggled}
+            onChange={handleToggle}
+          />
           <div className="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 dark:bg-opacity-50 peer-focus:ring-4 peer-focus:ring-emerald-300 dark:peer-focus:ring-emerald-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-600"></div>
         </label>
       )}
     </div>
   );
 };
-
 
