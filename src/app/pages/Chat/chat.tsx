@@ -20,7 +20,7 @@ import { format } from 'date-fns';
 import { FloatingDockComp } from "@/app/componenets/ui/floatingdockcomp";
 import { Logo } from "@/app/componenets/logo";
 import { LogoIcon } from '@/app/componenets/LogoIcon';
-import { toast, Bounce } from 'react-toastify';
+import { ToastContainer, toast, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export function SidebarComp() {
@@ -176,6 +176,19 @@ export function SidebarComp() {
     );
 }
 
+const showMessageNotification = (senderName: string, message: string) => {
+    toast.info(`${senderName}: ${message}`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        transition: Bounce,
+    });
+};
+
 
 interface Message {
     senderId: string;
@@ -199,6 +212,7 @@ const Chat = () => {
     const chatWithUserId = typeof params?.id === 'string' ? params.id : '';
     const endOfMessagesRef = useRef<HTMLDivElement>(null);
     const [loading, setLoading] = useState(true);
+    const previousMessagesLength = useRef<number>(0);
 
     useEffect(() => {
         const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
@@ -229,6 +243,30 @@ const Chat = () => {
             return () => unsubscribe();
         }
     }, [currentUserId, chatWithUserId]);
+
+    // Track changes in messages to trigger notification
+    useEffect(() => {
+        if (messages.length > previousMessagesLength.current) {
+            const lastMessage = messages[messages.length - 1];
+            
+            // Check if the last message is from the other user, not the current user
+            if (lastMessage && lastMessage.senderId !== currentUserId) {
+                // Show toast notification
+                toast.info(`New message from ${receiverName}: ${lastMessage.message}`, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            }
+        }
+
+        // Update the previous messages length after the change
+        previousMessagesLength.current = messages.length;
+    }, [messages, currentUserId, receiverName]);
 
     useEffect(() => {
         if (chatWithUserId) {
@@ -268,7 +306,7 @@ const Chat = () => {
 
         setNewMessage('');
     };
-
+    
     const Spinner = () => (
         <div className="flex justify-center items-center h-screen">
             <div className="w-16 h-16 border-4 border-solid border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
@@ -280,7 +318,6 @@ const Chat = () => {
             handleSendMessage();
         }
     };
-
 
     const formatTimestamp = (timestamp: any) => {
         if (!timestamp) return 'Invalid date'; // Handle null or undefined timestamp
@@ -324,9 +361,9 @@ const Chat = () => {
                                         </span>
                                     </div>
                                 </div>
-                            </div >
+                            </div>
                         ))}
-                    </div >
+                    </div>
                     <div ref={endOfMessagesRef} />
 
                     <div className="p-4 flex items-center bg-transparent border-t-2 border-neutral-700 dark:border-neutral-950 mb-10 md:mb-0">
@@ -348,6 +385,7 @@ const Chat = () => {
                     </div>
                 </div>
             </div>
+            <ToastContainer />
         </div>
     );
 };

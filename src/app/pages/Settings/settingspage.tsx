@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "@/app/componenets/ui/Sidebar";
 import {
   IconArrowLeft,
@@ -213,12 +213,27 @@ const SettingsSection = ({ title, description, children }: { title: string; desc
   );
 };
 
+
+
 const SettingItem = ({ label, description, toggle }: { label: string; description: string; toggle?: boolean }) => {
   const [isToggled, setIsToggled] = useState(false);
 
+  useEffect(() => {
+    const storedState = localStorage.getItem(label);
+    if (storedState) {
+      setIsToggled(storedState === "true");
+    }
+  }, [label]);
+
   const handleToggle = () => {
     setIsToggled((prev) => !prev);
+    localStorage.setItem(label, (!isToggled).toString());
+  
+    if (label === "Dark Mode") {
+      document.body.classList.toggle("dark", !isToggled); // Switch between dark and light mode
+    }
   };
+  
 
   return (
     <div className="flex justify-between items-center bg-white dark:bg-neutral-950 dark:bg-opacity-50 p-4 rounded-lg shadow-sm overflow-hidden">
