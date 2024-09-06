@@ -191,7 +191,6 @@ interface User {
     profileImage?: string;
 }
 
-
 const Chat = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');

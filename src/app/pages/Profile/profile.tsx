@@ -336,7 +336,9 @@ const Profile = () => {
                 </div>
 
                 <div className="flex flex-col md:w-2/3 w-full pl-4 rounded-tr-2xl border-t border-l border-r border-neutral-700  dark:border-neutral-950 bg-white dark:bg-gradient-to-b from-emerald-950 to-neutral-950 h-screen dark:custom-scrollbar">
-                    <h2 className="text-2xl font-semibold text-emerald-700 my-4">Friends</h2>
+                    <h2 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-6 from-green-400 via-emerald-600 to-teal-700 text-4xl md:text-3xl font-bold">
+                        Friends
+                    </h2>
                     <form onSubmit={handleSubmit} className="mb-4">
                         <PlaceholdersAndVanishInput
                             placeholders={placeholders}
@@ -359,7 +361,9 @@ const Profile = () => {
                     </div>
 
                     <div className='border-t-2 dark:border-neutral-950 border-neutral-700 mt-8 mr-8'>
-                        <h2 className="text-2xl font-semibold text-emerald-700 my-4">Other</h2>
+                        <h2 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-6 from-green-400 via-emerald-600 to-teal-700 text-4xl md:text-3xl font-bold">
+                            Other
+                        </h2>
                     </div>
                 </div>
             </div>
