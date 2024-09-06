@@ -43,23 +43,24 @@ export function Bento2() {
     {
       title: "24/7 Customer Support",
       description:
-        "We are available a 100% of the time. Atleast our AI Agents are.",
+        "We are available a 100% of the time. At least our AI Agents are.",
       icon: <IconHelp />,
     },
     {
       title: "Money back guarantee",
       description:
-        "If you donot like EveryAI, we will convince you to like us.",
+        "If you do not like EveryAI, we will convince you to like us.",
       icon: <IconAdjustmentsBolt />,
     },
     {
       title: "And everything else",
-      description: "I just ran out of copy ideas. Accept my sincere apologies",
+      description: "I just ran out of copy ideas. Accept my sincere apologies.",
       icon: <IconHeart />,
     },
   ];
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4  relative z-10 py-10 max-w-7xl mx-auto">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 relative z-10 py-10 max-w-7xl mx-auto">
       {features.map((feature, index) => (
         <Feature key={feature.title} {...feature} index={index} />
       ))}
@@ -81,7 +82,7 @@ const Feature = ({
   return (
     <div
       className={cn(
-        "flex flex-col lg:border-r  py-10 relative group/feature dark:border-neutral-800",
+        "flex flex-col lg:border-r py-10 relative group/feature dark:border-neutral-800",
         (index === 0 || index === 4) && "lg:border-l dark:border-neutral-800",
         index < 4 && "lg:border-b dark:border-neutral-800"
       )}
@@ -92,7 +93,7 @@ const Feature = ({
       {index >= 4 && (
         <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-b from-neutral-100 dark:from-neutral-950 to-transparent pointer-events-none" />
       )}
-      <div className="mb-4 relative z-10 px-10 text-neutral-600 dark:text-neutral-400">
+      <div className="mb-4 relative z-10 px-10 text-neutral-600 dark:text-neutral-400 group-hover/feature:text-emerald-600 transition duration-200">
         {icon}
       </div>
       <div className="text-lg font-bold mb-2 relative z-10 px-10">
