@@ -9,18 +9,19 @@ import {
     IconUserBolt,
     IconWorld,
     IconSend,
+    IconTrash,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '@/app/firebase';
-import { collection, doc, getDoc, onSnapshot, query, where, orderBy, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { collection, doc, getDoc, onSnapshot, query, where, orderBy, addDoc, serverTimestamp, Timestamp, deleteDoc } from 'firebase/firestore';
 import { useParams } from 'next/navigation';
 import { format } from 'date-fns';
 import { FloatingDockComp } from "@/app/componenets/ui/floatingdockcomp";
 import { Logo } from "@/app/componenets/logo";
 import { LogoIcon } from '@/app/componenets/LogoIcon';
-import { ToastContainer, toast, Bounce } from 'react-toastify';
+import { toast, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export function SidebarComp() {
@@ -176,21 +177,8 @@ export function SidebarComp() {
     );
 }
 
-const showMessageNotification = (senderName: string, message: string) => {
-    toast.info(`${senderName}: ${message}`, {
-        position: "bottom-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        transition: Bounce,
-    });
-};
-
-
 interface Message {
+    id: string;
     senderId: string;
     receiverId: string;
     message: string;
@@ -203,6 +191,7 @@ interface User {
     profileImage?: string;
 }
 
+
 const Chat = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
@@ -212,8 +201,9 @@ const Chat = () => {
     const chatWithUserId = typeof params?.id === 'string' ? params.id : '';
     const endOfMessagesRef = useRef<HTMLDivElement>(null);
     const [loading, setLoading] = useState(true);
-    const previousMessagesLength = useRef<number>(0);
+    const previousMessagesLength = useRef<number>(0); // Track previous message count
 
+    // Track authentication state
     useEffect(() => {
         const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -226,6 +216,7 @@ const Chat = () => {
         return () => unsubscribeAuth();
     }, []);
 
+    // Fetch messages from Firestore
     useEffect(() => {
         if (currentUserId && chatWithUserId) {
             const q = query(
@@ -236,7 +227,10 @@ const Chat = () => {
             );
 
             const unsubscribe = onSnapshot(q, (snapshot) => {
-                const msgs = snapshot.docs.map(doc => doc.data() as Message);
+                const msgs = snapshot.docs.map((doc) => ({
+                    id: doc.id, // Include the message ID
+                    ...doc.data(),
+                })) as Message[];
                 setMessages(msgs);
             });
 
@@ -244,14 +238,13 @@ const Chat = () => {
         }
     }, [currentUserId, chatWithUserId]);
 
-    // Track changes in messages to trigger notification
+    // Notification for new messages
     useEffect(() => {
         if (messages.length > previousMessagesLength.current) {
             const lastMessage = messages[messages.length - 1];
-            
-            // Check if the last message is from the other user, not the current user
+
+            // Show notification for new message
             if (lastMessage && lastMessage.senderId !== currentUserId) {
-                // Show toast notification
                 toast.info(`New message from ${receiverName}: ${lastMessage.message}`, {
                     position: "top-right",
                     autoClose: 5000,
@@ -264,14 +257,14 @@ const Chat = () => {
             }
         }
 
-        // Update the previous messages length after the change
+        // Update previous message count
         previousMessagesLength.current = messages.length;
     }, [messages, currentUserId, receiverName]);
 
+    // Fetch user data for receiver
     useEffect(() => {
         if (chatWithUserId) {
             const fetchUserData = async () => {
-                console.log("Fetching data for user ID:", chatWithUserId);
                 const userRef = doc(db, 'users', chatWithUserId);
                 try {
                     const docSnap = await getDoc(userRef);
@@ -280,11 +273,9 @@ const Chat = () => {
                         const fullName = `${data.firstname || ''} ${data.lastname || ''}`.trim();
                         setReceiverName(fullName || 'Unknown User');
                     } else {
-                        console.log("No user data found in Firestore for UID:", chatWithUserId);
                         setReceiverName('Unknown User');
                     }
                 } catch (error) {
-                    console.error("Error fetching user data from Firestore:", error);
                     setReceiverName('Error fetching name');
                 } finally {
                     setLoading(false);
@@ -294,6 +285,7 @@ const Chat = () => {
         }
     }, [chatWithUserId]);
 
+    // Send a new message
     const handleSendMessage = async () => {
         if (newMessage.trim() === '' || !currentUserId || !chatWithUserId) return;
 
@@ -306,25 +298,42 @@ const Chat = () => {
 
         setNewMessage('');
     };
-    
+
+    // Delete a message
+    const handleDeleteMessage = async (messageId: string) => {
+        if (!messageId) return;
+
+        try {
+            await deleteDoc(doc(db, 'messages', messageId));
+            toast.success("Message deleted successfully", { position: "top-right" });
+        } catch (error) {
+            console.error("Error deleting message:", error);
+            toast.error("Failed to delete message", { position: "top-right" });
+        }
+    };
+
+    // Spinner component for loading
     const Spinner = () => (
         <div className="flex justify-center items-center h-screen">
             <div className="w-16 h-16 border-4 border-solid border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
     );
 
+    // Send message on pressing Enter key
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             handleSendMessage();
         }
     };
 
+    // Format Firestore timestamp
     const formatTimestamp = (timestamp: any) => {
-        if (!timestamp) return 'Invalid date'; // Handle null or undefined timestamp
+        if (!timestamp) return 'Invalid date';
         const date = timestamp.toDate(); // Convert Firestore timestamp to JS Date
         return format(date, 'p, MMM d'); // Format as "12:00 PM, Jan 1"
     };
 
+    // Scroll to the bottom of the chat on new message
     useEffect(() => {
         if (endOfMessagesRef.current) {
             endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -350,15 +359,28 @@ const Chat = () => {
                 <div className="flex-1 overflow-hidden flex flex-col">
                     <div className="flex-1 overflow-y-auto p-4">
                         {messages.map((msg, index) => (
-                            <div key={index} className={`flex ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'} mb-4`}>
-                                <div className={`relative ${msg.senderId === currentUserId ? 'ml-auto' : 'mr-auto'}`}>
+                            <div
+                                key={index}
+                                className={`flex ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'} mb-4`}
+                            >
+                                <div className={`relative ${msg.senderId === currentUserId ? 'ml-auto' : 'mr-auto'} group`}>
                                     <div className={`bg-${msg.senderId === currentUserId ? 'emerald-700' : 'gray-300'} text-md text-black px-10 py-2 rounded-3xl font-mono`}>
                                         <span>{msg.message}</span>
                                     </div>
+
                                     <div className={`flex items-end ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'} mt-1`}>
+                                        {msg.senderId === currentUserId && (
+                                            <button
+                                                className="text-red-600 hover:text-red-800 ml-2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                                onClick={() => handleDeleteMessage(msg.id)}
+                                            >
+                                                <IconTrash size={18} />
+                                            </button>
+                                        )}
                                         <span className="text-xs dark:text-white bg-black bg-opacity-5 px-2 py-1 rounded-3xl whitespace-nowrap">
                                             {formatTimestamp(msg.timestamp)}
                                         </span>
+
                                     </div>
                                 </div>
                             </div>
@@ -385,7 +407,6 @@ const Chat = () => {
                     </div>
                 </div>
             </div>
-            <ToastContainer />
         </div>
     );
 };
