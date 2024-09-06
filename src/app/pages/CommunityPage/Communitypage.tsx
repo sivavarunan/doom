@@ -286,14 +286,16 @@ const Community = () => {
                     <div className="flex flex-col md:flex-row gap-4 w-full h-full">
                         {/* Left Section */}
                         <div className="flex-1 bg-gray-100 dark:bg-neutral-900 dark:bg-opacity-40 p-4 rounded-lg">
-                            <h1 className="text-3xl font-bold mb-2 text-black dark:text-white">Welcome to the Community</h1>
-                            <p className="text-lg mb-2 dark:text-neutral-400">We connect people all around the Globe</p>
+                            <h1 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-3 from-green-500 via-emerald-600 to-teal-700 text-4xl md:text-3xl font-bold">
+                                Welcome to the Community Page
+                            </h1>
+                            <p className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r  from-green-200 via-emerald-400 to-teal-600 text-2xl md:text-xl font-bold">We connect people all around the Globe</p>
                             <div className=" flex justify-center items-center">
                                 <Globe className="mt-4" />
                             </div>
                         </div>
                         <div className="flex-1 bg-gray-200 dark:bg-neutral-900 dark:bg-opacity-40 p-4 rounded-lg">
-                            <h2 className="text-xl font-semibold mb-4 text-black dark:text-white ">Users</h2>
+                            <h2 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-3 from-green-400 via-emerald-600 to-teal-700 text-4xl md:text-3xl font-bold">Users</h2>
                             <form onSubmit={handleSubmit} className="mb-4">
                                 <PlaceholdersAndVanishInput
                                     placeholders={placeholders}
