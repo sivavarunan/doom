@@ -297,10 +297,10 @@ const SkeletonFive = () => {
 };
 const items = [
   {
-    title: "AI Content Generation",
+    title: "Send Messages",
     description: (
       <span className="text-sm">
-        Experience the power of AI in generating unique content.
+        Can chat with users from all over the world.
       </span>
     ),
     header: <SkeletonOne />,
@@ -308,10 +308,10 @@ const items = [
     icon: <IconClipboardCopy className="h-4 w-4 text-neutral-500" />,
   },
   {
-    title: "Automated Proofreading",
+    title: "File Sharing",
     description: (
       <span className="text-sm">
-        Let AI handle the proofreading of your documents.
+        Upload and Share your documents.
       </span>
     ),
     header: <SkeletonTwo />,
