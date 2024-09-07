@@ -68,16 +68,16 @@ export function FloatingDockComp({ className = "" }: { className?: string }) {
       {isFileUploadVisible && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
-          onClick={() => setFileUploadVisible(false)} // Hide popup on outside click
+          onClick={() => setFileUploadVisible(false)} 
         >
           <div
-            className="bg-white p-6 rounded-lg shadow-lg"
-            onClick={(e) => e.stopPropagation()} // Prevent click inside the popup from closing it
+            className="bg-neutral-950 bg-opacity-35 p-2 rounded-3xl shadow-lg"
+            onClick={(e) => e.stopPropagation()} 
           >
             <FileUpload onChange={(files) => console.log(files)} />
             <button
-              className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
-              onClick={() => setFileUploadVisible(false)} // Close button for the popup
+              className="mt-4 px-4 py-2 bg-emerald-700 hover:bg-emerald-950 rounded-3xl"
+              onClick={() => setFileUploadVisible(false)}
             >
               Close
             </button>
