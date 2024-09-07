@@ -322,7 +322,7 @@ const items = [
     title: "Contextual Suggestions",
     description: (
       <span className="text-sm">
-        Get AI-powered suggestions based on your writing context.
+        Get AI assistant on your chat replays.
       </span>
     ),
     header: <SkeletonThree />,
