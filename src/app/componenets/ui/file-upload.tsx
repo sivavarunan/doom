@@ -3,6 +3,9 @@ import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { IconUpload } from "@tabler/icons-react";
 import { useDropzone } from "react-dropzone";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+const storage = getStorage();
 
 const mainVariant = {
   initial: {
@@ -28,29 +31,39 @@ const secondaryVariant = {
 export const FileUpload = ({
   onChange,
 }: {
-  onChange?: (files: File[]) => void;
+  onChange?: (fileURLs: string[]) => void;
 }) => {
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (newFiles: File[]) => {
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    onChange && onChange(newFiles);
-  };
+  const handleFileChange = async (newFiles: File[]) => {
+    const fileURLs: string[] = [];
+    for (const file of newFiles) {
+      // Create a Firebase storage reference
+      const storageRef = ref(storage, `uploads/${file.name}`);
+      // Upload the file to Firebase storage
+      await uploadBytes(storageRef, file);
+      // Get the downloadable URL
+      const fileURL = await getDownloadURL(storageRef);
+      fileURLs.push(fileURL);
+    }
 
+    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+    onChange && onChange(fileURLs); // Pass URLs to parent for rendering in chat
+  };
   const handleClick = () => {
     fileInputRef.current?.click();
   };
 
-  const { getRootProps, isDragActive } = useDropzone({
-    multiple: false,
-    noClick: true,
-    onDrop: handleFileChange,
-    onDropRejected: (error) => {
-      console.log(error);
-    },
-  });
-
+    const { getRootProps, isDragActive } = useDropzone({
+      multiple: false,
+      noClick: true,
+      onDrop: handleFileChange,
+      onDropRejected: (error) => {
+        console.log(error);
+      },
+    });
+ 
   return (
     <div className="w-full" {...getRootProps()}>
       <motion.div
@@ -136,7 +149,7 @@ export const FileUpload = ({
                   damping: 20,
                 }}
                 className={cn(
-                  "relative group-hover/file:shadow-2xl z-40 bg-white dark:bg-neutral-900 flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md",
+                  "relative group-hover/file:shadow-2xl z-40 bg-white dark:bg-neutral-950 dark:bg-opacity-95 flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-xl",
                   "shadow-[0px_10px_50px_rgba(0,0,0,0.1)]"
                 )}
               >
@@ -158,7 +171,7 @@ export const FileUpload = ({
             {!files.length && (
               <motion.div
                 variants={secondaryVariant}
-                className="absolute opacity-0 border border-dashed border-sky-400 inset-0 z-30 bg-transparent flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md"
+                className="absolute opacity-0 border border-dashed border-green-400 inset-0 z-30 bg-transparent flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md"
               ></motion.div>
             )}
           </div>
@@ -172,7 +185,7 @@ export function GridPattern() {
   const columns = 41;
   const rows = 11;
   return (
-    <div className="flex bg-gray-100 dark:bg-neutral-900 flex-shrink-0 flex-wrap justify-center items-center gap-x-px gap-y-px  scale-105">
+    <div className="flex bg-gray-100 dark:bg-emerald-900 flex-shrink-0 flex-wrap justify-center items-center gap-x-px gap-y-px  scale-105">
       {Array.from({ length: rows }).map((_, row) =>
         Array.from({ length: columns }).map((_, col) => {
           const index = row * columns + col;
@@ -181,8 +194,8 @@ export function GridPattern() {
               key={`${col}-${row}`}
               className={`w-10 h-10 flex flex-shrink-0 rounded-[2px] ${
                 index % 2 === 0
-                  ? "bg-gray-50 dark:bg-neutral-950"
-                  : "bg-gray-50 dark:bg-neutral-950 shadow-[0px_0px_1px_3px_rgba(255,255,255,1)_inset] dark:shadow-[0px_0px_1px_3px_rgba(0,0,0,1)_inset]"
+                  ? "bg-gray-50 dark:bg-emerald-950"
+                  : "bg-gray-50 dark:bg-emerald-950 shadow-[0px_0px_1px_3px_rgba(255,255,255,1)_inset] dark:shadow-[0px_0px_1px_3px_rgba(0,0,0,1)_inset]"
               }`}
             />
           );
