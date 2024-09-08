@@ -181,10 +181,10 @@ interface Message {
     id: string;
     senderId: string;
     receiverId: string;
-    message?: string; 
+    message?: string;
     timestamp: Timestamp;
-    type?: 'text' | 'file'; 
-    content?: string; 
+    type?: 'text' | 'file';
+    content?: string;
 }
 
 interface User {
@@ -202,8 +202,7 @@ const Chat = () => {
     const chatWithUserId = typeof params?.id === 'string' ? params.id : '';
     const endOfMessagesRef = useRef<HTMLDivElement>(null);
     const [loading, setLoading] = useState(true);
-    const previousMessagesLength = useRef<number>(0); // Track previous message count
-
+    const previousMessagesLength = useRef<number>(0);
 
     // Track authentication state
     useEffect(() => {
@@ -227,7 +226,7 @@ const Chat = () => {
                 where('receiverId', 'in', [currentUserId, chatWithUserId]),
                 orderBy('timestamp')
             );
-    
+
             const unsubscribe = onSnapshot(q, (snapshot) => {
                 const msgs = snapshot.docs.map((doc) => ({
                     id: doc.id,
@@ -235,7 +234,7 @@ const Chat = () => {
                 })) as Message[];
                 setMessages(msgs);
             });
-    
+
             return () => unsubscribe();
         }
     }, [currentUserId, chatWithUserId]);
@@ -297,6 +296,7 @@ const Chat = () => {
             senderId: currentUserId,
             receiverId: chatWithUserId,
             message: newMessage,
+            type: 'text',
             timestamp: serverTimestamp(),
         });
 
@@ -371,7 +371,6 @@ const Chat = () => {
     const handleSendFile = async (fileURLs: string[]) => {
         if (!currentUserId || !chatWithUserId) return;
 
-        // Store each file's URL in Firestore
         const newMessages = fileURLs.map((url) => ({
             type: "file",
             content: url,
