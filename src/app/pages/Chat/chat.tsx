@@ -408,35 +408,35 @@ const Chat = () => {
                                 <div className={`bg-${msg.senderId === currentUserId ? 'emerald-700' : 'gray-300'} text-md text-black px-10 py-2 rounded-3xl font-mono`}>
                                     {msg.type === 'file' ? (
                                         <div className="flex flex-col items-center">
-                                            {/* Conditional rendering here */}
+                                            {/* Display image preview */}
                                             {(msg.content?.endsWith('.png') || msg.content?.endsWith('.jpg') || msg.content?.endsWith('.jpeg')) && (
                                                 <img src={msg.content} alt="Preview" className="max-w-xs max-h-40 object-cover mb-2 rounded" />
                                             )}
 
                                             {/* Display PDF preview or link */}
                                             {msg.content?.endsWith('.pdf') && (
-                                                <a href={msg.content} target="_blank" rel="noopener noreferrer">
-                                                    <button className="bg-blue-500 text-white px-2 py-1 rounded">View PDF</button>
-                                                </a>
+                                                <div className="flex flex-col items-center">
+                                                    <iframe src={msg.content} className="w-full h-60 border border-gray-300 mb-2" title="PDF Preview"></iframe>
+                                                    <a href={msg.content} target="_blank" rel="noopener noreferrer">
+                                                        <button className="bg-blue-500 text-white px-2 py-1 rounded">View PDF</button>
+                                                    </a>
+                                                </div>
                                             )}
 
                                             {/* Display text file preview or link */}
                                             {msg.content?.endsWith('.txt') && (
-                                                <div className="whitespace-pre-wrap max-w-xs max-h-40 overflow-auto">
+                                                <div className="whitespace-pre-wrap max-w-xs max-h-40 overflow-auto mb-2">
                                                     <a href={msg.content} target="_blank" rel="noopener noreferrer">
-                                                        <button className="bg-blue-500 text-white px-2 py-1 rounded">View Text</button>
+                                                        <button className="bg-emerald-500 text-white px-2 py-1 rounded">View Text</button>
                                                     </a>
                                                 </div>
                                             )}
 
                                             {/* Display unsupported file message */}
                                             {!(msg.content?.endsWith('.png') || msg.content?.endsWith('.jpg') || msg.content?.endsWith('.jpeg') || msg.content?.endsWith('.pdf') || msg.content?.endsWith('.txt')) && (
-                                                <div>
-                                                    <span>Unsupported file type</span>
-                                                    <a href={msg.content} download>
-                                                        <button className="bg-gray-500 text-white px-2 py-1 rounded mt-2">Download File</button>
-                                                    </a>
-                                                </div>
+                                                <a href={msg.content} target="_blank" rel="noopener noreferrer">
+                                                    <button className="bg-emerald-500 hover:bg-emerald-950 text-white px-2 py-1 rounded">Download File</button>
+                                                </a>
                                             )}
                                         </div>
                                     ) : (
