@@ -393,8 +393,8 @@ const Chat = () => {
         <div className="dark:bg-gradient-to-b from-emerald-950 to-neutral-900 bg-neutral-50 flex flex-col h-screen">
             {/* Sticky Header */}
             <div className="rounded-tl-2xl border-2 border-neutral-700 dark:border-neutral-950 bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 flex flex-col gap-2 flex-1 w-full h-full">
-            <header className="sticky top-0 p-4 rounded-tl-2xl flex items-center justify-between border-b-2 border-b-neutral-950 dark:bg-black dark:bg-opacity-40">
-                <h1 className="text-lg font-semibold text-black dark:text-white">{receiverName}</h1>
+                <header className="sticky top-0 p-4 rounded-tl-2xl flex items-center justify-between border-b-2 border-b-neutral-950 dark:bg-black dark:bg-opacity-40">
+                    <h1 className="text-lg font-semibold text-black dark:text-white">{receiverName}</h1>
                 </header>
 
                 {/* Chat Messages */}
@@ -408,7 +408,7 @@ const Chat = () => {
                                 <div className={`bg-${msg.senderId === currentUserId ? 'emerald-700' : 'gray-300'} text-md text-black px-10 py-2 rounded-3xl font-mono`}>
                                     {msg.type === 'file' ? (
                                         <div className="flex flex-col items-center">
-                                            {/* Display image preview */}
+                                            {/* Conditional rendering here */}
                                             {(msg.content?.endsWith('.png') || msg.content?.endsWith('.jpg') || msg.content?.endsWith('.jpeg')) && (
                                                 <img src={msg.content} alt="Preview" className="max-w-xs max-h-40 object-cover mb-2 rounded" />
                                             )}
@@ -431,7 +431,12 @@ const Chat = () => {
 
                                             {/* Display unsupported file message */}
                                             {!(msg.content?.endsWith('.png') || msg.content?.endsWith('.jpg') || msg.content?.endsWith('.jpeg') || msg.content?.endsWith('.pdf') || msg.content?.endsWith('.txt')) && (
-                                                <span>Unsupported file type</span>
+                                                <div>
+                                                    <span>Unsupported file type</span>
+                                                    <a href={msg.content} download>
+                                                        <button className="bg-gray-500 text-white px-2 py-1 rounded mt-2">Download File</button>
+                                                    </a>
+                                                </div>
                                             )}
                                         </div>
                                     ) : (
@@ -459,21 +464,21 @@ const Chat = () => {
                 </div>
 
                 <div className="p-4 flex items-center bg-transparent border-t-2 border-neutral-700 dark:border-neutral-950 mb-10 md:mb-0">
-                        <input
-                            type="text"
-                            className="flex-1 p-2 border-2 border-green-800 rounded-3xl focus:outline-none focus:ring-4 dark:bg-neutral-950 focus:ring-emerald-700"
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            placeholder="Type your message..."
-                            onKeyDown={handleKeyDown}
-                        />
-                        <button
-                            className="ml-4 p-2 bg-emerald-700 text-white rounded-3xl hover:bg-emerald-900"
-                            onClick={handleSendMessage}
-                        >
-                            <IconSend stroke={2} className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-                        </button>
-                        <FloatingDockComp onSendFileToChat={handleSendFile} className="ml-4" />
+                    <input
+                        type="text"
+                        className="flex-1 p-2 border-2 border-green-800 rounded-3xl focus:outline-none focus:ring-4 dark:bg-neutral-950 focus:ring-emerald-700"
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        placeholder="Type your message..."
+                        onKeyDown={handleKeyDown}
+                    />
+                    <button
+                        className="ml-4 p-2 bg-emerald-700 text-white rounded-3xl hover:bg-emerald-900"
+                        onClick={handleSendMessage}
+                    >
+                        <IconSend stroke={2} className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+                    </button>
+                    <FloatingDockComp onSendFileToChat={handleSendFile} className="ml-4" />
                 </div>
             </div>
         </div>
