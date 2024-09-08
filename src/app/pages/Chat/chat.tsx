@@ -389,53 +389,76 @@ const Chat = () => {
         }
     };
 
-
     return (
         <div className="dark:bg-gradient-to-b from-emerald-950 to-neutral-900 bg-neutral-50 flex flex-col h-screen">
             {/* Sticky Header */}
             <div className="rounded-tl-2xl border-2 border-neutral-700 dark:border-neutral-950 bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 flex flex-col gap-2 flex-1 w-full h-full">
-                <header className="sticky top-0 p-4 rounded-tl-2xl flex items-center justify-between border-b-2 border-b-neutral-950 dark:bg-black dark:bg-opacity-40">
-                    <h1 className="text-lg font-semibold text-black dark:text-white">{receiverName}</h1>
+            <header className="sticky top-0 p-4 rounded-tl-2xl flex items-center justify-between border-b-2 border-b-neutral-950 dark:bg-black dark:bg-opacity-40">
+                <h1 className="text-lg font-semibold text-black dark:text-white">{receiverName}</h1>
                 </header>
 
-                <div className="flex-1 overflow-hidden flex flex-col">
-                    <div className="flex-1 overflow-y-auto p-4">
-                        {messages.map((msg, index) => (
-                            <div
-                                key={index}
-                                className={`flex ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'} mb-4`}
-                            >
-                                <div className={`relative ${msg.senderId === currentUserId ? 'ml-auto' : 'mr-auto'} group`}>
-                                    <div className={`bg-${msg.senderId === currentUserId ? 'emerald-700' : 'gray-300'} text-md text-black px-10 py-2 rounded-3xl font-mono`}>
-                                        {msg.type === 'file' ? (
-                                            <a href={msg.content} download>
-                                                <button className="bg-blue-500 text-white px-2 py-1 rounded">Download File</button>
-                                            </a>
-                                        ) : (
-                                            <span>{msg.message}</span>
-                                        )}
-                                    </div>
+                {/* Chat Messages */}
+                <div className="overflow-y-auto flex-1 px-4 pt-2">
+                    {messages.map((msg, index) => (
+                        <div
+                            key={index}
+                            className={`flex ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'} mb-4`}
+                        >
+                            <div className={`relative ${msg.senderId === currentUserId ? 'ml-auto' : 'mr-auto'} group`}>
+                                <div className={`bg-${msg.senderId === currentUserId ? 'emerald-700' : 'gray-300'} text-md text-black px-10 py-2 rounded-3xl font-mono`}>
+                                    {msg.type === 'file' ? (
+                                        <div className="flex flex-col items-center">
+                                            {/* Display image preview */}
+                                            {(msg.content?.endsWith('.png') || msg.content?.endsWith('.jpg') || msg.content?.endsWith('.jpeg')) && (
+                                                <img src={msg.content} alt="Preview" className="max-w-xs max-h-40 object-cover mb-2 rounded" />
+                                            )}
 
-                                    <div className={`flex items-end ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'} mt-1`}>
-                                        {msg.senderId === currentUserId && (
-                                            <button
-                                                className="text-red-600 hover:text-red-800 ml-2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                                                onClick={() => handleDeleteMessage(msg.id)}
-                                            >
-                                                <IconTrash size={18} />
-                                            </button>
-                                        )}
-                                        <span className="text-xs dark:text-white bg-black bg-opacity-5 px-2 py-1 rounded-3xl whitespace-nowrap">
-                                            {formatTimestamp(msg.timestamp)}
-                                        </span>
-                                    </div>
+                                            {/* Display PDF preview or link */}
+                                            {msg.content?.endsWith('.pdf') && (
+                                                <a href={msg.content} target="_blank" rel="noopener noreferrer">
+                                                    <button className="bg-blue-500 text-white px-2 py-1 rounded">View PDF</button>
+                                                </a>
+                                            )}
+
+                                            {/* Display text file preview or link */}
+                                            {msg.content?.endsWith('.txt') && (
+                                                <div className="whitespace-pre-wrap max-w-xs max-h-40 overflow-auto">
+                                                    <a href={msg.content} target="_blank" rel="noopener noreferrer">
+                                                        <button className="bg-blue-500 text-white px-2 py-1 rounded">View Text</button>
+                                                    </a>
+                                                </div>
+                                            )}
+
+                                            {/* Display unsupported file message */}
+                                            {!(msg.content?.endsWith('.png') || msg.content?.endsWith('.jpg') || msg.content?.endsWith('.jpeg') || msg.content?.endsWith('.pdf') || msg.content?.endsWith('.txt')) && (
+                                                <span>Unsupported file type</span>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <span>{msg.message}</span>
+                                    )}
+                                </div>
+
+                                <div className={`flex items-end ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'} mt-1`}>
+                                    {msg.senderId === currentUserId && (
+                                        <button
+                                            className="text-red-600 hover:text-red-800 ml-2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                            onClick={() => handleDeleteMessage(msg.id)}
+                                        >
+                                            <IconTrash size={18} />
+                                        </button>
+                                    )}
+                                    <span className="text-xs dark:text-white bg-black bg-opacity-5 px-2 py-1 rounded-3xl whitespace-nowrap">
+                                        {formatTimestamp(msg.timestamp)}
+                                    </span>
                                 </div>
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    ))}
                     <div ref={endOfMessagesRef} />
+                </div>
 
-                    <div className="p-4 flex items-center bg-transparent border-t-2 border-neutral-700 dark:border-neutral-950 mb-10 md:mb-0">
+                <div className="p-4 flex items-center bg-transparent border-t-2 border-neutral-700 dark:border-neutral-950 mb-10 md:mb-0">
                         <input
                             type="text"
                             className="flex-1 p-2 border-2 border-green-800 rounded-3xl focus:outline-none focus:ring-4 dark:bg-neutral-950 focus:ring-emerald-700"
@@ -451,7 +474,6 @@ const Chat = () => {
                             <IconSend stroke={2} className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
                         </button>
                         <FloatingDockComp onSendFileToChat={handleSendFile} className="ml-4" />
-                    </div>
                 </div>
             </div>
         </div>
