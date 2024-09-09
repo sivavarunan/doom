@@ -10,7 +10,7 @@ import {
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { FileUpload } from "@/app/componenets/ui/file-upload";
-import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'; // Ensure correct import
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 
 export function FloatingDockComp({
   className = "",
@@ -29,13 +29,13 @@ export function FloatingDockComp({
   };
 
   const handleEmojiClick = () => {
-    setEmojiPickerVisible(!isEmojiPickerVisible); // Toggle emoji picker visibility
+    setEmojiPickerVisible(!isEmojiPickerVisible); 
   };
 
   // Correct handler type for onEmojiClick
   const handleEmojiSelect = (emojiObject: EmojiClickData) => {
-    onEmojiSelect?.(emojiObject.emoji); // Pass selected emoji to parent
-    setEmojiPickerVisible(false); // Close picker after selection
+    onEmojiSelect?.(emojiObject.emoji);
+    setEmojiPickerVisible(true); 
   };
 
   const links = [
@@ -81,7 +81,7 @@ export function FloatingDockComp({
       {/* Emoji Picker */}
       {isEmojiPickerVisible && (
         <div
-          className="fixed bottom-16 right-16 z-50"
+           className="fixed bottom-16 right-16 z-50"
           onClick={(e) => e.stopPropagation()}
         >
           <EmojiPicker onEmojiClick={handleEmojiSelect} />
