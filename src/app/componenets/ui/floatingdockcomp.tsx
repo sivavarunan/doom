@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { FloatingDock } from "./floating-doc";
 import {
   IconBrandGithub,
-  IconHome,
-  IconNewSection,
-  IconTerminal2,
   IconFile,
   IconMoodHappy,
+  IconLanguage,
+  IconNewSection,
+  IconTerminal2
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { FileUpload } from "@/app/componenets/ui/file-upload";
@@ -16,32 +16,44 @@ export function FloatingDockComp({
   className = "",
   onSendFileToChat,
   onEmojiSelect,
+  message,
+  setMessage,
 }: {
   className?: string;
   onSendFileToChat?: (fileURLs: string[]) => void;
   onEmojiSelect?: (emoji: string) => void;
+  message: string;
+  setMessage: (newMessage: string) => void;
 }) {
   const [isFileUploadVisible, setFileUploadVisible] = useState(false);
   const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
+  const [isLanguagePickerVisible, setLanguagePickerVisible] = useState(false); // New state for language picker
+  const [selectedLanguage, setSelectedLanguage] = useState("es"); // Default language: Spanish
 
-  const handleFileClick = () => {
-    setFileUploadVisible(true);
-  };
+  const handleFileClick = () => setFileUploadVisible(true);
+  const handleEmojiClick = () => setEmojiPickerVisible(!isEmojiPickerVisible);
+  const handleLanguageClick = () => setLanguagePickerVisible(!isLanguagePickerVisible); // Toggle language picker visibility
 
-  const handleEmojiClick = () => {
-    setEmojiPickerVisible(!isEmojiPickerVisible); 
-  };
-
-  // Correct handler type for onEmojiClick
   const handleEmojiSelect = (emojiObject: EmojiClickData) => {
     onEmojiSelect?.(emojiObject.emoji);
-    setEmojiPickerVisible(true); 
+    setEmojiPickerVisible(false);
+  };
+
+  const handleTranslateClick = async () => {
+    const translatedText = await translateMessage(message, selectedLanguage);
+    setMessage(translatedText);
+  };
+
+  const handleLanguageSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedLanguage(event.target.value);
+    setLanguagePickerVisible(false); // Close the language picker after selection
   };
 
   const links = [
     { title: "Emoji", icon: <IconMoodHappy className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleEmojiClick },
     { title: "File", icon: <IconFile className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleFileClick },
-    { title: "Home", icon: <IconHome className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
+    // { title: "Translate", icon: <IconLanguage className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleTranslateClick },
+    { title: "Translate", icon: <IconLanguage className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleLanguageClick }, // New language picker link
     { title: "Products", icon: <IconTerminal2 className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
     { title: "Components", icon: <IconNewSection className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
     { title: "DOOM", icon: <Image src="/doom1.png" width={500} height={200} alt="Aceternity Logo" />, href: "#" },
@@ -64,7 +76,7 @@ export function FloatingDockComp({
           >
             <FileUpload
               onChange={(files) => {
-                onSendFileToChat?.(files); 
+                onSendFileToChat?.(files);
                 setFileUploadVisible(false);
               }}
             />
@@ -81,12 +93,57 @@ export function FloatingDockComp({
       {/* Emoji Picker */}
       {isEmojiPickerVisible && (
         <div
-           className="fixed bottom-16 right-16 z-50"
+          className="fixed bottom-16 right-16 z-50"
           onClick={(e) => e.stopPropagation()}
         >
           <EmojiPicker onEmojiClick={handleEmojiSelect} />
         </div>
       )}
+
+      {/* Language Picker Popup */}
+      {isLanguagePickerVisible && (
+        <div
+          className="fixed bottom-16 right-16 z-50 bg-neutral-950 bg-opacity-35 p-4 rounded-3xl shadow-lg"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <select
+            value={selectedLanguage}
+            onChange={handleLanguageSelect}
+            className="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg"
+          >
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="hi">Hindi</option>
+            <option value="zh">Chinese</option>
+          </select>
+        </div>
+      )}
     </div>
   );
 }
+
+const translateMessage = async (text: string, targetLang: string): Promise<string> => {
+  try {
+    const response = await fetch('https://libretranslate.com/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        q: text,
+        source: 'en',
+        target: targetLang,
+        format: 'text',
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Translation API error');
+    }
+
+    const data = await response.json();
+    return data.translatedText;
+  } catch (error) {
+    console.error('Translation error:', error);
+    return text; // Return the original message in case of an error
+  }
+};
