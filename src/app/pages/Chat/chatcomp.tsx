@@ -136,6 +136,9 @@ const Chat = () => {
 
         setNewMessage('');
     };
+    const handleEmojiSelect = (emoji: string) => {
+        setNewMessage((prevMessage) => prevMessage + emoji); // Append emoji to the message
+      };
 
     // Delete a message
     const handleDeleteMessage = async (messageId: string) => {
@@ -312,7 +315,7 @@ const Chat = () => {
                     >
                         <IconSend stroke={2} className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
                     </button>
-                    <FloatingDockComp onSendFileToChat={handleSendFile} className="ml-4" />
+                    <FloatingDockComp onSendFileToChat={handleSendFile}  onEmojiSelect={handleEmojiSelect} className="ml-4" />
                 </div>
             </div>
         </div>

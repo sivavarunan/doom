@@ -73,3 +73,29 @@ body {
   }
 }
 
+/* Custom styles for the emoji picker */
+.emoji-picker-react {
+  --emoji-picker-background: #1a1a1a; /* Background color of the picker */
+  --emoji-picker-text-color: #ffffff; /* Text color (including emoji) */
+}
+
+.emoji-picker-react .emoji-picker-react .emoji-mart-bar {
+  background-color: #333; /* Background color of the top bar */
+}
+
+.emoji-picker-react .emoji-picker-react .emoji-mart-bar .emoji-mart-bar-item {
+  color: #fff; /* Color of the items in the top bar */
+}
+
+.emoji-picker-react .emoji-picker-react .emoji-mart-bar .emoji-mart-bar-item:hover {
+  background-color: #444; /* Hover background color of the items in the top bar */
+}
+
+.emoji-picker-react .emoji-picker-react .emoji-mart-search input {
+  background-color: #333; /* Background color of the search input */
+  color: #fff; /* Text color of the search input */
+}
+
+.emoji-picker-react .emoji-picker-react .emoji-mart-category {
+  color: #fff; /* Color of the category labels */
+}

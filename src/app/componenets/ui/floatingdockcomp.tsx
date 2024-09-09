@@ -2,35 +2,49 @@ import React, { useState } from "react";
 import { FloatingDock } from "./floating-doc";
 import {
   IconBrandGithub,
-  IconBrandX,
   IconHome,
   IconNewSection,
   IconTerminal2,
   IconFile,
+  IconMoodHappy,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { FileUpload } from "@/app/componenets/ui/file-upload";
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'; // Ensure correct import
 
 export function FloatingDockComp({
   className = "",
   onSendFileToChat,
+  onEmojiSelect,
 }: {
   className?: string;
-  onSendFileToChat?: (fileURLs: string[]) => void; // Add this prop
+  onSendFileToChat?: (fileURLs: string[]) => void;
+  onEmojiSelect?: (emoji: string) => void;
 }) {
   const [isFileUploadVisible, setFileUploadVisible] = useState(false);
+  const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
 
   const handleFileClick = () => {
     setFileUploadVisible(true);
   };
 
+  const handleEmojiClick = () => {
+    setEmojiPickerVisible(!isEmojiPickerVisible); // Toggle emoji picker visibility
+  };
+
+  // Correct handler type for onEmojiClick
+  const handleEmojiSelect = (emojiObject: EmojiClickData) => {
+    onEmojiSelect?.(emojiObject.emoji); // Pass selected emoji to parent
+    setEmojiPickerVisible(false); // Close picker after selection
+  };
+
   const links = [
+    { title: "Emoji", icon: <IconMoodHappy className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleEmojiClick },
+    { title: "File", icon: <IconFile className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleFileClick },
     { title: "Home", icon: <IconHome className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
     { title: "Products", icon: <IconTerminal2 className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
     { title: "Components", icon: <IconNewSection className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
     { title: "DOOM", icon: <Image src="/doom1.png" width={500} height={200} alt="Aceternity Logo" />, href: "#" },
-    { title: "File", icon: <IconFile className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleFileClick },
-    { title: "Twitter", icon: <IconBrandX className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
     { title: "GitHub", icon: <IconBrandGithub className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
   ];
 
@@ -50,7 +64,7 @@ export function FloatingDockComp({
           >
             <FileUpload
               onChange={(files) => {
-                onSendFileToChat?.(files); // Send the uploaded files to the chat component
+                onSendFileToChat?.(files); 
                 setFileUploadVisible(false);
               }}
             />
@@ -61,6 +75,16 @@ export function FloatingDockComp({
               Close
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Emoji Picker */}
+      {isEmojiPickerVisible && (
+        <div
+          className="fixed bottom-16 right-16 z-50"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <EmojiPicker onEmojiClick={handleEmojiSelect} />
         </div>
       )}
     </div>
