@@ -30,6 +30,7 @@ interface User {
 const Chat = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
+     const [currentMessage, setCurrentMessage] = useState<string>("");
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const [receiverName, setReceiverName] = useState<string>('');
     const params = useParams();
@@ -226,6 +227,10 @@ const Chat = () => {
         }
     };
 
+    const handleSetTranslatedMessage = (translatedMessage: string) => {
+        setCurrentMessage(translatedMessage); // Set the translated message as current message
+      };
+
     return (
         <div className="dark:bg-gradient-to-b from-emerald-950 to-neutral-900 bg-neutral-50 flex flex-col h-screen">
             {/* Sticky Header */}
@@ -315,7 +320,8 @@ const Chat = () => {
                     >
                         <IconSend stroke={2} className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
                     </button>
-                    <FloatingDockComp onSendFileToChat={handleSendFile}  onEmojiSelect={handleEmojiSelect} className="ml-4" />
+                    <FloatingDockComp onSendFileToChat={handleSendFile} onEmojiSelect={handleEmojiSelect} className="ml-4" message={''} setMessage={handleSetTranslatedMessage}
+                     />
                 </div>
             </div>
         </div>
