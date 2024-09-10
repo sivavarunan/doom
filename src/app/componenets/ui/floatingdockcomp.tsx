@@ -103,13 +103,13 @@ export function FloatingDockComp({
       {/* Language Picker Popup */}
       {isLanguagePickerVisible && (
         <div
-          className="fixed bottom-16 right-16 z-50 bg-neutral-950 bg-opacity-35 p-4 rounded-3xl shadow-lg"
+          className="fixed bottom-16 right-48 z-50 bg-neutral-950 bg-opacity-35 p-1 rounded-3xl shadow-lg"
           onClick={(e) => e.stopPropagation()}
         >
           <select
             value={selectedLanguage}
             onChange={handleLanguageSelect}
-            className="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg"
+            className="p-2 bg-emerald-700 rounded-xl"
           >
             <option value="es">Spanish</option>
             <option value="fr">French</option>
@@ -144,6 +144,6 @@ const translateMessage = async (text: string, targetLang: string): Promise<strin
     return data.translatedText;
   } catch (error) {
     console.error('Translation error:', error);
-    return text; // Return the original message in case of an error
+    return text; 
   }
 };
