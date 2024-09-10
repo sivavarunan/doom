@@ -27,12 +27,13 @@ export function FloatingDockComp({
 }) {
   const [isFileUploadVisible, setFileUploadVisible] = useState(false);
   const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
-  const [isLanguagePickerVisible, setLanguagePickerVisible] = useState(false); // New state for language picker
-  const [selectedLanguage, setSelectedLanguage] = useState("es"); // Default language: Spanish
+  const [isLanguagePickerVisible, setLanguagePickerVisible] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState("es");
+  const [isLoading, setLoading] = useState(false); // Loading state for translation
 
   const handleFileClick = () => setFileUploadVisible(true);
   const handleEmojiClick = () => setEmojiPickerVisible(!isEmojiPickerVisible);
-  const handleLanguageClick = () => setLanguagePickerVisible(!isLanguagePickerVisible); // Toggle language picker visibility
+  const handleLanguageClick = () => setLanguagePickerVisible(!isLanguagePickerVisible);
 
   const handleEmojiSelect = (emojiObject: EmojiClickData) => {
     onEmojiSelect?.(emojiObject.emoji);
@@ -40,20 +41,21 @@ export function FloatingDockComp({
   };
 
   const handleTranslateClick = async () => {
+    setLoading(true); // Set loading state to true when translation starts
     const translatedText = await translateMessage(message, selectedLanguage);
     setMessage(translatedText);
+    setLoading(false); // Stop loading once translation is done
   };
 
   const handleLanguageSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedLanguage(event.target.value);
-    setLanguagePickerVisible(false); // Close the language picker after selection
+    setLanguagePickerVisible(false);
   };
 
   const links = [
     { title: "Emoji", icon: <IconMoodHappy className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleEmojiClick },
     { title: "File", icon: <IconFile className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleFileClick },
-    // { title: "Translate", icon: <IconLanguage className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleTranslateClick },
-    { title: "Translate", icon: <IconLanguage className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleLanguageClick }, // New language picker link
+    { title: "Translate", icon: <IconLanguage className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleLanguageClick },
     { title: "Products", icon: <IconTerminal2 className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
     { title: "Components", icon: <IconNewSection className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
     { title: "DOOM", icon: <Image src="/doom1.png" width={500} height={200} alt="Aceternity Logo" />, href: "#" },
@@ -119,6 +121,15 @@ export function FloatingDockComp({
           </select>
         </div>
       )}
+
+      {/* Translate Button */}
+      <button
+        className="px-4 py-2 bg-emerald-700 hover:bg-emerald-950 rounded-3xl ml-4"
+        onClick={handleTranslateClick}
+        disabled={isLoading}
+      >
+        {isLoading ? "Translating..." : "Translate"}
+      </button>
     </div>
   );
 }
@@ -144,6 +155,6 @@ const translateMessage = async (text: string, targetLang: string): Promise<strin
     return data.translatedText;
   } catch (error) {
     console.error('Translation error:', error);
-    return text; 
+    return text; // Return the original text if translation fails
   }
 };
