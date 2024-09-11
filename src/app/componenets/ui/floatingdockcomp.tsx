@@ -136,27 +136,32 @@ export function FloatingDockComp({
 
 const translateMessage = async (text: string, targetLang: string): Promise<string> => {
   try {
-    const response = await fetch('https://libretranslate.com/translate', {
+    const apiKey = 'rapidapi-key'; 
+    const response = await fetch('https://google-translate1.p.rapidapi.com/language/translate/v2', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+        'accept-encoding': 'application/gzip',
+        'x-rapidapi-host': 'google-translate1.p.rapidapi.com',
+        'x-rapidapi-key': apiKey,
+      },
+      body: new URLSearchParams({
         q: text,
-        source: 'en', // This should be 'en' if you are translating from English
-        target: targetLang, // The selected language
-        format: 'text',
-      }),
+        source: 'en',
+        target: targetLang,
+      })
     });
 
     if (!response.ok) {
-      const errorDetails = await response.json(); // Fetch the error details from the response
+      const errorDetails = await response.json();
       console.error('API Error:', errorDetails);
       throw new Error('Translation API error: ' + JSON.stringify(errorDetails));
     }
 
     const data = await response.json();
-    return data.translatedText;
+    return data.data.translations[0].translatedText;
   } catch (error) {
     console.error('Translation error:', error);
-    return text; // Return the original text if translation fails
+    return text; 
   }
 };
