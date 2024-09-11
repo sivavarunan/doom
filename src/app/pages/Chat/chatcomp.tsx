@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import {IconSend,IconTrash,} from "@tabler/icons-react";
+import { IconSend, IconTrash, IconDownload } from "@tabler/icons-react";
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '@/app/firebase';
 import { collection, doc, getDoc, onSnapshot, query, where, orderBy, addDoc, serverTimestamp, Timestamp, deleteDoc } from 'firebase/firestore';
@@ -30,7 +30,7 @@ interface User {
 const Chat = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
-     const [currentMessage, setCurrentMessage] = useState<string>("");
+    const [currentMessage, setCurrentMessage] = useState<string>("");
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const [receiverName, setReceiverName] = useState<string>('');
     const params = useParams();
@@ -139,7 +139,7 @@ const Chat = () => {
     };
     const handleEmojiSelect = (emoji: string) => {
         setNewMessage((prevMessage) => prevMessage + emoji); // Append emoji to the message
-      };
+    };
 
     // Delete a message
     const handleDeleteMessage = async (messageId: string) => {
@@ -218,9 +218,8 @@ const Chat = () => {
         }));
 
         try {
-            for (const message of newMessages) {
-                await addDoc(collection(db, 'messages'), message);
-            }
+            const promises = newMessages.map(message => addDoc(collection(db, 'messages'), message));
+            await Promise.all(promises);
         } catch (error) {
             console.error("Error sending file:", error);
             toast.error("Failed to send file", { position: "top-right" });
@@ -229,7 +228,7 @@ const Chat = () => {
 
     const handleSetTranslatedMessage = (translatedMessage: string) => {
         setCurrentMessage(translatedMessage); // Set the translated message as current message
-      };
+    };
 
     return (
         <div className="dark:bg-gradient-to-b from-emerald-950 to-neutral-900 bg-neutral-50 flex flex-col h-screen">
@@ -269,17 +268,20 @@ const Chat = () => {
                                             {msg.content?.endsWith('.txt') && (
                                                 <div className="whitespace-pre-wrap max-w-xs max-h-40 overflow-auto mb-2">
                                                     <a href={msg.content} target="_blank" rel="noopener noreferrer">
-                                                        <button className="bg-emerald-500 text-white px-2 py-1 rounded">View Text</button>
+                                                        <button className="bg-emerald-500 text-white px-2 py-1 rounded">View Full Text</button>
                                                     </a>
                                                 </div>
                                             )}
 
                                             {/* Display unsupported file message */}
-                                            {!(msg.content?.endsWith('.png') || msg.content?.endsWith('.jpg') || msg.content?.endsWith('.jpeg') || msg.content?.endsWith('.pdf') || msg.content?.endsWith('.txt')) && (
-                                                <a href={msg.content} target="_blank" rel="noopener noreferrer">
-                                                    <button className="bg-emerald-500 hover:bg-emerald-950 text-white px-2 py-1 rounded">Download File</button>
-                                                </a>
-                                            )}
+                                            {!(msg.content?.endsWith('.png') || msg.content?.endsWith('.jpg') || msg.content?.endsWith('.jpeg') ||
+                                                msg.content?.endsWith('.pdf') || msg.content?.endsWith('.txt')) && (
+                                                    <a href={msg.content} target="_blank" rel="noopener noreferrer">
+                                                        <button className="bg-emerald-400 hover:bg-emerald-950 text-white px-1 py-1 rounded-3xl">
+                                                            <IconDownload className='dark:text-black hover:text-white' />
+                                                        </button>
+                                                    </a>
+                                                )}
                                         </div>
                                     ) : (
                                         <span>{msg.message}</span>
@@ -321,7 +323,7 @@ const Chat = () => {
                         <IconSend stroke={2} className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
                     </button>
                     <FloatingDockComp onSendFileToChat={handleSendFile} onEmojiSelect={handleEmojiSelect} className="ml-4" message={''} setMessage={handleSetTranslatedMessage}
-                     />
+                    />
                 </div>
             </div>
         </div>
