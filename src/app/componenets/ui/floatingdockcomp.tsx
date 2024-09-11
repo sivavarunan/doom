@@ -141,14 +141,16 @@ const translateMessage = async (text: string, targetLang: string): Promise<strin
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         q: text,
-        source: 'en',
-        target: targetLang,
+        source: 'en', // This should be 'en' if you are translating from English
+        target: targetLang, // The selected language
         format: 'text',
       }),
     });
 
     if (!response.ok) {
-      throw new Error('Translation API error');
+      const errorDetails = await response.json(); // Fetch the error details from the response
+      console.error('API Error:', errorDetails);
+      throw new Error('Translation API error: ' + JSON.stringify(errorDetails));
     }
 
     const data = await response.json();
