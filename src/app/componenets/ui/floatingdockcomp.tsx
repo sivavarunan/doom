@@ -29,7 +29,7 @@ export function FloatingDockComp({
   const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
   const [isLanguagePickerVisible, setLanguagePickerVisible] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("es");
-  const [isLoading, setLoading] = useState(false); // Loading state for translation
+  const [isLoading, setLoading] = useState(false);
 
   const handleFileClick = () => setFileUploadVisible(true);
   const handleEmojiClick = () => setEmojiPickerVisible(!isEmojiPickerVisible);
@@ -41,10 +41,10 @@ export function FloatingDockComp({
   };
 
   const handleTranslateClick = async () => {
-    setLoading(true); // Set loading state to true when translation starts
+    setLoading(true);
     const translatedText = await translateMessage(message, selectedLanguage);
     setMessage(translatedText);
-    setLoading(false); // Stop loading once translation is done
+    setLoading(false); 
   };
 
   const handleLanguageSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -136,26 +136,26 @@ export function FloatingDockComp({
 
 const translateMessage = async (text: string, targetLang: string): Promise<string> => {
   try {
-    const apiKey = 'rapidapi-key'; 
+    const apiKey = '9d3759bfdcmsh6769e8af5a6241fp15b794jsn1a89edae0017';
     const response = await fetch('https://google-translate1.p.rapidapi.com/language/translate/v2', {
       method: 'POST',
       headers: {
-        'content-type': 'application/x-www-form-urlencoded',
+        'content-type': 'multipart/form-data',
         'accept-encoding': 'application/gzip',
         'x-rapidapi-host': 'google-translate1.p.rapidapi.com',
         'x-rapidapi-key': apiKey,
       },
       body: new URLSearchParams({
         q: text,
-        source: 'en',
-        target: targetLang,
+        source: 'en', // source language
+        target: targetLang, // target language
       })
     });
 
     if (!response.ok) {
-      const errorDetails = await response.json();
+      const errorDetails = await response.text(); 
       console.error('API Error:', errorDetails);
-      throw new Error('Translation API error: ' + JSON.stringify(errorDetails));
+      throw new Error('Translation API error: ' + errorDetails);
     }
 
     const data = await response.json();
