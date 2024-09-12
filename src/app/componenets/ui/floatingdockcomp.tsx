@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FloatingDock } from "./floating-doc";
 import {
   IconBrandGithub,
@@ -36,9 +36,22 @@ export function FloatingDockComp({
   const [isRecording, setRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [recordingError, setRecordingError] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<number | null>(null);
+  const emojiPickerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target as Node)) {
+        setEmojiPickerVisible(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleFileClick = () => setFileUploadVisible(true);
   const handleEmojiClick = () => setEmojiPickerVisible(!isEmojiPickerVisible);
@@ -46,7 +59,7 @@ export function FloatingDockComp({
 
   const handleEmojiSelect = (emojiObject: EmojiClickData) => {
     onEmojiSelect?.(emojiObject.emoji);
-    setEmojiPickerVisible(false);
+    // Do not close the picker on emoji select
   };
 
   const handleTranslateClick = async () => {
@@ -114,6 +127,7 @@ export function FloatingDockComp({
       }
     } catch (error) {
       console.error('Error during recording or uploading.', error);
+      setRecordingError('Error during recording or uploading.');
     } finally {
       cleanup();
     }
@@ -138,7 +152,6 @@ export function FloatingDockComp({
       streamRef.current = null;
     }
     mediaRecorderRef.current = null;
-    setAudioBlob(null);
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
@@ -199,6 +212,7 @@ export function FloatingDockComp({
       {/* Emoji Picker */}
       {isEmojiPickerVisible && (
         <div
+          ref={emojiPickerRef}
           className="fixed bottom-16 right-16 z-50"
           onClick={(e) => e.stopPropagation()}
         >
@@ -237,7 +251,7 @@ export function FloatingDockComp({
 
       {/* Voice Recording Progress Bar */}
       {isRecording && (
-        <div className="fixed bottom-24 right-16 z-50 p-3 bg-emerald-900 rounded-3xl shadow-lg">
+        <div className="fixed bottom-24 right-26 z-50 p-3 bg-emerald-900 rounded-3xl shadow-lg">
           <p>Recording... {formatTime(recordingTime)}</p>
           <div className="relative w-full h-2 bg-gray-300 rounded-full mt-2">
             <div
@@ -247,13 +261,20 @@ export function FloatingDockComp({
           </div>
         </div>
       )}
+
+      {/* Recording Error Message */}
+      {recordingError && (
+        <div className="fixed bottom-24 right-26 z-50 p-3 bg-red-500 text-white rounded-3xl shadow-lg">
+          <p>{recordingError}</p>
+        </div>
+      )}
     </div>
   );
 }
 
 const translateMessage = async (text: string, targetLang: string): Promise<string> => {
   try {
-    const apiKey = '9d3759bfdcmsh6769e8af5a6241fp15b794jsn1a89edae0017';
+    const apiKey = '9d3759bfdcmsh6769e8af5a6241fp15b794jsn1a89edae0017'; // Replace with your actual API key
     const response = await fetch('https://google-translate1.p.rapidapi.com/language/translate/v2', {
       method: 'POST',
       headers: {
