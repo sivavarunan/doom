@@ -245,13 +245,13 @@ export function FloatingDockComp({
       {/* Language Picker Popup */}
       {isLanguagePickerVisible && (
         <div
-          className="fixed bottom-16 right-48 z-50 bg-neutral-950 bg-opacity-35 p-1 rounded-3xl shadow-lg"
+          className="fixed bottom-20 right-4 z-50 bg-black bg-opacity-35 p-1 rounded-full shadow-lg"
           onClick={(e) => e.stopPropagation()}
         >
           <select
             value={selectedLanguage}
             onChange={handleLanguageSelect}
-            className="p-2 bg-emerald-700 rounded-xl"
+            className="p-2 bg-emerald-700 rounded-2xl"
           >
             <option value="es">Spanish</option>
             <option value="fr">French</option>
@@ -273,7 +273,7 @@ export function FloatingDockComp({
 
       {/* Voice Recording UI */}
       {isRecording && (
-        <div className="fixed bottom-24 right-26 z-50 p-3 bg-emerald-900 rounded-3xl shadow-lg">
+        <div className="fixed bottom-24 md:right-26 z-50 p-3 bg-emerald-900 rounded-3xl shadow-lg">
           <p>Recording... {formatTime(recordingTime)}</p>
           <div className="relative w-full h-2 bg-gray-300 rounded-full mt-2">
             <div
