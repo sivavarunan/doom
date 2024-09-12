@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { FloatingDock } from "./floating-doc";
 import {
   IconBrandGithub,
@@ -6,11 +6,12 @@ import {
   IconMoodHappy,
   IconLanguage,
   IconNewSection,
-  IconTerminal2
+  IconMicrophone,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { FileUpload } from "@/app/componenets/ui/file-upload";
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export function FloatingDockComp({
   className = "",
@@ -18,18 +19,26 @@ export function FloatingDockComp({
   onEmojiSelect,
   message,
   setMessage,
+  onSendAudioMessage,
 }: {
   className?: string;
   onSendFileToChat?: (fileURLs: string[]) => void;
   onEmojiSelect?: (emoji: string) => void;
   message: string;
   setMessage: (newMessage: string) => void;
+  onSendAudioMessage?: (audioURL: string) => void;
 }) {
   const [isFileUploadVisible, setFileUploadVisible] = useState(false);
   const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
   const [isLanguagePickerVisible, setLanguagePickerVisible] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("es");
   const [isLoading, setLoading] = useState(false);
+  const [isRecording, setRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const timerRef = useRef<number | null>(null);
 
   const handleFileClick = () => setFileUploadVisible(true);
   const handleEmojiClick = () => setEmojiPickerVisible(!isEmojiPickerVisible);
@@ -42,9 +51,14 @@ export function FloatingDockComp({
 
   const handleTranslateClick = async () => {
     setLoading(true);
-    const translatedText = await translateMessage(message, selectedLanguage);
-    setMessage(translatedText);
-    setLoading(false); 
+    try {
+      const translatedText = await translateMessage(message, selectedLanguage);
+      setMessage(translatedText);
+    } catch (error) {
+      console.error('Translation error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLanguageSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -52,11 +66,101 @@ export function FloatingDockComp({
     setLanguagePickerVisible(false);
   };
 
+  const handleVoiceMessageClick = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      mediaRecorder.start();
+
+      mediaRecorder.ondataavailable = (e) => {
+        setAudioBlob(e.data);
+      };
+
+      mediaRecorder.onerror = (event) => {
+        console.error('MediaRecorder error:', event);
+        stopRecording();
+      };
+
+      setRecording(true);
+      setRecordingTime(0);
+      timerRef.current = window.setInterval(() => {
+        setRecordingTime((prev) => prev + 1);
+      }, 1000);
+    } catch (error) {
+      console.error('Error accessing media devices.', error);
+    }
+  };
+
+  const stopRecording = async () => {
+    if (!mediaRecorderRef.current) return;
+
+    try {
+      mediaRecorderRef.current.stop();
+      setRecording(false);
+
+      if (audioBlob) {
+        const audioURL = await uploadToFirebaseStorage(audioBlob);
+        onSendAudioMessage?.(audioURL);
+      }
+    } catch (error) {
+      console.error('Error during recording or uploading.', error);
+    } finally {
+      cleanup();
+    }
+  };
+
+  const uploadToFirebaseStorage = async (audioBlob: Blob): Promise<string> => {
+    try {
+      const storage = getStorage();
+      const storageRef = ref(storage, `voice-messages/${Date.now()}.webm`);
+      await uploadBytes(storageRef, audioBlob);
+      const downloadURL = await getDownloadURL(storageRef);
+      return downloadURL;
+    } catch (error) {
+      console.error('Error uploading audio to Firebase:', error);
+      throw error;
+    }
+  };
+
+  const cleanup = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    mediaRecorderRef.current = null;
+    setAudioBlob(null);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    setRecordingTime(0);
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  };
+
   const links = [
     { title: "Emoji", icon: <IconMoodHappy className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleEmojiClick },
     { title: "File", icon: <IconFile className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleFileClick },
     { title: "Translate", icon: <IconLanguage className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleLanguageClick },
-    { title: "Products", icon: <IconTerminal2 className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
+    {
+      title: isRecording ? "Stop" : "Voice Message",
+      icon: <IconMicrophone className={`h-full w-full ${isRecording ? "text-red-500" : "text-neutral-500"} dark:text-neutral-300`} />,
+      onClick: handleVoiceMessageClick,
+    },
     { title: "Components", icon: <IconNewSection className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
     { title: "DOOM", icon: <Image src="/doom1.png" width={500} height={200} alt="Aceternity Logo" />, href: "#" },
     { title: "GitHub", icon: <IconBrandGithub className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
@@ -130,6 +234,19 @@ export function FloatingDockComp({
       >
         {isLoading ? "Translating..." : "Translate"}
       </button>
+
+      {/* Voice Recording Progress Bar */}
+      {isRecording && (
+        <div className="fixed bottom-24 right-16 z-50 p-4 bg-neutral-950 bg-opacity-50 rounded-3xl shadow-lg">
+          <p>Recording... {formatTime(recordingTime)}</p>
+          <div className="relative w-full h-2 bg-gray-300 rounded-full mt-2">
+            <div
+              className="absolute top-0 left-0 h-2 bg-emerald-500 rounded-full"
+              style={{ width: `${(recordingTime % 60) * 100 / 60}%` }}
+            ></div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -153,7 +270,7 @@ const translateMessage = async (text: string, targetLang: string): Promise<strin
     });
 
     if (!response.ok) {
-      const errorDetails = await response.text(); 
+      const errorDetails = await response.text();
       console.error('API Error:', errorDetails);
       throw new Error('Translation API error: ' + errorDetails);
     }
@@ -162,6 +279,6 @@ const translateMessage = async (text: string, targetLang: string): Promise<strin
     return data.data.translations[0].translatedText;
   } catch (error) {
     console.error('Translation error:', error);
-    return text; 
+    return text;
   }
 };
