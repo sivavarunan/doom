@@ -15,6 +15,7 @@ import Image from "next/image";
 import { FileUpload } from "@/app/componenets/ui/file-upload";
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { toast } from "react-toastify";
 
 export function FloatingDockComp({
   className = "",
@@ -94,65 +95,86 @@ export function FloatingDockComp({
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
+
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
-      mediaRecorder.start();
 
+      const chunks: Blob[] = [];
       mediaRecorder.ondataavailable = (e) => {
-        setAudioBlob(e.data);
+        if (e.data.size > 0) {
+          chunks.push(e.data);
+        }
       };
 
-      mediaRecorder.onerror = (event) => {
-        console.error('MediaRecorder error:', event);
-        stopRecording();
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'audio/webm' });
+        setAudioBlob(blob);
       };
 
+      mediaRecorder.onerror = (error) => {
+        console.error('MediaRecorder error:', error);
+        setRecordingError('Error during recording.');
+        stopRecording(); // Stop recording in case of error
+      };
+
+      mediaRecorder.start();
       setRecording(true);
       setRecordingTime(0);
+
       timerRef.current = window.setInterval(() => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
     } catch (error) {
-      console.error('Error accessing media devices.', error);
+      console.error('Error accessing media devices:', error);
+      setRecordingError('Microphone access denied or unavailable.');
     }
   };
 
-  const stopRecording = async () => {
+
+  const stopRecording = () => {
     if (!mediaRecorderRef.current) return;
 
-    try {
-      mediaRecorderRef.current.stop();
-      setRecording(false);
+    mediaRecorderRef.current.stop();
+    setRecording(false);
 
-      // Only prepare to send or delete if there's a blob
-      if (audioBlob) {
-        // Do not upload yet; wait for user action
-      }
-    } catch (error) {
-      console.error('Error during recording or uploading.', error);
-      setRecordingError('Error during recording or uploading.');
-    } finally {
-      // No cleanup here as the user might want to send or delete
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop()); // Stop the stream
+      streamRef.current = null;
+    }
+
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     }
   };
 
-  const sendRecording = async () => {
-    if (!audioBlob) return;
 
+  const sendRecording = async () => {
+    if (!audioBlob) return; // Ensure there is a valid recording
+  
     try {
+      setRecordingError(null); // Clear previous errors
       const audioURL = await uploadToFirebaseStorage(audioBlob);
-      onSendAudioMessage?.(audioURL);
+  
+      // Ensure we're not duplicating submissions
+      if (audioURL) {
+        onSendAudioMessage?.(audioURL);
+        // toast.success('Audio message sent.');
+      }
+  
     } catch (error) {
       console.error('Error sending recording:', error);
-      setRecordingError('Error sending recording.');
+      setRecordingError('Error uploading audio.');
     } finally {
       cleanup();
     }
   };
+  
 
   const deleteRecording = () => {
-    setAudioBlob(null);
-    cleanup();
+    setAudioBlob(null); // Clear the recorded audio
+    cleanup(); // Reset the state and cleanup resources
+    toast.success('Recording deleted.');
   };
 
   const uploadToFirebaseStorage = async (audioBlob: Blob): Promise<string> => {
@@ -174,12 +196,18 @@ export function FloatingDockComp({
       streamRef.current = null;
     }
     mediaRecorderRef.current = null;
+  
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
+  
     setRecordingTime(0);
+    setRecording(false);
+    setAudioBlob(null); // Clear the audio blob to reset state
   };
+  
+
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -286,21 +314,21 @@ export function FloatingDockComp({
               className="px-2 py-2 bg-red-600 hover:bg-red-800 rounded-full"
               onClick={stopRecording}
             >
-              <IconPlayerStop/>
+              <IconPlayerStop />
             </button>
             <button
               className="px-3 py-2 bg-emerald-700 hover:bg-emerald-950 rounded-3xl mx-2 cursor-pointer"
               onClick={sendRecording}
               disabled={!audioBlob}
             >
-              <IconSend/>
+              <IconSend />
             </button>
             <button
               className="px-2 py-2 bg-gray-500 hover:bg-gray-700 rounded-full cursor-pointer"
               onClick={deleteRecording}
               disabled={!audioBlob}
             >
-              <IconTrash/>
+              <IconTrash />
             </button>
           </div>
         </div>
