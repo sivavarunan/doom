@@ -10,6 +10,8 @@ import { format } from 'date-fns';
 import { FloatingDockComp } from "@/app/componenets/ui/floatingdockcomp";
 import { toast, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { AudioMessage } from '@/app/componenets/audiomsg';
+import { v4 as uuidv4 } from 'uuid';
 
 interface Message {
     id: string;
@@ -17,7 +19,7 @@ interface Message {
     receiverId: string;
     message?: string;
     timestamp: Timestamp;
-    type?: 'text' | 'file';
+    type?: 'text' | 'file' | 'voice';
     content?: string;
 }
 
@@ -38,6 +40,7 @@ const Chat = () => {
     const endOfMessagesRef = useRef<HTMLDivElement>(null);
     const [loading, setLoading] = useState(true);
     const previousMessagesLength = useRef<number>(0);
+    const generateUniqueId = () => uuidv4();
 
     // Track authentication state
     useEffect(() => {
@@ -97,8 +100,6 @@ const Chat = () => {
         previousMessagesLength.current = messages.length;
     }, [messages, currentUserId, receiverName]);
 
-
-
     // Fetch user data for receiver
     useEffect(() => {
         if (chatWithUserId) {
@@ -137,6 +138,7 @@ const Chat = () => {
 
         setNewMessage('');
     };
+
     const handleEmojiSelect = (emoji: string) => {
         setNewMessage((prevMessage) => prevMessage + emoji); // Append emoji to the message
     };
@@ -144,15 +146,15 @@ const Chat = () => {
     // Delete a message
     const handleDeleteMessage = async (messageId: string) => {
         if (!messageId) return;
-
+      
         try {
-            await deleteDoc(doc(db, 'messages', messageId));
-            toast.success("Message deleted successfully", { position: "top-right" });
+          await deleteDoc(doc(db, 'messages', messageId));
+          toast.success("Message deleted successfully", { position: "top-right" });
         } catch (error) {
-            console.error("Error deleting message:", error);
-            toast.error("Failed to delete message", { position: "top-right" });
+          console.error("Error deleting message:", error);
+          toast.error("Failed to delete message", { position: "top-right" });
         }
-    };
+      };
 
     // Spinner component for loading
     const Spinner = () => (
@@ -198,14 +200,6 @@ const Chat = () => {
         }
     }, [messages]);
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center h-screen">
-                <Spinner />
-            </div>
-        );
-    }
-
     const handleSendFile = async (fileURLs: string[]) => {
         if (!currentUserId || !chatWithUserId) return;
 
@@ -229,6 +223,33 @@ const Chat = () => {
     const handleSetTranslatedMessage = (translatedMessage: string) => {
         setCurrentMessage(translatedMessage); // Set the translated message as current message
     };
+
+    const handleSendAudioMessage = async (audioURL: string) => {
+        if (!currentUserId || !chatWithUserId) return;
+      
+        try {
+          const newMessage: Message = {
+            id: generateUniqueId(), 
+            senderId: currentUserId,
+            receiverId: chatWithUserId,
+            timestamp: Timestamp.now(),
+            type: 'voice',
+            content: audioURL,
+          };
+      
+          // Update Firestore
+          await addDoc(collection(db, 'messages'), newMessage);
+      
+          // Update local state
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
+      
+          toast.success("Audio message sent successfully", { position: "top-right" });
+        } catch (error) {
+          console.error('Error sending audio message:', error);
+          toast.error("Failed to send audio message", { position: "top-right" });
+        }
+      };
+      
 
     return (
         <div className="dark:bg-gradient-to-b from-emerald-950 to-neutral-900 bg-neutral-50 flex flex-col h-screen">
@@ -283,6 +304,10 @@ const Chat = () => {
                                                     </a>
                                                 )}
                                         </div>
+                                    ) : msg.type === 'voice' ? (
+                                        <div className="flex flex-col items-center">
+                                            <AudioMessage audioURL={msg.content ?? ''} />
+                                        </div>
                                     ) : (
                                         <span>{msg.message}</span>
                                     )}
@@ -322,7 +347,13 @@ const Chat = () => {
                     >
                         <IconSend stroke={2} className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
                     </button>
-                    <FloatingDockComp onSendFileToChat={handleSendFile} onEmojiSelect={handleEmojiSelect} className="ml-4" message={''} setMessage={handleSetTranslatedMessage}
+                    <FloatingDockComp
+                        onSendFileToChat={handleSendFile}
+                        onEmojiSelect={handleEmojiSelect}
+                        onSendAudioMessage={handleSendAudioMessage}
+                        className="ml-4"
+                        message={currentMessage}
+                        setMessage={handleSetTranslatedMessage}
                     />
                 </div>
             </div>
