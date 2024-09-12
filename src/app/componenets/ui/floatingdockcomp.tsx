@@ -7,6 +7,9 @@ import {
   IconLanguage,
   IconNewSection,
   IconMicrophone,
+  IconTrash,
+  IconPlayerStop,
+  IconSend,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { FileUpload } from "@/app/componenets/ui/file-upload";
@@ -121,16 +124,35 @@ export function FloatingDockComp({
       mediaRecorderRef.current.stop();
       setRecording(false);
 
+      // Only prepare to send or delete if there's a blob
       if (audioBlob) {
-        const audioURL = await uploadToFirebaseStorage(audioBlob);
-        onSendAudioMessage?.(audioURL);
+        // Do not upload yet; wait for user action
       }
     } catch (error) {
       console.error('Error during recording or uploading.', error);
       setRecordingError('Error during recording or uploading.');
     } finally {
+      // No cleanup here as the user might want to send or delete
+    }
+  };
+
+  const sendRecording = async () => {
+    if (!audioBlob) return;
+
+    try {
+      const audioURL = await uploadToFirebaseStorage(audioBlob);
+      onSendAudioMessage?.(audioURL);
+    } catch (error) {
+      console.error('Error sending recording:', error);
+      setRecordingError('Error sending recording.');
+    } finally {
       cleanup();
     }
+  };
+
+  const deleteRecording = () => {
+    setAudioBlob(null);
+    cleanup();
   };
 
   const uploadToFirebaseStorage = async (audioBlob: Blob): Promise<string> => {
@@ -249,7 +271,7 @@ export function FloatingDockComp({
         {isLoading ? "Translating..." : "Translate"}
       </button>
 
-      {/* Voice Recording Progress Bar */}
+      {/* Voice Recording UI */}
       {isRecording && (
         <div className="fixed bottom-24 right-26 z-50 p-3 bg-emerald-900 rounded-3xl shadow-lg">
           <p>Recording... {formatTime(recordingTime)}</p>
@@ -258,6 +280,28 @@ export function FloatingDockComp({
               className="absolute top-0 left-0 h-2 bg-emerald-700 rounded-full"
               style={{ width: `${(recordingTime % 60) * 100 / 60}%` }}
             ></div>
+          </div>
+          <div className="mt-2 flex justify-between">
+            <button
+              className="px-2 py-2 bg-red-600 hover:bg-red-800 rounded-full"
+              onClick={stopRecording}
+            >
+              <IconPlayerStop/>
+            </button>
+            <button
+              className="px-3 py-2 bg-emerald-700 hover:bg-emerald-950 rounded-3xl mx-2 cursor-pointer"
+              onClick={sendRecording}
+              disabled={!audioBlob}
+            >
+              <IconSend/>
+            </button>
+            <button
+              className="px-2 py-2 bg-gray-500 hover:bg-gray-700 rounded-full cursor-pointer"
+              onClick={deleteRecording}
+              disabled={!audioBlob}
+            >
+              <IconTrash/>
+            </button>
           </div>
         </div>
       )}
