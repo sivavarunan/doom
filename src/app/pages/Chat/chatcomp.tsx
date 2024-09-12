@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { IconSend, IconTrash, IconDownload } from "@tabler/icons-react";
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '@/app/firebase';
-import { collection, doc, getDoc, onSnapshot, query, where, orderBy, addDoc, serverTimestamp, Timestamp, deleteDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, onSnapshot, query, where, orderBy, addDoc, serverTimestamp, Timestamp, deleteDoc, FieldValue  } from 'firebase/firestore';
 import { useParams } from 'next/navigation';
 import { format } from 'date-fns';
 import { FloatingDockComp } from "@/app/componenets/ui/floatingdockcomp";
@@ -19,7 +19,7 @@ interface Message {
     senderId: string;
     receiverId: string;
     message?: string;
-    timestamp: Timestamp;
+    timestamp: Timestamp | FieldValue ;
     type?: 'text' | 'file' | 'voice';
     content?: string;
 }
@@ -59,6 +59,8 @@ const Chat = () => {
     // Fetch messages from Firestore
     useEffect(() => {
         if (currentUserId && chatWithUserId) {
+            setLoading(true); 
+
             const q = query(
                 collection(db, 'messages'),
                 where('senderId', 'in', [currentUserId, chatWithUserId]),
@@ -72,6 +74,7 @@ const Chat = () => {
                     ...doc.data(),
                 })) as Message[];
                 setMessages(msgs);
+                setLoading(false);
             });
 
             return () => unsubscribe();
@@ -193,10 +196,7 @@ const Chat = () => {
             toast.error("Failed to delete message from Firestore", { position: "top-right" });
         }
     };
-    
-    
-    
-    
+       
     // Spinner component for loading
     const Spinner = () => (
         <div className="flex justify-center items-center h-screen">
@@ -241,6 +241,7 @@ const Chat = () => {
         }
     }, [messages]);
 
+    //sending new files
     const handleSendFile = async (fileURLs: string[]) => {
         if (!currentUserId || !chatWithUserId) return;
 
@@ -265,33 +266,38 @@ const Chat = () => {
         setCurrentMessage(translatedMessage); // Set the translated message as current message
     };
 
+    //send Audio messages
     const handleSendAudioMessage = async (audioURL: string) => {
         if (!currentUserId || !chatWithUserId) return;
-
+    
         try {
-            const newMessage: Message = {
-                id: generateUniqueId(),
+            // Create a new message
+            const newMessage: Omit<Message, 'id'> = {
                 senderId: currentUserId,
                 receiverId: chatWithUserId,
-                timestamp: Timestamp.now(),
+                timestamp: serverTimestamp(), 
                 type: 'voice',
                 content: audioURL,
             };
-
-            // Update Firestore
+    
+            // Add the message to Firestore
             await addDoc(collection(db, 'messages'), newMessage);
-
-            // Update local state
-            setMessages((prevMessages) => [...prevMessages, newMessage]);
-
+    
             toast.success("Audio message sent successfully", { position: "top-right" });
         } catch (error) {
             console.error('Error sending audio message:', error);
             toast.error("Failed to send audio message", { position: "top-right" });
         }
     };
-
-
+    
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Spinner />
+            </div>
+        );
+    }
+    
     return (
         <div className="dark:bg-gradient-to-b from-emerald-950 to-neutral-900 bg-neutral-50 flex flex-col h-screen">
             {/* Sticky Header */}
