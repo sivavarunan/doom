@@ -237,11 +237,11 @@ export function FloatingDockComp({
 
       {/* Voice Recording Progress Bar */}
       {isRecording && (
-        <div className="fixed bottom-24 right-16 z-50 p-4 bg-neutral-950 bg-opacity-50 rounded-3xl shadow-lg">
+        <div className="fixed bottom-24 right-16 z-50 p-3 bg-emerald-900 rounded-3xl shadow-lg">
           <p>Recording... {formatTime(recordingTime)}</p>
           <div className="relative w-full h-2 bg-gray-300 rounded-full mt-2">
             <div
-              className="absolute top-0 left-0 h-2 bg-emerald-500 rounded-full"
+              className="absolute top-0 left-0 h-2 bg-emerald-700 rounded-full"
               style={{ width: `${(recordingTime % 60) * 100 / 60}%` }}
             ></div>
           </div>
