@@ -12,6 +12,7 @@ import { toast, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AudioMessage } from '@/app/componenets/audiomsg';
 import { v4 as uuidv4 } from 'uuid';
+import { getStorage, ref, deleteObject, getDownloadURL } from "firebase/storage";
 
 interface Message {
     id: string;
@@ -143,19 +144,59 @@ const Chat = () => {
         setNewMessage((prevMessage) => prevMessage + emoji); // Append emoji to the message
     };
 
-    // Delete a message
-    const handleDeleteMessage = async (messageId: string) => {
-        if (!messageId) return;
-      
-        try {
-          await deleteDoc(doc(db, 'messages', messageId));
-          toast.success("Message deleted successfully", { position: "top-right" });
-        } catch (error) {
-          console.error("Error deleting message:", error);
-          toast.error("Failed to delete message", { position: "top-right" });
+    //Delete messages
+    const handleDeleteMessage = async (messageId: string, audioURL: string) => {
+        if (!messageId) {
+            console.error("No message ID provided.");
+            return;
         }
-      };
-
+    
+        // Step 1: Attempt to delete the audio file from Firebase Storage
+        if (audioURL) {
+            try {
+                const decodedURL = decodeURIComponent(audioURL);  // Decode the URL
+                const fileName = decodedURL.split('/').pop()?.split('?')[0];  // Extract the file name
+    
+                if (fileName) {
+                    const storage = getStorage();
+                    const audioRef = ref(storage, `voice-messages/${fileName}`);
+    
+                    // Check if the file exists before deleting
+                    try {
+                        await getDownloadURL(audioRef);  // If this succeeds, the file exists
+                        await deleteObject(audioRef);    // Proceed to delete the file
+                        console.log(`Audio file ${fileName} deleted from Firebase Storage.`);
+                    } catch (error) {
+                        if (error === 'storage/object-not-found') {
+                            console.warn(`Audio file ${fileName} does not exist in Firebase Storage.`);
+                        } else {
+                            throw error; // Re-throw if it's a different error
+                        }
+                    }
+                } else {
+                    console.error("Failed to extract file name from audio URL.");
+                }
+            } catch (error) {
+                console.error("Error deleting audio file from Firebase Storage:", error);
+                toast.error("Failed to delete audio file", { position: "top-right" });
+            }
+        }
+    
+        // Step 2: Delete the message document from Firestore
+        try {
+            const messageRef = doc(db, 'messages', messageId);
+            await deleteDoc(messageRef);
+            console.log(`Message with ID ${messageId} deleted from Firestore.`);
+            toast.success("Message deleted successfully", { position: "top-right" });
+        } catch (error) {
+            console.error("Error deleting message from Firestore:", error);
+            toast.error("Failed to delete message from Firestore", { position: "top-right" });
+        }
+    };
+    
+    
+    
+    
     // Spinner component for loading
     const Spinner = () => (
         <div className="flex justify-center items-center h-screen">
@@ -226,30 +267,30 @@ const Chat = () => {
 
     const handleSendAudioMessage = async (audioURL: string) => {
         if (!currentUserId || !chatWithUserId) return;
-      
+
         try {
-          const newMessage: Message = {
-            id: generateUniqueId(), 
-            senderId: currentUserId,
-            receiverId: chatWithUserId,
-            timestamp: Timestamp.now(),
-            type: 'voice',
-            content: audioURL,
-          };
-      
-          // Update Firestore
-          await addDoc(collection(db, 'messages'), newMessage);
-      
-          // Update local state
-          setMessages((prevMessages) => [...prevMessages, newMessage]);
-      
-          toast.success("Audio message sent successfully", { position: "top-right" });
+            const newMessage: Message = {
+                id: generateUniqueId(),
+                senderId: currentUserId,
+                receiverId: chatWithUserId,
+                timestamp: Timestamp.now(),
+                type: 'voice',
+                content: audioURL,
+            };
+
+            // Update Firestore
+            await addDoc(collection(db, 'messages'), newMessage);
+
+            // Update local state
+            setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+            toast.success("Audio message sent successfully", { position: "top-right" });
         } catch (error) {
-          console.error('Error sending audio message:', error);
-          toast.error("Failed to send audio message", { position: "top-right" });
+            console.error('Error sending audio message:', error);
+            toast.error("Failed to send audio message", { position: "top-right" });
         }
-      };
-      
+    };
+
 
     return (
         <div className="dark:bg-gradient-to-b from-emerald-950 to-neutral-900 bg-neutral-50 flex flex-col h-screen">
@@ -317,7 +358,7 @@ const Chat = () => {
                                     {msg.senderId === currentUserId && (
                                         <button
                                             className="text-red-600 hover:text-red-800 ml-2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                                            onClick={() => handleDeleteMessage(msg.id)}
+                                            onClick={() => handleDeleteMessage(msg.id, msg.content ?? '')}
                                         >
                                             <IconTrash size={18} />
                                         </button>
