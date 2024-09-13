@@ -31,7 +31,6 @@ const PingPongGame: React.FC = () => {
     s: false,
     ArrowUp: false,
     ArrowDown: false,
-    Enter: false,
   };
 
   const moveBall = () => {
@@ -186,16 +185,10 @@ const PingPongGame: React.FC = () => {
       ctx.fillText('Game Over', canvasWidth / 2 - 150, canvasHeight / 2);
     }
   };
-  
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key in keys) {
       keys[e.key] = true;
-    }
-
-    // Start the game when "Enter" is pressed
-    if (e.key === 'Enter' && !isPlaying) {
-      togglePlay();
     }
   };
 
@@ -258,7 +251,6 @@ const PingPongGame: React.FC = () => {
         <button
           onClick={togglePlay}
           className="mt-4 px-4 py-2 bg-emerald-700 hover:bg-emerald-950 rounded-3xl"
-          disabled={!isPlaying} // Disable the button until game starts
         >
           {isPlaying ? 'Pause' : 'Play'}
         </button>
