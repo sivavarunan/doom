@@ -2,10 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const PingPongGame: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false); // Start with the game paused
   const [ballSpeed, setBallSpeed] = useState<number>(2);
   const [gameInterval, setGameInterval] = useState<NodeJS.Timeout | null>(null);
+  const [scoreLeft, setScoreLeft] = useState<number>(0);
+  const [scoreRight, setScoreRight] = useState<number>(0);
+  const [isGameOver, setIsGameOver] = useState<boolean>(false);
 
+  const maxScore = 5; // Set score limit for game over
   const canvasWidth = 800;
   const canvasHeight = 600;
   const paddleHeight = 100;
@@ -26,29 +30,12 @@ const PingPongGame: React.FC = () => {
     s: false,
     ArrowUp: false,
     ArrowDown: false,
-  };
-
-  const drawEverything = (ctx: CanvasRenderingContext2D) => {
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
-    // Canvas background
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-    // Paddles
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, paddle1Y, paddleWidth, paddleHeight); // Left paddle
-    ctx.fillRect(canvasWidth - paddleWidth, paddle2Y, paddleWidth, paddleHeight); // Right paddle
-
-    // Ball
-    ctx.beginPath();
-    ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
-    ctx.fillStyle = 'white';
-    ctx.fill();
-    ctx.closePath();
+    Enter: false, // To start the game
   };
 
   const moveBall = () => {
+    if (isGameOver) return;
+
     ballX += ballSpeedX;
     ballY += ballSpeedY;
 
@@ -73,8 +60,18 @@ const PingPongGame: React.FC = () => {
     }
 
     // Ball goes out of bounds (score condition)
-    if (ballX - ballRadius < 0 || ballX + ballRadius > canvasWidth) {
+    if (ballX - ballRadius < 0) {
+      setScoreRight((prev) => prev + 1);
       resetBall();
+    } else if (ballX + ballRadius > canvasWidth) {
+      setScoreLeft((prev) => prev + 1);
+      resetBall();
+    }
+
+    // Check for game over
+    if (scoreLeft >= maxScore || scoreRight >= maxScore) {
+      setIsGameOver(true);
+      stopGame();
     }
   };
 
@@ -99,6 +96,13 @@ const PingPongGame: React.FC = () => {
     ballSpeedY = ballSpeed;
   };
 
+  const stopGame = () => {
+    if (gameInterval) {
+      clearInterval(gameInterval);
+      setGameInterval(null);
+    }
+  };
+
   const gameLoop = () => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
@@ -109,9 +113,47 @@ const PingPongGame: React.FC = () => {
     }
   };
 
+  const drawEverything = (ctx: CanvasRenderingContext2D) => {
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    // Canvas background
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    // Paddles
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, paddle1Y, paddleWidth, paddleHeight); // Left paddle
+    ctx.fillRect(canvasWidth - paddleWidth, paddle2Y, paddleWidth, paddleHeight); // Right paddle
+
+    // Ball
+    if (!isGameOver) {
+      ctx.beginPath();
+      ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+      ctx.fillStyle = 'white';
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    // Scores
+    ctx.font = '48px Arial';
+    ctx.fillText(`${scoreLeft}`, canvasWidth / 4, 50);
+    ctx.fillText(`${scoreRight}`, (3 * canvasWidth) / 4, 50);
+
+    // Game Over screen
+    if (isGameOver) {
+      ctx.fillStyle = 'red';
+      ctx.fillText('Game Over', canvasWidth / 2 - 150, canvasHeight / 2);
+    }
+  };
+
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key in keys) {
       keys[e.key] = true;
+    }
+
+    // Start the game when "Enter" is pressed
+    if (e.key === 'Enter' && !isPlaying) {
+      togglePlay();
     }
   };
 
@@ -122,14 +164,13 @@ const PingPongGame: React.FC = () => {
   };
 
   const togglePlay = () => {
-    if (isPlaying) {
-      if (gameInterval) {
-        clearInterval(gameInterval);
-        setGameInterval(null);
-      }
-    } else {
-      const interval = setInterval(gameLoop, 1000 / 60);
+    if (!isPlaying) {
+      // Start the game
+      const interval = setInterval(gameLoop, 1000 / 60); // 60 FPS
       setGameInterval(interval);
+    } else {
+      // Pause the game
+      stopGame();
     }
     setIsPlaying(!isPlaying);
   };
@@ -141,34 +182,45 @@ const PingPongGame: React.FC = () => {
     ballSpeedY = newSpeed;
   };
 
+  const restartGame = () => {
+    setScoreLeft(0);
+    setScoreRight(0);
+    setIsGameOver(false);
+    resetBall();
+    if (!isPlaying) togglePlay(); // Ensure the game starts if paused
+  };
+
   useEffect(() => {
-    if (isPlaying) {
-      const interval = setInterval(gameLoop, 1000 / 60); // 60 FPS
-      setGameInterval(interval);
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
 
-      window.addEventListener('keydown', handleKeyDown);
-      window.addEventListener('keyup', handleKeyUp);
-
-      return () => {
-        if (gameInterval) {
-          clearInterval(gameInterval);
-        }
-        window.removeEventListener('keydown', handleKeyDown);
-        window.removeEventListener('keyup', handleKeyUp);
-      };
-    }
-  }, [isPlaying]);
+    return () => {
+      stopGame();
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col items-center">
       <canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} className="bg-black" />
 
-      <button
-        onClick={togglePlay}
-        className="mt-4 px-4 py-2 bg-emerald-700 hover:bg-emerald-950 rounded-3xl"
-      >
-        {isPlaying ? 'Pause' : 'Play'}
-      </button>
+      {isGameOver ? (
+        <button
+          onClick={restartGame}
+          className="mt-4 px-4 py-2 bg-red-700 hover:bg-red-900 rounded-3xl"
+        >
+          Restart Game
+        </button>
+      ) : (
+        <button
+          onClick={togglePlay}
+          className="mt-4 px-4 py-2 bg-emerald-700 hover:bg-emerald-950 rounded-3xl"
+          disabled={!isPlaying} // Disable the button until game starts
+        >
+          {isPlaying ? 'Pause' : 'Play'}
+        </button>
+      )}
 
       <div className="mt-4">
         <label className="text-white">
