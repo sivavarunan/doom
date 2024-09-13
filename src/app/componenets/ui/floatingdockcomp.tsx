@@ -17,6 +17,8 @@ import { FileUpload } from "@/app/componenets/ui/file-upload";
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { toast } from "react-toastify";
+import PingPongGame from "@/app/componenets/PingPong";
+
 
 export function FloatingDockComp({
   className = "",
@@ -46,6 +48,8 @@ export function FloatingDockComp({
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<number | null>(null);
   const emojiPickerRef = useRef<HTMLDivElement | null>(null);
+  const [isPingPongVisible, setPingPongVisible] = useState(false);
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -152,17 +156,17 @@ export function FloatingDockComp({
 
   const sendRecording = async () => {
     if (!audioBlob) return; // Ensure there is a valid recording
-  
+
     try {
       setRecordingError(null); // Clear previous errors
       const audioURL = await uploadToFirebaseStorage(audioBlob);
-  
+
       // Ensure we're not duplicating submissions
       if (audioURL) {
         onSendAudioMessage?.(audioURL);
         // toast.success('Audio message sent.');
       }
-  
+
     } catch (error) {
       console.error('Error sending recording:', error);
       setRecordingError('Error uploading audio.');
@@ -170,7 +174,7 @@ export function FloatingDockComp({
       cleanup();
     }
   };
-  
+
 
   const deleteRecording = () => {
     setAudioBlob(null); // Clear the recorded audio
@@ -197,17 +201,17 @@ export function FloatingDockComp({
       streamRef.current = null;
     }
     mediaRecorderRef.current = null;
-  
+
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
-  
+
     setRecordingTime(0);
     setRecording(false);
     setAudioBlob(null); // Clear the audio blob to reset state
   };
-  
+
 
 
   const formatTime = (time: number) => {
@@ -227,7 +231,11 @@ export function FloatingDockComp({
     },
     { title: "Components", icon: <IconNewSection className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
     { title: "DOOM", icon: <Image src="/doom1.png" width={500} height={200} alt="Aceternity Logo" />, href: "#" },
-    { title: "Ping Pong", icon: <IconPingPong className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
+    {
+      title: "Ping Pong",
+      icon: <IconPingPong className="h-full w-full text-neutral-500 dark:text-neutral-300" />,
+      onClick: () => setPingPongVisible(true), // This will show the Ping Pong game
+    },
   ];
 
   return (
@@ -341,10 +349,27 @@ export function FloatingDockComp({
           <p>{recordingError}</p>
         </div>
       )}
+
+      {/* Ping Pong Game Modal */}
+      {isPingPongVisible && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-neutral-950 p-6 rounded-3xl shadow-lg relative">
+            {/* Ping Pong Game */}
+            <PingPongGame />
+
+            {/* Close Button */}
+            <button
+              className="absolute top-2 right-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-950 rounded-full text-white"
+              onClick={() => setPingPongVisible(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
-
+};
 const translateMessage = async (text: string, targetLang: string): Promise<string> => {
   try {
     const apiKey = '9d3759bfdcmsh6769e8af5a6241fp15b794jsn1a89edae0017'; // Replace with your actual API key
