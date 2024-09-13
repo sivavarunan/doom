@@ -10,6 +10,7 @@ import {
   IconTrash,
   IconPlayerStop,
   IconSend,
+  IconPingPong,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { FileUpload } from "@/app/componenets/ui/file-upload";
@@ -226,7 +227,7 @@ export function FloatingDockComp({
     },
     { title: "Components", icon: <IconNewSection className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
     { title: "DOOM", icon: <Image src="/doom1.png" width={500} height={200} alt="Aceternity Logo" />, href: "#" },
-    { title: "GitHub", icon: <IconBrandGithub className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
+    { title: "Ping Pong", icon: <IconPingPong className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
   ];
 
   return (
