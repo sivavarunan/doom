@@ -2,14 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const PingPongGame: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false); // Start with the game paused
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [ballSpeed, setBallSpeed] = useState<number>(2);
-  const [gameInterval, setGameInterval] = useState<NodeJS.Timeout | null>(null);
   const [scoreLeft, setScoreLeft] = useState<number>(0);
   const [scoreRight, setScoreRight] = useState<number>(0);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
+  const [gameInterval, setGameInterval] = useState<NodeJS.Timeout | null>(null);
 
-  const maxScore = 5; // Set score limit for game over
+  const maxScore = 5;
   const canvasWidth = 800;
   const canvasHeight = 600;
   const paddleHeight = 100;
@@ -17,6 +17,7 @@ const PingPongGame: React.FC = () => {
   const ballRadius = 10;
   const paddleSpeed = 10;
 
+  // State variables for paddles and ball
   let paddle1Y = (canvasHeight - paddleHeight) / 2;
   let paddle2Y = (canvasHeight - paddleHeight) / 2;
   let ballX = canvasWidth / 2;
@@ -30,7 +31,7 @@ const PingPongGame: React.FC = () => {
     s: false,
     ArrowUp: false,
     ArrowDown: false,
-    Enter: false, // To start the game
+    Enter: false,
   };
 
   const moveBall = () => {
@@ -46,13 +47,13 @@ const PingPongGame: React.FC = () => {
 
     // Bouncing off paddles
     if (
-      ballX - ballRadius < paddleWidth && // Left paddle
+      ballX - ballRadius < paddleWidth &&
       ballY > paddle1Y &&
       ballY < paddle1Y + paddleHeight
     ) {
       ballSpeedX = -ballSpeedX;
     } else if (
-      ballX + ballRadius > canvasWidth - paddleWidth && // Right paddle
+      ballX + ballRadius > canvasWidth - paddleWidth &&
       ballY > paddle2Y &&
       ballY < paddle2Y + paddleHeight
     ) {
@@ -61,10 +62,10 @@ const PingPongGame: React.FC = () => {
 
     // Ball goes out of bounds (score condition)
     if (ballX - ballRadius < 0) {
-      setScoreRight((prev) => prev + 1);
+      setScoreRight(prev => prev + 1);
       resetBall();
     } else if (ballX + ballRadius > canvasWidth) {
-      setScoreLeft((prev) => prev + 1);
+      setScoreLeft(prev => prev + 1);
       resetBall();
     }
 
@@ -115,16 +116,56 @@ const PingPongGame: React.FC = () => {
 
   const drawEverything = (ctx: CanvasRenderingContext2D) => {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
+  
     // Canvas background
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
+  
+    // Draw borders with gaps
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 5; // Border thickness
+    
+    // Top border
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(canvasWidth, 0);
+    ctx.stroke();
+    
+    // Bottom border
+    ctx.beginPath();
+    ctx.moveTo(0, canvasHeight);
+    ctx.lineTo(canvasWidth, canvasHeight);
+    ctx.stroke();
+  
+    // Left border with gap in the middle
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(30, 0); // Gap start
+    ctx.lineTo(30, canvasHeight); // Gap end
+    ctx.lineTo(0, canvasHeight);
+    ctx.stroke();
+  
+    // Right border with gap in the middle
+    ctx.beginPath();
+    ctx.moveTo(canvasWidth, 0);
+    ctx.lineTo(canvasWidth - 30, 0); // Gap start
+    ctx.lineTo(canvasWidth - 30, canvasHeight); // Gap end
+    ctx.lineTo(canvasWidth, canvasHeight);
+    ctx.stroke();
+  
+    // Draw the vertical middle line
+    ctx.strokeStyle = 'white'; // Color of the line
+    ctx.lineWidth = 1; // Thin line width
+    ctx.beginPath();
+    ctx.moveTo(canvasWidth / 2, 0);
+    ctx.lineTo(canvasWidth / 2, canvasHeight);
+    ctx.stroke();
+  
     // Paddles
     ctx.fillStyle = 'white';
     ctx.fillRect(0, paddle1Y, paddleWidth, paddleHeight); // Left paddle
     ctx.fillRect(canvasWidth - paddleWidth, paddle2Y, paddleWidth, paddleHeight); // Right paddle
-
+  
     // Ball
     if (!isGameOver) {
       ctx.beginPath();
@@ -133,18 +174,19 @@ const PingPongGame: React.FC = () => {
       ctx.fill();
       ctx.closePath();
     }
-
+  
     // Scores
     ctx.font = '48px Arial';
     ctx.fillText(`${scoreLeft}`, canvasWidth / 4, 50);
     ctx.fillText(`${scoreRight}`, (3 * canvasWidth) / 4, 50);
-
+  
     // Game Over screen
     if (isGameOver) {
       ctx.fillStyle = 'red';
       ctx.fillText('Game Over', canvasWidth / 2 - 150, canvasHeight / 2);
     }
   };
+  
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key in keys) {
