@@ -5,7 +5,7 @@ const PingPongGame: React.FC = () => {
   
   // Game state and settings
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [ballSpeed, setBallSpeed] = useState<number>(2);
+  const [ballSpeed, setBallSpeed] = useState<number>(5);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [gameInterval, setGameInterval] = useState<NodeJS.Timeout | null>(null);
 
@@ -35,6 +35,11 @@ const PingPongGame: React.FC = () => {
     ArrowDown: false,
   });
 
+  // Sound effects
+  const ballHitSound = useRef<HTMLAudioElement>(new Audio('/sound.mp3'));
+  const scoreSound = useRef<HTMLAudioElement>(new Audio('/score.mp3'));
+  const gameOverSound = useRef<HTMLAudioElement>(new Audio('/GameOver.mp3'));
+
   const moveBall = () => {
     if (isGameOver) return;
 
@@ -44,6 +49,7 @@ const PingPongGame: React.FC = () => {
     // Bouncing off top and bottom walls
     if (ballY.current + ballRadius > canvasHeight || ballY.current - ballRadius < 0) {
       ballSpeedY.current = -ballSpeedY.current;
+      ballHitSound.current.play(); // Play sound on ball hit
     }
 
     // Bouncing off paddles
@@ -53,20 +59,24 @@ const PingPongGame: React.FC = () => {
       ballY.current < paddle1Y.current + paddleHeight
     ) {
       ballSpeedX.current = -ballSpeedX.current;
+      ballHitSound.current.play(); // Play sound on ball hit
     } else if (
       ballX.current + ballRadius > canvasWidth - paddleWidth &&
       ballY.current > paddle2Y.current &&
       ballY.current < paddle2Y.current + paddleHeight
     ) {
       ballSpeedX.current = -ballSpeedX.current;
+      ballHitSound.current.play(); // Play sound on ball hit
     }
 
     // Ball goes out of bounds (score condition)
     if (ballX.current - ballRadius < 0) {
       scoreRight.current += 1;
+      scoreSound.current.play(); // Play sound on score
       resetBall();
     } else if (ballX.current + ballRadius > canvasWidth) {
       scoreLeft.current += 1;
+      scoreSound.current.play(); // Play sound on score
       resetBall();
     }
 
@@ -74,6 +84,7 @@ const PingPongGame: React.FC = () => {
     if (scoreLeft.current >= maxScore || scoreRight.current >= maxScore) {
       setIsGameOver(true);
       stopGame();
+      gameOverSound.current.play(); // Play game over sound
     }
   };
 
