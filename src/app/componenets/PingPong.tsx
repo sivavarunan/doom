@@ -6,8 +6,6 @@ const PingPongGame: React.FC = () => {
   // Game state and settings
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [ballSpeed, setBallSpeed] = useState<number>(2);
-  const [scoreLeft, setScoreLeft] = useState<number>(0);
-  const [scoreRight, setScoreRight] = useState<number>(0);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [gameInterval, setGameInterval] = useState<NodeJS.Timeout | null>(null);
 
@@ -19,13 +17,15 @@ const PingPongGame: React.FC = () => {
   const ballRadius = 10;
   const paddleSpeed = 10;
 
-  // State for paddles and ball positions using useRef to keep these persistent
+  // State for paddles, ball positions, and scores using useRef to keep these persistent
   const paddle1Y = useRef<number>((canvasHeight - paddleHeight) / 2);
   const paddle2Y = useRef<number>((canvasHeight - paddleHeight) / 2);
   const ballX = useRef<number>(canvasWidth / 2);
   const ballY = useRef<number>(canvasHeight / 2);
   const ballSpeedX = useRef<number>(ballSpeed);
   const ballSpeedY = useRef<number>(ballSpeed);
+  const scoreLeft = useRef<number>(0);
+  const scoreRight = useRef<number>(0);
 
   // Key states
   const keys = useRef<{ [key: string]: boolean }>({
@@ -63,15 +63,15 @@ const PingPongGame: React.FC = () => {
 
     // Ball goes out of bounds (score condition)
     if (ballX.current - ballRadius < 0) {
-      setScoreRight((prev) => prev + 1);
+      scoreRight.current += 1;
       resetBall();
     } else if (ballX.current + ballRadius > canvasWidth) {
-      setScoreLeft((prev) => prev + 1);
+      scoreLeft.current += 1;
       resetBall();
     }
 
     // Check for game over
-    if (scoreLeft >= maxScore || scoreRight >= maxScore) {
+    if (scoreLeft.current >= maxScore || scoreRight.current >= maxScore) {
       setIsGameOver(true);
       stopGame();
     }
@@ -126,7 +126,6 @@ const PingPongGame: React.FC = () => {
     ctx.strokeStyle = 'white';
     ctx.lineWidth = 5; // Border thickness
 
-    // Top border
     ctx.beginPath();
     ctx.moveTo(0, 0);
     ctx.lineTo(canvasWidth, 0);
@@ -178,8 +177,8 @@ const PingPongGame: React.FC = () => {
 
     // Scores
     ctx.font = '48px Arial';
-    ctx.fillText(`${scoreLeft}`, canvasWidth / 4, 50);
-    ctx.fillText(`${scoreRight}`, (3 * canvasWidth) / 4, 50);
+    ctx.fillText(`${scoreLeft.current}`, canvasWidth / 4, 50);
+    ctx.fillText(`${scoreRight.current}`, (3 * canvasWidth) / 4, 50);
 
     // Game Over screen
     if (isGameOver) {
@@ -220,8 +219,8 @@ const PingPongGame: React.FC = () => {
   };
 
   const restartGame = () => {
-    setScoreLeft(0);
-    setScoreRight(0);
+    scoreLeft.current = 0;
+    scoreRight.current = 0;
     setIsGameOver(false);
     resetBall();
     if (!isPlaying) togglePlay(); // Ensure the game starts if paused
