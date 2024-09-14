@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const PingPongGame: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
+  
   // Sound effects
   const ballHitSound = useRef<HTMLAudioElement>(new Audio('/sound.mp3'));
   const scoreSound = useRef<HTMLAudioElement>(new Audio('/score.mp3'));
@@ -46,7 +46,7 @@ const PingPongGame: React.FC = () => {
   });
 
   const moveBall = () => {
-    if (isGameOver) return;
+    if (isGameOver) return; // Skip ball movement if game is over
 
     ballX.current += ballSpeedX.current;
     ballY.current += ballSpeedY.current;
@@ -88,7 +88,7 @@ const PingPongGame: React.FC = () => {
     // Check for game over
     if (scoreLeft.current >= maxScore || scoreRight.current >= maxScore) {
       setIsGameOver(true);
-      stopGame();
+      stopGame(); // Stop the game
       playSound(gameOverSound.current); // Play game over sound
     }
   };
