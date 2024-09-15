@@ -225,9 +225,8 @@ const PingPongGame: React.FC<PingPongGameProps> = ({ gameId, userId, opponentId 
     keys.current[event.key] = false;
   };
 
-  const restartGame = () => {
-    setGameState(prevState => ({
-      ...prevState,
+  const restartGame = async () => {
+    const newGameState: GameState = {
       ballX: canvasWidth / 2,
       ballY: canvasHeight / 2,
       ballSpeedX: 5,
@@ -238,9 +237,19 @@ const PingPongGame: React.FC<PingPongGameProps> = ({ gameId, userId, opponentId 
       scoreRight: 0,
       isGameOver: false,
       isPlaying: true,
-    }));
+    };
+
+    setGameState(newGameState);
     setIsPlaying(true);
+
+    // Update Firestore document
+    try {
+      await updateDoc(gameRef, newGameState as Record<string, any>);
+    } catch (error) {
+      console.error('Error updating document:', error);
+    }
   };
+
 
   useEffect(() => {
     createOrUpdateGame();
