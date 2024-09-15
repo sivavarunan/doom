@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FloatingDock } from "./floating-doc";
 import {
-  IconBrandGithub,
   IconFile,
   IconMoodHappy,
   IconLanguage,
@@ -18,7 +17,6 @@ import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { toast } from "react-toastify";
 import PingPongGame from "@/app/componenets/PingPong";
-
 
 export function FloatingDockComp({
   className = "",
@@ -50,7 +48,6 @@ export function FloatingDockComp({
   const emojiPickerRef = useRef<HTMLDivElement | null>(null);
   const [isPingPongVisible, setPingPongVisible] = useState(false);
 
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target as Node)) {
@@ -69,6 +66,10 @@ export function FloatingDockComp({
   const handleEmojiSelect = (emojiObject: EmojiClickData) => {
     onEmojiSelect?.(emojiObject.emoji);
     // Do not close the picker on emoji select
+  };
+
+  const handlePingPongClick = () => {
+    setPingPongVisible(true);
   };
 
   const handleTranslateClick = async () => {
@@ -135,7 +136,6 @@ export function FloatingDockComp({
     }
   };
 
-
   const stopRecording = () => {
     if (!mediaRecorderRef.current) return;
 
@@ -152,7 +152,6 @@ export function FloatingDockComp({
       timerRef.current = null;
     }
   };
-
 
   const sendRecording = async () => {
     if (!audioBlob) return; // Ensure there is a valid recording
@@ -174,7 +173,6 @@ export function FloatingDockComp({
       cleanup();
     }
   };
-
 
   const deleteRecording = () => {
     setAudioBlob(null); // Clear the recorded audio
@@ -211,8 +209,6 @@ export function FloatingDockComp({
     setRecording(false);
     setAudioBlob(null); // Clear the audio blob to reset state
   };
-
-
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -355,7 +351,7 @@ export function FloatingDockComp({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-neutral-950 p-6 rounded-3xl shadow-lg relative">
             {/* Ping Pong Game */}
-            <PingPongGame />
+            <PingPongGame gameId="some-game-id" userId="current-user-id" opponentId="current-user-id" />
 
             {/* Close Button */}
             <button
@@ -369,10 +365,11 @@ export function FloatingDockComp({
       )}
     </div>
   );
-};
+}
+
 const translateMessage = async (text: string, targetLang: string): Promise<string> => {
   try {
-    const apiKey = '9d3759bfdcmsh6769e8af5a6241fp15b794jsn1a89edae0017'; // Replace with your actual API key
+    const apiKey = '9d3759bfdcmsh6769e8af5a6241fp15b794jsn1a89edae0017';
     const response = await fetch('https://google-translate1.p.rapidapi.com/language/translate/v2', {
       method: 'POST',
       headers: {
