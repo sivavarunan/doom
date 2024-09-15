@@ -25,6 +25,8 @@ export function FloatingDockComp({
   message,
   setMessage,
   onSendAudioMessage,
+  currentUserId,
+  receiverId,
 }: {
   className?: string;
   onSendFileToChat?: (fileURLs: string[]) => void;
@@ -32,6 +34,8 @@ export function FloatingDockComp({
   message: string;
   setMessage: (newMessage: string) => void;
   onSendAudioMessage?: (audioURL: string) => void;
+  currentUserId: string;
+  receiverId: string;
 }) {
   const [isFileUploadVisible, setFileUploadVisible] = useState(false);
   const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
@@ -69,8 +73,12 @@ export function FloatingDockComp({
   };
 
   const handlePingPongClick = () => {
+    console.log("Game ID: gameTest-id");
+    console.log("User ID:", currentUserId);
+    console.log("Opponent ID:", receiverId);
     setPingPongVisible(true);
   };
+
 
   const handleTranslateClick = async () => {
     setLoading(true);
@@ -216,6 +224,7 @@ export function FloatingDockComp({
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   };
 
+
   const links = [
     { title: "Emoji", icon: <IconMoodHappy className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleEmojiClick },
     { title: "File", icon: <IconFile className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleFileClick },
@@ -230,9 +239,11 @@ export function FloatingDockComp({
     {
       title: "Ping Pong",
       icon: <IconPingPong className="h-full w-full text-neutral-500 dark:text-neutral-300" />,
-      onClick: () => setPingPongVisible(true), // This will show the Ping Pong game
+      onClick: handlePingPongClick, // Explicitly call the function
     },
   ];
+
+
 
   return (
     <div className={`flex items-center justify-center ${className}`}>
@@ -350,10 +361,12 @@ export function FloatingDockComp({
       {isPingPongVisible && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-neutral-950 p-6 rounded-3xl shadow-lg relative">
-            {/* Ping Pong Game */}
-            <PingPongGame gameId="some-game-id" userId="current-user-id" opponentId="current-user-id" />
+            <PingPongGame
+              gameId="Test-game-id"
+              userId="current-user-id"
+              opponentId="current-user-id" 
+            />
 
-            {/* Close Button */}
             <button
               className="absolute top-2 right-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-950 rounded-full text-white"
               onClick={() => setPingPongVisible(false)}
