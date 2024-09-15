@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { IconSend, IconTrash, IconDownload } from "@tabler/icons-react";
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '@/app/firebase';
-import { collection, doc, getDoc, onSnapshot, query, where, orderBy, addDoc, serverTimestamp, Timestamp, deleteDoc, FieldValue  } from 'firebase/firestore';
+import { collection, doc, getDoc, onSnapshot, query, where, orderBy, addDoc, serverTimestamp, Timestamp, deleteDoc, FieldValue } from 'firebase/firestore';
 import { useParams } from 'next/navigation';
 import { format } from 'date-fns';
 import { FloatingDockComp } from "@/app/componenets/ui/floatingdockcomp";
@@ -19,7 +19,7 @@ interface Message {
     senderId: string;
     receiverId: string;
     message?: string;
-    timestamp: Timestamp | FieldValue ;
+    timestamp: Timestamp | FieldValue;
     type?: 'text' | 'file' | 'voice';
     content?: string;
 }
@@ -59,7 +59,7 @@ const Chat = () => {
     // Fetch messages from Firestore
     useEffect(() => {
         if (currentUserId && chatWithUserId) {
-            setLoading(true); 
+            setLoading(true);
 
             const q = query(
                 collection(db, 'messages'),
@@ -153,17 +153,17 @@ const Chat = () => {
             console.error("No message ID provided.");
             return;
         }
-    
+
         // Step 1: Attempt to delete the audio file from Firebase Storage
         if (audioURL) {
             try {
                 const decodedURL = decodeURIComponent(audioURL);  // Decode the URL
                 const fileName = decodedURL.split('/').pop()?.split('?')[0];  // Extract the file name
-    
+
                 if (fileName) {
                     const storage = getStorage();
                     const audioRef = ref(storage, `voice-messages/${fileName}`);
-    
+
                     // Check if the file exists before deleting
                     try {
                         await getDownloadURL(audioRef);  // If this succeeds, the file exists
@@ -184,7 +184,7 @@ const Chat = () => {
                 toast.error("Failed to delete audio file", { position: "top-right" });
             }
         }
-    
+
         // Step 2: Delete the message document from Firestore
         try {
             const messageRef = doc(db, 'messages', messageId);
@@ -196,7 +196,7 @@ const Chat = () => {
             toast.error("Failed to delete message from Firestore", { position: "top-right" });
         }
     };
-       
+
     // Spinner component for loading
     const Spinner = () => (
         <div className="flex justify-center items-center h-screen">
@@ -269,27 +269,27 @@ const Chat = () => {
     //send Audio messages
     const handleSendAudioMessage = async (audioURL: string) => {
         if (!currentUserId || !chatWithUserId) return;
-    
+
         try {
             // Create a new message
             const newMessage: Omit<Message, 'id'> = {
                 senderId: currentUserId,
                 receiverId: chatWithUserId,
-                timestamp: serverTimestamp(), 
+                timestamp: serverTimestamp(),
                 type: 'voice',
                 content: audioURL,
             };
-    
+
             // Add the message to Firestore
             await addDoc(collection(db, 'messages'), newMessage);
-    
+
             toast.success("Audio message sent successfully", { position: "top-right" });
         } catch (error) {
             console.error('Error sending audio message:', error);
             toast.error("Failed to send audio message", { position: "top-right" });
         }
     };
-    
+
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen">
@@ -297,7 +297,7 @@ const Chat = () => {
             </div>
         );
     }
-    
+
     return (
         <div className="dark:bg-gradient-to-b from-emerald-950 to-neutral-900 bg-neutral-50 flex flex-col h-screen">
             {/* Sticky Header */}
@@ -401,6 +401,8 @@ const Chat = () => {
                         className="ml-4"
                         message={currentMessage}
                         setMessage={handleSetTranslatedMessage}
+                        currentUserId={currentUserId ?? ''}  
+                        receiverId={chatWithUserId}      
                     />
                 </div>
             </div>
