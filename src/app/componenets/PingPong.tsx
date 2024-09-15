@@ -63,7 +63,7 @@ const PingPongGame: React.FC<PingPongGameProps> = ({ gameId, userId, opponentId 
   const [gameInterval, setGameInterval] = useState<NodeJS.Timeout | null>(null);
 
   const maxScore = 5;
-  const canvasWidth = window.innerWidth * 0.8;
+  const canvasWidth = window.innerWidth * 0.6;
   const canvasHeight = window.innerHeight * 0.6;
   const paddleHeight = 100;
   const paddleWidth = 10;
@@ -300,12 +300,24 @@ const PingPongGame: React.FC<PingPongGameProps> = ({ gameId, userId, opponentId 
         height={canvasHeight}
         style={{ border: '1px solid black' }}
       />
-      <button onClick={() => setIsPlaying(!isPlaying)}>
-        {isPlaying ? 'Pause' : 'Play'}
-      </button>
-      <button onClick={restartGame} disabled={isPlaying}>
-        Restart
-      </button>
+      <div className="flex space-x-4">
+        <button
+          onClick={() => setIsPlaying(!isPlaying)}
+          className={`px-4 py-2 rounded ${isPlaying ? 'bg-red-500 text-white' : 'bg-emerald-400 text-white'
+            } transition-colors duration-300 hover:opacity-80 rounded-3xl`}
+        >
+          {isPlaying ? 'Pause' : 'Play'}
+        </button>
+        <button
+          onClick={restartGame}
+          disabled={isPlaying}
+          className={`px-4 py-2 rounded bg-cyan-500 text-white ${isPlaying ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'
+            } transition-colors duration-300 rounded-3xl`}
+        >
+          Restart
+        </button>
+      </div>
+
     </div>
   );
 };
