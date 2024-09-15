@@ -1,117 +1,167 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { db } from '@/app/firebase';
+import { doc, onSnapshot, updateDoc, setDoc, getDoc } from 'firebase/firestore';
 
-const PingPongGame: React.FC = () => {
+interface PingPongGameProps {
+  gameId: string;
+  userId: string;
+  opponentId: string;
+}
+
+interface GameState {
+  ballX: number;
+  ballY: number;
+  ballSpeedX: number;
+  ballSpeedY: number;
+  paddle1Y: number;
+  paddle2Y: number;
+  scoreLeft: number;
+  scoreRight: number;
+  isGameOver: boolean;
+  isPlaying: boolean;
+}
+
+const PingPongGame: React.FC<PingPongGameProps> = ({ gameId, userId, opponentId }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  
-  // Sound effects
-  const ballHitSound = useRef<HTMLAudioElement>(new Audio('/sound.mp3'));
-  const scoreSound = useRef<HTMLAudioElement>(new Audio('/score.mp3'));
-  const gameOverSound = useRef<HTMLAudioElement>(new Audio('/GameOver.mp3'));
+  const gameRef = doc(db, 'games', gameId);
+  const keys = useRef<{ [key: string]: boolean }>({ w: false, s: false, ArrowUp: false, ArrowDown: false });
 
-  const playSound = (sound: HTMLAudioElement) => {
-    sound.currentTime = 0; // Reset the sound to the beginning
-    sound.play();
+  const [gameState, setGameState] = useState<GameState>({
+    ballX: 400,
+    ballY: 300,
+    ballSpeedX: 5,
+    ballSpeedY: 5,
+    paddle1Y: 250,
+    paddle2Y: 250,
+    scoreLeft: 0,
+    scoreRight: 0,
+    isGameOver: false,
+    isPlaying: false,
+  });
+
+  const createOrUpdateGame = async () => {
+    const gameDoc = await getDoc(gameRef);
+    if (!gameDoc.exists()) {
+      await setDoc(gameRef, {
+        ballX: canvasWidth / 2,
+        ballY: canvasHeight / 2,
+        ballSpeedX: 5,
+        ballSpeedY: 5,
+        paddle1Y: (canvasHeight - paddleHeight) / 2,
+        paddle2Y: (canvasHeight - paddleHeight) / 2,
+        scoreLeft: 0,
+        scoreRight: 0,
+        isGameOver: false,
+        isPlaying: false,
+      }).catch((error) => {
+        console.error('Error creating document:', error);
+      });
+    }
   };
 
-  // Game state and settings
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [ballSpeed, setBallSpeed] = useState<number>(5);
-  const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [gameInterval, setGameInterval] = useState<NodeJS.Timeout | null>(null);
 
   const maxScore = 5;
-  const canvasWidth = 800;
-  const canvasHeight = 600;
+  const canvasWidth = window.innerWidth * 0.8;
+  const canvasHeight = window.innerHeight * 0.6;
   const paddleHeight = 100;
   const paddleWidth = 10;
   const ballRadius = 10;
   const paddleSpeed = 10;
 
-  // State for paddles, ball positions, and scores using useRef to keep these persistent
-  const paddle1Y = useRef<number>((canvasHeight - paddleHeight) / 2);
-  const paddle2Y = useRef<number>((canvasHeight - paddleHeight) / 2);
-  const ballX = useRef<number>(canvasWidth / 2);
-  const ballY = useRef<number>(canvasHeight / 2);
-  const ballSpeedX = useRef<number>(ballSpeed);
-  const ballSpeedY = useRef<number>(ballSpeed);
-  const scoreLeft = useRef<number>(0);
-  const scoreRight = useRef<number>(0);
-
-  // Key states
-  const keys = useRef<{ [key: string]: boolean }>({
-    w: false,
-    s: false,
-    ArrowUp: false,
-    ArrowDown: false,
-  });
+  const resetBall = () => {
+    setGameState(prevState => ({
+      ...prevState,
+      ballX: canvasWidth / 2,
+      ballY: canvasHeight / 2,
+      ballSpeedX: 5,
+      ballSpeedY: 5,
+    }));
+  };
 
   const moveBall = () => {
-    if (isGameOver) return; // Skip ball movement if game is over
+    if (gameState.isGameOver) return;
 
-    ballX.current += ballSpeedX.current;
-    ballY.current += ballSpeedY.current;
+    setGameState(prevState => {
+      let newBallX = prevState.ballX + prevState.ballSpeedX;
+      let newBallY = prevState.ballY + prevState.ballSpeedY;
 
-    // Bouncing off top and bottom walls
-    if (ballY.current + ballRadius > canvasHeight || ballY.current - ballRadius < 0) {
-      ballSpeedY.current = -ballSpeedY.current;
-      playSound(ballHitSound.current); // Play sound on ball hit
-    }
+      if (newBallY + ballRadius > canvasHeight || newBallY - ballRadius < 0) {
+        prevState.ballSpeedY = -prevState.ballSpeedY;
+      }
 
-    // Bouncing off paddles
-    if (
-      ballX.current - ballRadius < paddleWidth &&
-      ballY.current > paddle1Y.current &&
-      ballY.current < paddle1Y.current + paddleHeight
-    ) {
-      ballSpeedX.current = -ballSpeedX.current;
-      playSound(ballHitSound.current); // Play sound on ball hit
-    } else if (
-      ballX.current + ballRadius > canvasWidth - paddleWidth &&
-      ballY.current > paddle2Y.current &&
-      ballY.current < paddle2Y.current + paddleHeight
-    ) {
-      ballSpeedX.current = -ballSpeedX.current;
-      playSound(ballHitSound.current); // Play sound on ball hit
-    }
+      if (
+        newBallX - ballRadius < paddleWidth &&
+        newBallY > prevState.paddle1Y &&
+        newBallY < prevState.paddle1Y + paddleHeight
+      ) {
+        prevState.ballSpeedX = -prevState.ballSpeedX;
+      } else if (
+        newBallX + ballRadius > canvasWidth - paddleWidth &&
+        newBallY > prevState.paddle2Y &&
+        newBallY < prevState.paddle2Y + paddleHeight
+      ) {
+        prevState.ballSpeedX = -prevState.ballSpeedX;
+      }
 
-    // Ball goes out of bounds (score condition)
-    if (ballX.current - ballRadius < 0) {
-      scoreRight.current += 1;
-      playSound(scoreSound.current); // Play sound on score
-      resetBall();
-    } else if (ballX.current + ballRadius > canvasWidth) {
-      scoreLeft.current += 1;
-      playSound(scoreSound.current); // Play sound on score
-      resetBall();
-    }
+      if (newBallX - ballRadius < 0) {
+        return {
+          ...prevState,
+          scoreRight: prevState.scoreRight + 1,
+          ballX: canvasWidth / 2,
+          ballY: canvasHeight / 2,
+          ballSpeedX: 5,
+          ballSpeedY: 5,
+        };
+      } else if (newBallX + ballRadius > canvasWidth) {
+        return {
+          ...prevState,
+          scoreLeft: prevState.scoreLeft + 1,
+          ballX: canvasWidth / 2,
+          ballY: canvasHeight / 2,
+          ballSpeedX: 5,
+          ballSpeedY: 5,
+        };
+      }
 
-    // Check for game over
-    if (scoreLeft.current >= maxScore || scoreRight.current >= maxScore) {
-      setIsGameOver(true);
-      stopGame(); // Stop the game
-      playSound(gameOverSound.current); // Play game over sound
-    }
+      if (prevState.scoreLeft >= maxScore || prevState.scoreRight >= maxScore) {
+        return { ...prevState, isGameOver: true };
+      }
+
+      return { ...prevState, ballX: newBallX, ballY: newBallY };
+    });
   };
 
   const movePaddles = () => {
-    if (keys.current.w && paddle1Y.current > 0) {
-      paddle1Y.current -= paddleSpeed;
-    } else if (keys.current.s && paddle1Y.current < canvasHeight - paddleHeight) {
-      paddle1Y.current += paddleSpeed;
-    }
+    if (gameState.isGameOver) return;
 
-    if (keys.current.ArrowUp && paddle2Y.current > 0) {
-      paddle2Y.current -= paddleSpeed;
-    } else if (keys.current.ArrowDown && paddle2Y.current < canvasHeight - paddleHeight) {
-      paddle2Y.current += paddleSpeed;
-    }
-  };
+    setGameState(prevState => {
+      const newPaddle1Y = prevState.paddle1Y;
+      const newPaddle2Y = prevState.paddle2Y;
 
-  const resetBall = () => {
-    ballX.current = canvasWidth / 2;
-    ballY.current = canvasHeight / 2;
-    ballSpeedX.current = ballSpeed;
-    ballSpeedY.current = ballSpeed;
+      let updatedState = { ...prevState };
+
+      if (userId === opponentId) {
+        if (keys.current.w && newPaddle1Y > 0) {
+          updatedState.paddle1Y = newPaddle1Y - paddleSpeed;
+        } else if (keys.current.s && newPaddle1Y < canvasHeight - paddleHeight) {
+          updatedState.paddle1Y = newPaddle1Y + paddleSpeed;
+        }
+
+        if (keys.current.ArrowUp && newPaddle2Y > 0) {
+          updatedState.paddle2Y = newPaddle2Y - paddleSpeed;
+        } else if (keys.current.ArrowDown && newPaddle2Y < canvasHeight - paddleHeight) {
+          updatedState.paddle2Y = newPaddle2Y + paddleSpeed;
+        }
+      }
+
+      updateDoc(gameRef, updatedState).catch(error => {
+        console.error('Error updating document:', error);
+      });
+
+      return updatedState;
+    });
   };
 
   const stopGame = () => {
@@ -134,158 +184,119 @@ const PingPongGame: React.FC = () => {
   const drawEverything = (ctx: CanvasRenderingContext2D) => {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-    // Canvas background
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-    // Draw borders with gaps
     ctx.strokeStyle = 'white';
-    ctx.lineWidth = 5; // Border thickness
+    ctx.lineWidth = 5;
 
     ctx.beginPath();
     ctx.moveTo(0, 0);
     ctx.lineTo(canvasWidth, 0);
     ctx.stroke();
 
-    // Bottom border
     ctx.beginPath();
     ctx.moveTo(0, canvasHeight);
     ctx.lineTo(canvasWidth, canvasHeight);
     ctx.stroke();
-      // Left border with gap in the middle
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(30, 0); // Gap start
-      ctx.lineTo(30, canvasHeight); // Gap end
-      ctx.lineTo(0, canvasHeight);
-      ctx.stroke();
-    
-      // Right border with gap in the middle
-      ctx.beginPath();
-      ctx.moveTo(canvasWidth, 0);
-      ctx.lineTo(canvasWidth - 30, 0); // Gap start
-      ctx.lineTo(canvasWidth - 30, canvasHeight); // Gap end
-      ctx.lineTo(canvasWidth, canvasHeight);
-      ctx.stroke();
-    
-      // Draw the vertical middle line
-      ctx.strokeStyle = 'white'; // Color of the line
-      ctx.lineWidth = 1; // Thin line width
-      ctx.beginPath();
-      ctx.moveTo(canvasWidth / 2, 0);
-      ctx.lineTo(canvasWidth / 2, canvasHeight);
-      ctx.stroke();
-    
 
-    // Draw the paddles
     ctx.fillStyle = 'white';
-    ctx.fillRect(0, paddle1Y.current, paddleWidth, paddleHeight); // Left paddle
-    ctx.fillRect(canvasWidth - paddleWidth, paddle2Y.current, paddleWidth, paddleHeight); // Right paddle
+    ctx.fillRect(0, gameState.paddle1Y, paddleWidth, paddleHeight);
+    ctx.fillRect(canvasWidth - paddleWidth, gameState.paddle2Y, paddleWidth, paddleHeight);
 
-    // Draw the ball
-    if (!isGameOver) {
-      ctx.beginPath();
-      ctx.arc(ballX.current, ballY.current, ballRadius, 0, Math.PI * 2);
-      ctx.fillStyle = 'white';
-      ctx.fill();
-      ctx.closePath();
-    }
+    ctx.beginPath();
+    ctx.arc(gameState.ballX, gameState.ballY, ballRadius, 0, Math.PI * 2);
+    ctx.fill();
 
-    // Scores
-    ctx.font = '48px Arial';
-    ctx.fillText(`${scoreLeft.current}`, canvasWidth / 4, 50);
-    ctx.fillText(`${scoreRight.current}`, (3 * canvasWidth) / 4, 50);
+    ctx.font = '30px Arial';
+    ctx.fillText(gameState.scoreLeft.toString(), canvasWidth / 2 - 50, 50);
+    ctx.fillText(gameState.scoreRight.toString(), canvasWidth / 2 + 20, 50);
 
-    // Game Over screen
-    if (isGameOver) {
-      ctx.fillStyle = 'red';
-      ctx.fillText('Game Over', canvasWidth / 2 - 150, canvasHeight / 2);
+    if (gameState.isGameOver) {
+      ctx.fillText('Game Over', canvasWidth / 2 - 75, canvasHeight / 2);
     }
   };
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key in keys.current) {
-      keys.current[e.key] = true;
-    }
+  const handleKeyDown = (event: KeyboardEvent) => {
+    keys.current[event.key] = true;
   };
 
-  const handleKeyUp = (e: KeyboardEvent) => {
-    if (e.key in keys.current) {
-      keys.current[e.key] = false;
-    }
-  };
-
-  const togglePlay = () => {
-    if (!isPlaying) {
-      // Resume the game
-      const interval = setInterval(gameLoop, 1000 / 60); // 60 FPS
-      setGameInterval(interval);
-    } else {
-      // Pause the game
-      stopGame();
-    }
-    setIsPlaying(!isPlaying);
-  };
-
-  const handleBallSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newSpeed = Number(e.target.value);
-    setBallSpeed(newSpeed);
-    ballSpeedX.current = newSpeed;
-    ballSpeedY.current = newSpeed;
+  const handleKeyUp = (event: KeyboardEvent) => {
+    keys.current[event.key] = false;
   };
 
   const restartGame = () => {
-    scoreLeft.current = 0;
-    scoreRight.current = 0;
-    setIsGameOver(false);
-    resetBall();
-    if (!isPlaying) togglePlay(); // Ensure the game starts if paused
+    setGameState(prevState => ({
+      ...prevState,
+      ballX: canvasWidth / 2,
+      ballY: canvasHeight / 2,
+      ballSpeedX: 5,
+      ballSpeedY: 5,
+      paddle1Y: (canvasHeight - paddleHeight) / 2,
+      paddle2Y: (canvasHeight - paddleHeight) / 2,
+      scoreLeft: 0,
+      scoreRight: 0,
+      isGameOver: false,
+      isPlaying: true,
+    }));
+    setIsPlaying(true);
   };
+
+  useEffect(() => {
+    createOrUpdateGame();
+
+    const unsubscribe = onSnapshot(gameRef, (doc) => {
+      const data = doc.data();
+      if (data) {
+        setGameState(prevState => ({
+          ...data as GameState
+        }));
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      stopGame();
+    };
+  }, [gameId]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      const intervalId = setInterval(gameLoop, 1000 / 60);
+      setGameInterval(intervalId);
+    } else {
+      stopGame();
+    }
+
+    return () => {
+      stopGame();
+    };
+  }, [isPlaying, gameState]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
 
     return () => {
-      stopGame();
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
   }, []);
 
   return (
-    <div className="flex flex-col items-center">
-      <canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} className="bg-black" />
-
-      {isGameOver ? (
-        <button
-          onClick={restartGame}
-          className="mt-4 px-4 py-2 bg-red-700 hover:bg-red-900 rounded-3xl"
-        >
-          Restart Game
-        </button>
-      ) : (
-        <button
-          onClick={togglePlay}
-          className="mt-4 px-4 py-2 bg-emerald-700 hover:bg-emerald-950 rounded-3xl"
-        >
-          {isPlaying ? 'Pause' : 'Play'}
-        </button>
-      )}
-
-      <div className="mt-4">
-        <label className="text-white">
-          Ball Speed: {ballSpeed}
-          <input
-            type="range"
-            min="1"
-            max="10"
-            value={ballSpeed}
-            onChange={handleBallSpeedChange}
-            className="ml-2"
-          />
-        </label>
-      </div>
+    <div>
+      <canvas
+        ref={canvasRef}
+        width={canvasWidth}
+        height={canvasHeight}
+        style={{ border: '1px solid black' }}
+      />
+      <button onClick={() => setIsPlaying(!isPlaying)}>
+        {isPlaying ? 'Pause' : 'Play'}
+      </button>
+      <button onClick={restartGame} disabled={isPlaying}>
+        Restart
+      </button>
     </div>
   );
 };
