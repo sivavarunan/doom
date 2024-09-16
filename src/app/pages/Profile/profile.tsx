@@ -215,40 +215,45 @@ const Profile = () => {
             <div>
                 <div className="flex flex-col md:flex-row flex-1 ">
                     <div className="flex flex-col p-4 md:p-6 rounded-tl-2xl border-2 border-neutral-200 dark:border-neutral-900 md:w-1/4 w-full h-screen">
-                        {[...Array(5)].map((_, i) => (
-                            <div
-                                key={"settings-category" + i}
-                                className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  mb-4 animate-pulse"
-                            ></div>
-                        ))}
+                        <div className="flex items-center mb-4">
+                            <div className="h-36 w-36 rounded-full bg-gray-300 dark:bg-neutral-600 animate-pulse ml-20"></div>
+                            
+                            <div className="flex flex-col gap-2">
+                                <div className="h-6 w-1/2 rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse mb-2"></div>
+                                <div className="h-4 w-2/3 rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse mb-2"></div>
+                                <div className="h-4 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse mb-2"></div>
+                            </div>
+                                
+                        </div>
                     </div>
-                    <div className="flex flex-col gap-4 md:gap-8 flex-1 p-4 md:p-6  border-2 border-neutral-200 dark:border-neutral-900  w-full h-full">
+                    <div className="flex flex-col gap-4 md:gap-8 flex-1 p-4 md:p-6 border-2 border-neutral-200 dark:border-neutral-900 w-full h-full">
                         <div className="flex flex-col gap-2">
                             <div className="h-6 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600 mb-2 animate-pulse"></div>
                             <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
-                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  animate-pulse"></div>
+                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
                         </div>
                         <div className="flex flex-col gap-2">
-                            <div className="h-6 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600  mb-2 animate-pulse"></div>
-                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  animate-pulse"></div>
-                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  animate-pulse"></div>
+                            <div className="h-6 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600 mb-2 animate-pulse"></div>
+                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
+                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
                         </div>
                         <div className="flex flex-col gap-2">
-                            <div className="h-6 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600  mb-2 animate-pulse"></div>
-                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  animate-pulse"></div>
-                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  animate-pulse"></div>
-                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  animate-pulse"></div>
+                            <div className="h-6 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600 mb-2 animate-pulse"></div>
+                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
+                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
+                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
                         </div>
                         <div className="flex flex-col gap-2">
-                            <div className="h-6 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600  mb-2 animate-pulse"></div>
-                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  animate-pulse"></div>
-                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600  animate-pulse"></div>
+                            <div className="h-6 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600 mb-2 animate-pulse"></div>
+                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
+                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
                         </div>
                     </div>
                 </div>
             </div>
         );
     }
+    
 
 
 
