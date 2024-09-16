@@ -145,6 +145,14 @@ export function SidebarComp() {
                     <div>
                         <SidebarLink
                             link={{
+                                label: "Privacy Policy",
+                                href: "#",
+                                icon: ""
+                            }
+                            }
+                        />
+                        <SidebarLink
+                            link={{
                                 label: "About",
                                 href: "/pages/AboutPage",
                                 icon: (
@@ -156,8 +164,11 @@ export function SidebarComp() {
                                         alt="Avatar"
                                     />
                                 ),
-                            }}
+
+                            }
+                            }
                         />
+
                     </div>
                 </SidebarBody>
             </Sidebar>

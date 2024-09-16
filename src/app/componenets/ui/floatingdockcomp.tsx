@@ -243,8 +243,6 @@ export function FloatingDockComp({
     },
   ];
 
-
-
   return (
     <div className={`flex items-center justify-center ${className}`}>
       <FloatingDock items={links} />
