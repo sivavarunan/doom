@@ -212,41 +212,39 @@ const Profile = () => {
 
     if (loading) {
         return (
-            <div>
-                <div className="flex flex-col md:flex-row flex-1 ">
-                    <div className="flex flex-col p-4 md:p-6 rounded-tl-2xl border-2 border-neutral-200 dark:border-neutral-900 md:w-1/4 w-full h-screen">
-                        <div className="flex items-center mb-4">
-                            <div className="h-36 w-36 rounded-full bg-gray-300 dark:bg-neutral-600 animate-pulse ml-20"></div>
-                            
-                            <div className="flex flex-col gap-2">
-                                <div className="h-6 w-1/2 rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse mb-2"></div>
-                                <div className="h-4 w-2/3 rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse mb-2"></div>
-                                <div className="h-4 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse mb-2"></div>
-                            </div>
-                                
+            <div className="flex flex-col md:flex-row flex-1">
+                <div className="flex flex-col items-center p-4 md:p-6 rounded-tl-2xl border border-b-0 border-neutral-700 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 dark:border-2 dark:border-neutral-950 md:w-1/3 w-full h-screen">
+                    {/* Profile Section */}
+                    <div className="flex flex-col items-center mt-12">
+                        <div className="w-32 h-32 rounded-full bg-gray-300 dark:bg-neutral-600 animate-pulse mb-4"></div>
+                        <div className="w-1/2 h-6 rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse mb-4"></div>
+                        <div className="w-3/4 h-4 rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse mb-4"></div>
+                        <div className="w-2/3 h-4 rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse mb-4"></div>
+                        <div className="h-4 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
+                    </div>
+                </div>
+                
+                <div className="flex flex-col md:w-2/3 w-full pl-4 rounded-tr-2xl border-t border-l border-r border-neutral-700 dark:border-neutral-950 bg-white dark:bg-gradient-to-b from-emerald-950 to-neutral-950 h-screen dark:custom-scrollbar">
+                    <div className="py-6">
+                        <div className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-6 from-green-400 via-emerald-600 to-teal-700 text-4xl md:text-3xl font-bold animate-pulse mb-6">
+                            <div className="h-8 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
                         </div>
                     </div>
-                    <div className="flex flex-col gap-4 md:gap-8 flex-1 p-4 md:p-6 border-2 border-neutral-200 dark:border-neutral-900 w-full h-full">
-                        <div className="flex flex-col gap-2">
-                            <div className="h-6 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600 mb-2 animate-pulse"></div>
-                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
-                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
+                    
+                    <div className="mb-4">
+                        <div className="h-10 w-5/6 rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse mb-4"></div>
+                        <div className="h-10 w-5/6 rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse mb-4"></div>
+                        <div className="h-10 w-5/6 rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse mb-4"></div>
+                        <div className="h-10 w-5/6 rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse mb-4"></div>
+                    </div>
+                    
+                    <div className="border-t-2 dark:border-neutral-950 border-neutral-700 mt-8 pt-4">
+                        <div className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-6 from-green-400 via-emerald-600 to-teal-700 text-4xl md:text-3xl font-bold animate-pulse mb-6">
+                            <div className="h-8 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
                         </div>
-                        <div className="flex flex-col gap-2">
-                            <div className="h-6 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600 mb-2 animate-pulse"></div>
-                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
-                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <div className="h-6 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600 mb-2 animate-pulse"></div>
-                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
-                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
-                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <div className="h-6 w-1/3 rounded-lg bg-gray-300 dark:bg-neutral-600 mb-2 animate-pulse"></div>
-                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
-                            <div className="h-10 w-full rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse"></div>
+                        <div className="mb-4">
+                            <div className="h-10 w-5/6 rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse mb-4"></div>
+                            <div className="h-10 w-5/6 rounded-lg bg-gray-300 dark:bg-neutral-600 animate-pulse mb-4"></div>
                         </div>
                     </div>
                 </div>
@@ -254,8 +252,7 @@ const Profile = () => {
         );
     }
     
-
-
+    
 
     return (
         <div className="dark:bg-gradient-to-b from-emerald-950 to-neutral-950 bg-neutral-50">
