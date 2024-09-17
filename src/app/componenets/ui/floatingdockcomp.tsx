@@ -10,6 +10,7 @@ import {
   IconPlayerStop,
   IconSend,
   IconPingPong,
+  IconBrandOpenai,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { FileUpload } from "@/app/componenets/ui/file-upload";
@@ -17,6 +18,7 @@ import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { toast } from "react-toastify";
 import PingPongGame from "@/app/componenets/PingPong";
+import { fetchChatGPTResponse } from '@/app/pages/ChatGPT/route';
 
 export function FloatingDockComp({
   className = "",
@@ -51,6 +53,9 @@ export function FloatingDockComp({
   const timerRef = useRef<number | null>(null);
   const emojiPickerRef = useRef<HTMLDivElement | null>(null);
   const [isPingPongVisible, setPingPongVisible] = useState(false);
+  const [isChatGPTLoading, setChatGPTLoading] = useState(false);
+  const [chatGPTResponse, setChatGPTResponse] = useState<string | null>(null);
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -224,6 +229,34 @@ export function FloatingDockComp({
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   };
 
+  const suggestAIResponse = async () => {
+    try {
+      const suggestedMessages = [
+        "How can I help you today?",
+        "Let me assist you with that!",
+        "Can you tell me more about your problem?",
+      ];
+
+      const randomIndex = Math.floor(Math.random() * suggestedMessages.length);
+      const suggestedMessage = suggestedMessages[randomIndex];
+
+      // Set AI suggestion as the current message
+      setMessage(suggestedMessage);
+    } catch (error) {
+      console.error("AI Suggestion Error:", error);
+    }
+  };
+
+  const handleChatGPTClick = async () => {
+    const response = await fetchChatGPTResponse(message);
+    if (response) {
+      console.log('ChatGPT Response:', response);
+      setChatGPTResponse(response);
+    } else {
+      setChatGPTResponse('Failed to get a response from ChatGPT.');
+    }
+  };
+  
 
   const links = [
     { title: "Emoji", icon: <IconMoodHappy className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleEmojiClick },
@@ -234,7 +267,11 @@ export function FloatingDockComp({
       icon: <IconMicrophone className={`h-full w-full ${isRecording ? "text-red-500" : "text-neutral-500"} dark:text-neutral-300`} />,
       onClick: handleVoiceMessageClick,
     },
-    { title: "Components", icon: <IconNewSection className="h-full w-full text-neutral-500 dark:text-neutral-300" />, href: "#" },
+    {
+      title: "ChatGPT",
+      icon: <IconBrandOpenai className="h-full w-full text-neutral-500 dark:text-neutral-300" />,
+      onClick: handleChatGPTClick,
+    }, 
     { title: "DOOM", icon: <Image src="/doom1.png" width={500} height={200} alt="Aceternity Logo" />, href: "#" },
     {
       title: "Ping Pong",
@@ -372,6 +409,25 @@ export function FloatingDockComp({
               Close
             </button>
           </div>
+        </div>
+      )}
+          {/* ChatGPT Response Section */}
+          {chatGPTResponse && (
+        <div className="fixed bottom-10 right-10 z-50 p-4 bg-neutral-800 text-white rounded-lg shadow-lg">
+          <p>{chatGPTResponse}</p>
+          <button
+            className="mt-2 px-4 py-2 bg-red-600 hover:bg-red-800 rounded-full"
+            onClick={() => setChatGPTResponse(null)}
+          >
+            Close
+          </button>
+        </div>
+      )}
+
+      {/* ChatGPT Loading Indicator */}
+      {isChatGPTLoading && (
+        <div className="fixed bottom-10 right-10 z-50 p-4 bg-neutral-800 text-white rounded-lg shadow-lg">
+          <p>Loading ChatGPT response...</p>
         </div>
       )}
     </div>
