@@ -18,7 +18,7 @@ import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { toast } from "react-toastify";
 import PingPongGame from "@/app/componenets/PingPong";
-import { fetchChatGPTResponse } from '@/app/pages/ChatGPT/route';
+import { fetchChatGPTResponse } from '@/app/pages/ChatGPT/chatgpt';
 
 export function FloatingDockComp({
   className = "",
