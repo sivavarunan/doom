@@ -1,207 +1,160 @@
 "use client";
-import React, { useState } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "@/app/componenets/ui/Sidebar";
+import React from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
 import {
-    IconArrowLeft,
-    IconBrandTabler,
-    IconSettings,
-    IconUserBolt,
-    IconWorld
+    IconArrowUpRight,
+    IconSparkles,
+    IconUsersGroup,
+    IconMessage,
+    IconTrendingUp,
 } from "@tabler/icons-react";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
+
+import { AppShell } from "@/app/componenets/AppShell";
 import { Bento } from "./bentogrid";
-import { Logo } from "@/app/componenets/logo";
-import { LogoIcon } from "@/app/componenets/LogoIcon";
 import { Bento2 } from "./bento2";
-import { toast, Bounce } from "react-toastify";
 
 export function SidebarComp() {
-
-    const clearIndexedDB = async () => {
-        const databases = [
-            '/firebaseLocalStorageDb',
-            'firebaselocalstorage',
-        ];
-
-        // Delete known databases
-        databases.forEach((dbName) => {
-            if (dbName) {
-                const request = indexedDB.deleteDatabase(dbName);
-                request.onsuccess = () => {
-                    console.log(`IndexedDB ${dbName} cleared`);
-                };
-                request.onerror = (event) => {
-                    console.error(`Error clearing IndexedDB ${dbName}:`, event);
-                };
-            }
-        });
-
-        // List and delete all databases
-        try {
-            const dbs = await indexedDB.databases();
-            dbs.forEach((dbInfo) => {
-                const dbName = dbInfo.name;
-                if (dbName) {
-                    const request = indexedDB.deleteDatabase(dbName);
-                    request.onsuccess = () => {
-                        console.log(`IndexedDB ${dbName} cleared`);
-                    };
-                    request.onerror = (event) => {
-                        console.error(`Error clearing IndexedDB ${dbName}:`, event);
-                    };
-                }
-            });
-        } catch (error) {
-            console.error('Error listing databases:', error);
-        }
-    };
-
-    const handleLogout = async () => {
-        // Remove auth token
-        localStorage.removeItem('authToken');
-
-        // Clear IndexedDB
-        await clearIndexedDB();
-
-        // Clear localStorage and sessionStorage
-        localStorage.clear();
-        sessionStorage.clear();
-
-        // Notify user
-        toast.success("Signed out successfully", {
-            position: "bottom-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            transition: Bounce,
-        });
-
-        // Redirect to Login page
-        window.location.href = '/pages/LoginPage'; // Immediate redirection
-    };
-
-    const links = [
-        {
-            label: "Dashboard",
-            href: "/pages/MainPage",
-            icon: (
-                <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-            ),
-        },
-        {
-            label: "Profile",
-            href: "/pages/Profile",
-            icon: (
-                <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-            ),
-        },
-        {
-            label: "Community",
-            href: "/pages/CommunityPage",
-            icon: (
-                <IconWorld className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-            ),
-        },
-        {
-            label: "Settings",
-            href: "/pages/Settings",
-            icon: (
-                <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-            ),
-        },
-        {
-            label: "Logout",
-            href: "/pages/LoginPage",
-            icon: (
-                <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-            ),
-            onClick: handleLogout,
-        },
-    ];
-
-    const [open, setOpen] = useState(false);
-
     return (
-        <div
-            className={cn(
-                "flex flex-col md:flex-row bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 w-full h-screen overflow-hidden"
-            )}
-        >
-            <Sidebar open={open} setOpen={setOpen}>
-                <SidebarBody className="justify-between gap-10">
-                    <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-                        {open ? <Logo /> : <LogoIcon />}
-                        <div className="mt-8 flex flex-col gap-2">
-                            {links.map((link, idx) => (
-                                <SidebarLink key={idx} link={link} />
-                            ))}
-                        </div>
-                    </div>
-
-                    <div>
-                        <SidebarLink
-                            link={{
-                                label: "Privacy Policy",
-                                href: "#",
-                                icon: ""
-                            }
-                            }
-                        />
-                        <SidebarLink
-                            link={{
-                                label: "About",
-                                href: "/pages/AboutPage",
-                                icon: (
-                                    <Image
-                                        src="/anime.jpg"
-                                        className="h-7 w-7 flex-shrink-0 rounded-full"
-                                        width={50}
-                                        height={50}
-                                        alt="Avatar"
-                                    />
-                                ),
-
-                            }
-                            }
-                        />
-
-                    </div>
-                </SidebarBody>
-            </Sidebar>
-            <div className="flex-1 overflow-y-scroll dark:custom-scrollbar">
-                <div className="flex-1 overflow-auto">
-                    <Dashboard />
-                </div>
-            </div>
-        </div>
+        <AppShell>
+            <Dashboard />
+        </AppShell>
     );
 }
 
 const Dashboard = () => {
     return (
-        <div className="flex flex-col w-full h-full bg-neutral-50 dark:bg-gradient-to-b from-emerald-950 to-neutral-950">
-            <div className="p-2 md:px-20 md:py-10 rounded-tl-2xl border-2 border-neutral-900 dark:border-2 dark:border-neutral-950 bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 flex flex-col gap-2 flex-1 w-full h-full">
-                <div className="relative w-full h-52 rounded-lg mb-10">
-                    <div className="absolute inset-0 bg-white dark:bg-neutral-950 animate-pulse rounded-2xl"></div>
-                    <div className="absolute inset-0 dark:bg-inherit bg-opacity-50 flex items-center justify-center rounded-2xl">
-                        <h1 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-4 from-green-400 via-emerald-600 to-teal-700 text-5xl md:text-6xl mt-6 font-bold">
-                            Dashboard
-                        </h1>
-                    </div>
-                </div>
+        <div className="mx-auto w-full max-w-7xl px-5 py-6 md:px-10 md:py-10">
+            <PageHero />
+            <StatsRow />
+            <SectionHeader
+                eyebrow="capabilities"
+                title="What DOOM can do"
+                subtitle="A focused set of tools designed for fast, expressive conversation."
+            />
+            <Bento />
 
-                {/* Hero Section */}
-                <div className="">
-                    <Bento />
-                </div>
-                <div className=" mt-10">
-                    <Bento2 />
-                </div>
+            <div className="mt-20">
+                <SectionHeader
+                    eyebrow="the details"
+                    title="Built for the long haul"
+                    subtitle="Eight principles that shape every decision we make."
+                />
+                <Bento2 />
             </div>
+
+            <FooterCTA />
         </div>
     );
 };
+
+const PageHero = () => {
+    return (
+        <motion.section
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="relative mb-10 overflow-hidden rounded-3xl border border-white/[0.06] bg-surface-1/70 p-8 md:p-12"
+        >
+            <div className="pointer-events-none absolute inset-0 bg-aurora" />
+            <div className="pointer-events-none absolute inset-0 bg-grid mask-radial opacity-30" />
+
+            <div className="relative z-10 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+                <div className="max-w-xl">
+                    <span className="chip mb-4">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                        dashboard
+                    </span>
+                    <h1 className="font-display text-4xl font-semibold tracking-tight text-white md:text-5xl">
+                        Good to see you.
+                    </h1>
+                    <p className="mt-3 max-w-md text-sm text-white/55 md:text-base">
+                        Your conversations, your people, your space. Jump back in
+                        where you left off.
+                    </p>
+                    <div className="mt-6 flex flex-wrap gap-3">
+                        <Link href="/pages/CommunityPage" className="btn-primary">
+                            Find people
+                            <IconArrowUpRight className="h-4 w-4" />
+                        </Link>
+                        <Link href="/pages/Profile" className="btn-ghost">
+                            Your profile
+                        </Link>
+                    </div>
+                </div>
+
+                <div className="relative hidden aspect-square w-56 shrink-0 md:block">
+                    <div className="absolute inset-0 animate-float rounded-3xl border border-emerald-400/20 bg-gradient-to-br from-emerald-500/20 via-teal-500/10 to-transparent" />
+                    <div className="absolute inset-6 flex items-center justify-center rounded-3xl border border-white/10 bg-surface-2/60 backdrop-blur-xl">
+                        <IconSparkles className="h-10 w-10 text-emerald-300" />
+                    </div>
+                </div>
+            </div>
+        </motion.section>
+    );
+};
+
+const StatsRow = () => {
+    const stats = [
+        { label: "Active chats", value: "12", icon: IconMessage, trend: "+3" },
+        { label: "Friends online", value: "8", icon: IconUsersGroup, trend: "+2" },
+        { label: "This week", value: "147", icon: IconTrendingUp, trend: "+24%" },
+    ];
+    return (
+        <div className="mb-14 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {stats.map((s, i) => (
+                <motion.div
+                    key={s.label}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 + i * 0.05, duration: 0.4 }}
+                    className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-surface-1/60 p-5 transition-colors hover:border-emerald-400/20"
+                >
+                    <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-emerald-500/5 blur-2xl transition-opacity group-hover:bg-emerald-500/15" />
+                    <div className="relative flex items-center justify-between">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-300">
+                            <s.icon className="h-4 w-4" />
+                        </span>
+                        <span className="font-mono text-[11px] text-emerald-300">
+                            {s.trend}
+                        </span>
+                    </div>
+                    <p className="relative mt-5 font-display text-3xl font-semibold tracking-tight text-white">
+                        {s.value}
+                    </p>
+                    <p className="relative mt-1 font-mono text-[11px] uppercase tracking-[0.15em] text-white/40">
+                        {s.label}
+                    </p>
+                </motion.div>
+            ))}
+        </div>
+    );
+};
+
+const SectionHeader = ({
+    eyebrow,
+    title,
+    subtitle,
+}: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+}) => (
+    <div className="mb-8">
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-emerald-300/80">
+            {eyebrow}
+        </p>
+        <h2 className="mt-2 font-display text-2xl font-semibold tracking-tight text-white md:text-3xl">
+            {title}
+        </h2>
+        <p className="mt-1 max-w-2xl text-sm text-white/50">{subtitle}</p>
+    </div>
+);
+
+const FooterCTA = () => (
+    <div className="mt-24 flex flex-col items-center gap-3 border-t border-white/[0.05] pt-10 text-center">
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/30">
+            made with care · v0.1
+        </p>
+    </div>
+);

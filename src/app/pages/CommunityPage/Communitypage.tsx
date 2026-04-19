@@ -1,309 +1,211 @@
 "use client";
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "@/app/componenets/ui/Sidebar";
-import {
-    IconArrowLeft,
-    IconBrandTabler,
-    IconSettings,
-    IconUserBolt,
-    IconWorld,
-} from "@tabler/icons-react";
 import { getAuth } from "firebase/auth";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
-import { db } from '@/app/firebase';
-import UserCard from '@/app/componenets/ui/usercard';
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { motion } from "framer-motion";
+import { IconSearch, IconUsers, IconWorld } from "@tabler/icons-react";
+import { toast, Slide } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import { AppShell } from "@/app/componenets/AppShell";
+import { db } from "@/app/firebase";
+import UserCard from "@/app/componenets/ui/usercard";
 import { PlaceholdersAndVanishInput } from "@/app/componenets/ui/searchbar";
-import { toast, Bounce, Slide } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { Globe } from "@/app/componenets/ui/Globe"
-import { Logo } from "@/app/componenets/logo";
-import { LogoIcon } from "@/app/componenets/LogoIcon";
+import { Globe } from "@/app/componenets/ui/Globe";
 
 export function SidebarComp() {
-
-    const clearIndexedDB = async () => {
-        const databases = [
-            '/firebaseLocalStorageDb',
-            'firebaselocalstorage',
-        ];
-
-        // Delete known databases
-        databases.forEach((dbName) => {
-            if (dbName) {
-                const request = indexedDB.deleteDatabase(dbName);
-                request.onsuccess = () => {
-                    console.log(`IndexedDB ${dbName} cleared`);
-                };
-                request.onerror = (event) => {
-                    console.error(`Error clearing IndexedDB ${dbName}:`, event);
-                };
-            }
-        });
-
-        // List and delete all databases
-        try {
-            const dbs = await indexedDB.databases();
-            dbs.forEach((dbInfo) => {
-                const dbName = dbInfo.name;
-                if (dbName) {
-                    const request = indexedDB.deleteDatabase(dbName);
-                    request.onsuccess = () => {
-                        console.log(`IndexedDB ${dbName} cleared`);
-                    };
-                    request.onerror = (event) => {
-                        console.error(`Error clearing IndexedDB ${dbName}:`, event);
-                    };
-                }
-            });
-        } catch (error) {
-            console.error('Error listing databases:', error);
-        }
-    };
-
-    const handleLogout = async () => {
-        // Remove auth token
-        localStorage.removeItem('authToken');
-
-        // Clear IndexedDB
-        await clearIndexedDB();
-
-        // Clear localStorage and sessionStorage
-        localStorage.clear();
-        sessionStorage.clear();
-
-        // Notify user
-        toast.success("Signed out successfully", {
-            position: "bottom-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            transition: Bounce,
-        });
-
-        // Redirect to Login page
-        window.location.href = '/pages/LoginPage'; // Immediate redirection
-    };
-
-    const links = [
-        {
-            label: "Dashboard",
-            href: "/pages/MainPage",
-            icon: (
-                <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-            ),
-        },
-        {
-            label: "Profile",
-            href: "/pages/Profile",
-            icon: (
-                <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-            ),
-        },
-        {
-            label: "Community",
-            href: "/pages/CommunityPage",
-            icon: (
-                <IconWorld className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-            ),
-        },
-        {
-            label: "Settings",
-            href: "/pages/Settings",
-            icon: (
-                <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-            ),
-        },
-        {
-            label: "Logout",
-            href: "/pages/LoginPage",
-            icon: (
-                <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-            ),
-            onClick: handleLogout,
-        },
-    ];
-    const [open, setOpen] = useState(false);
     return (
-        <div
-            className={cn(
-                "flex flex-col md:flex-row bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 w-full h-screen overflow-hidden"
-            )}
-        >
-            <Sidebar open={open} setOpen={setOpen}>
-                <SidebarBody className="justify-between gap-10">
-                    <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-                        {open ? <Logo /> : <LogoIcon />}
-                        <div className="mt-8 flex flex-col gap-2">
-                            {links.map((link, idx) => (
-                                <SidebarLink key={idx} link={link} />
-                            ))}
-                        </div>
-                    </div>
-                    <div>
-                        <SidebarLink
-                            link={{
-                                label: "About",
-                                href: "/pages/AboutPage",
-                                icon: (
-                                    <Image
-                                        src="/anime.jpg"
-                                        className="h-7 w-7 flex-shrink-0 rounded-full"
-                                        width={50}
-                                        height={50}
-                                        alt="Avatar"
-                                    />
-                                ),
-                            }}
-                        />
-                    </div>
-                </SidebarBody>
-            </Sidebar>
-            <div className="flex-1 overflow-y-scroll dark:custom-scrollbar">
-                <div className="flex-1 overflow-auto">
-                    <Community />
-                </div>
-            </div>
-        </div>
-
+        <AppShell>
+            <Community />
+        </AppShell>
     );
 }
+
+const placeholders = [
+    "Eren Yeager",
+    "NoobMaster69",
+    "Mikasa",
+    "DOGO420",
+    "username1234",
+];
 
 const Community = () => {
     const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [searchTerm, setSearchTerm] = useState<string>("");
     const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
     const auth = getAuth();
-
-    const placeholders = [
-        "Eren Yeager",
-        "NoobMaster69",
-        "Mikasa",
-        "DOGO420",
-        "username1234",
-    ];
 
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const usersCollection = collection(db, 'users');
-                const userSnapshot = await getDocs(usersCollection);
-                const userList = userSnapshot.docs.map((doc) => doc.data());
-                setUsers(userList);
-                setFilteredUsers(userList);
+                const snap = await getDocs(collection(db, "users"));
+                const list = snap.docs.map((d) => d.data());
+                setUsers(list);
+                setFilteredUsers(list);
             } catch (error) {
-                console.error('Error fetching users:', error);
+                console.error("Error fetching users:", error);
             } finally {
                 setLoading(false);
             }
         };
-
         fetchUsers();
     }, []);
 
     useEffect(() => {
-        const results = users.filter(user =>
-            user.firstname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.lastname.toLowerCase().includes(searchTerm.toLowerCase())
+        const term = searchTerm.toLowerCase();
+        setFilteredUsers(
+            users.filter(
+                (u) =>
+                    u.firstname?.toLowerCase().includes(term) ||
+                    u.lastname?.toLowerCase().includes(term)
+            )
         );
-        setFilteredUsers(results);
     }, [searchTerm, users]);
 
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(event.target.value);
-    };
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
+        setSearchTerm(e.target.value);
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => e.preventDefault();
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-    };
-
-    const Spinner = () => (
-        <div className="flex justify-center items-center h-screen">
-            <div className="w-16 h-16 border-4 border-solid border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-    );
     const handleAddFriend = async (uid: string) => {
         try {
             const currentUser = auth.currentUser?.uid;
+            if (!currentUser) return;
 
-            if (!currentUser) {
-                console.error('No current user found.');
-                return;
-            }
+            const friendsCollection = collection(db, "friends");
+            const q = query(
+                friendsCollection,
+                where("userId", "==", currentUser),
+                where("friendId", "==", uid)
+            );
+            const snap = await getDocs(q);
 
-            const friendsCollection = collection(db, 'friends');
-            const q = query(friendsCollection, where('userId', '==', currentUser), where('friendId', '==', uid));
-            const querySnapshot = await getDocs(q);
-
-            if (querySnapshot.empty) {
+            if (snap.empty) {
                 await addDoc(friendsCollection, { userId: currentUser, friendId: uid });
-                console.log(`Added friend with UID: ${uid}`);
-                toast.success("Freind added", {
+                toast.success("Friend added", {
                     position: "bottom-right",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
+                    autoClose: 2500,
                     transition: Slide,
                 });
-            } else {
-                console.log('Friendship already exists');
             }
         } catch (error) {
-            console.error('Error adding friend:', error);
+            console.error("Error adding friend:", error);
         }
     };
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center h-screen">
-                <Spinner />
-            </div>
-        );
-    }
-
     return (
-        <div className="dark:bg-gradient-to-b from-emerald-950 to-neutral-950 bg-neutral-50">
-            <div className="p-2 md:p-10 rounded-tl-2xl border-2 border-neutral-700 dark:border-neutral-950 bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 flex flex-col gap-2 flex-1 w-full h-full">
-                <div className="flex flex-col w-full h-full">
-                    <div className="relative w-full h-52 rounded-lg mb-10">
-                        <div className="absolute inset-0 bg-white dark:bg-neutral-950 animate-pulse rounded-2xl"></div>
-                        <div className="absolute inset-0  dark:bg-inherit  bg-opacity-50 flex items-center justify-center rounded-2xl">
-                            <h1 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-4 from-green-400 via-emerald-600 to-teal-700 text-5xl md:text-6xl mt-6 font-bold">
-                                Community
-                            </h1>
+        <div className="mx-auto w-full max-w-7xl px-5 py-6 md:px-10 md:py-10">
+            {/* Hero */}
+            <motion.section
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="relative mb-10 overflow-hidden rounded-3xl border border-white/[0.06] bg-surface-1/70 p-8 md:p-12"
+            >
+                <div className="pointer-events-none absolute inset-0 bg-aurora" />
+                <div className="pointer-events-none absolute inset-0 bg-grid mask-radial opacity-30" />
+                <div className="relative z-10">
+                    <span className="chip mb-4">
+                        <IconWorld className="h-3.5 w-3.5" />
+                        community
+                    </span>
+                    <h1 className="font-display text-4xl font-semibold tracking-tight text-white md:text-5xl">
+                        A world of conversations.
+                    </h1>
+                    <p className="mt-3 max-w-xl text-sm text-white/55 md:text-base">
+                        Discover new people, spark friendships, and start chats across
+                        borders.
+                    </p>
+                </div>
+            </motion.section>
+
+            {/* Two column */}
+            <div className="grid gap-5 lg:grid-cols-5">
+                {/* Left: globe panel */}
+                <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1, duration: 0.5 }}
+                    className="relative overflow-hidden rounded-3xl border border-white/[0.06] bg-surface-1/60 p-6 lg:col-span-2 lg:p-8"
+                >
+                    <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
+                    <div className="relative">
+                        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-emerald-300/80">
+                            connected
+                        </p>
+                        <h2 className="mt-2 font-display text-2xl font-semibold tracking-tight text-white">
+                            People, everywhere.
+                        </h2>
+                        <p className="mt-1.5 max-w-sm text-sm text-white/55">
+                            Real-time presence across continents. Tap a node to see who&apos;s
+                            online.
+                        </p>
+                    </div>
+                    <div className="mt-6 flex items-center justify-center">
+                        <Globe className="mt-2" />
+                    </div>
+                </motion.div>
+
+                {/* Right: users */}
+                <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15, duration: 0.5 }}
+                    className="relative flex flex-col gap-5 overflow-hidden rounded-3xl border border-white/[0.06] bg-surface-1/60 p-6 lg:col-span-3 lg:p-8"
+                >
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-emerald-300/80">
+                                browse
+                            </p>
+                            <h2 className="mt-2 font-display text-2xl font-semibold tracking-tight text-white">
+                                Everyone
+                            </h2>
                         </div>
+                        <span className="chip">
+                            <IconUsers className="h-3.5 w-3.5" />
+                            {users.length}
+                        </span>
                     </div>
 
-                    {/* Main Content Layout */}
-                    <div className="flex flex-col md:flex-row gap-4 w-full h-full">
-                        {/* Left Section */}
-                        <div className="flex-1 bg-gray-100 dark:bg-neutral-900 dark:bg-opacity-40 p-4 rounded-lg">
-                            <h1 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-3 from-green-500 via-emerald-600 to-teal-700 text-4xl md:text-3xl font-bold">
-                                Welcome to the Community Page
-                            </h1>
-                            <p className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r  from-green-200 via-emerald-400 to-teal-600 text-2xl md:text-xl font-bold">We connect people all around the Globe</p>
-                            <div className=" flex justify-center items-center">
-                                <Globe className="mt-4" />
+                    <form onSubmit={handleSubmit} className="relative">
+                        <PlaceholdersAndVanishInput
+                            placeholders={placeholders}
+                            onChange={handleChange}
+                            onSubmit={handleSubmit}
+                        />
+                    </form>
+
+                    <div className="-mr-2 max-h-[560px] overflow-y-auto pr-2 custom-scrollbar">
+                        {loading ? (
+                            <div className="flex flex-col gap-3">
+                                {Array.from({ length: 4 }).map((_, i) => (
+                                    <div
+                                        key={i}
+                                        className="flex items-center gap-3 rounded-2xl border border-white/[0.05] bg-surface-2/40 p-3"
+                                    >
+                                        <div className="h-11 w-11 animate-pulse rounded-full bg-white/[0.06]" />
+                                        <div className="flex-1 space-y-2">
+                                            <div className="h-3 w-32 animate-pulse rounded-full bg-white/[0.06]" />
+                                            <div className="h-2 w-20 animate-pulse rounded-full bg-white/[0.04]" />
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-                        </div>
-                        <div className="flex-1 bg-gray-200 dark:bg-neutral-900 dark:bg-opacity-40 p-4 rounded-lg">
-                            <h2 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-3 from-green-400 via-emerald-600 to-teal-700 text-4xl md:text-3xl font-bold">Users</h2>
-                            <form onSubmit={handleSubmit} className="mb-4">
-                                <PlaceholdersAndVanishInput
-                                    placeholders={placeholders}
-                                    onChange={handleChange}
-                                    onSubmit={handleSubmit}
-                                />
-                            </form>
-                            <div className="grid grid-cols-1 gap-4">
+                        ) : filteredUsers.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center gap-3 py-14 text-center">
+                                <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-surface-2/60">
+                                    <IconSearch className="h-5 w-5 text-white/50" />
+                                </span>
+                                <p className="font-mono text-xs uppercase tracking-[0.2em] text-white/40">
+                                    no matches
+                                </p>
+                                <p className="max-w-xs text-sm text-white/55">
+                                    Try a different name or clear your search.
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col gap-3">
                                 {filteredUsers.map((user) => (
                                     <UserCard
                                         key={user.uid}
@@ -316,9 +218,9 @@ const Community = () => {
                                     />
                                 ))}
                             </div>
-                        </div>
+                        )}
                     </div>
-                </div>
+                </motion.div>
             </div>
         </div>
     );

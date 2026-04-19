@@ -1,13 +1,18 @@
 "use client";
 import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { motion } from "framer-motion";
+import { IconArrowRight, IconAlertTriangle } from "@tabler/icons-react";
+
 import { auth } from "@/app/firebase";
 import { Label } from "@/app/componenets/ui/label";
 import { Input } from "@/app/componenets/ui/input";
+import { Logo } from "@/app/componenets/logo";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-import { toast, Bounce, Zoom } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast, Bounce, Zoom } from "react-toastify";
+
 interface Errors {
     email?: string;
     password?: string;
@@ -15,165 +20,157 @@ interface Errors {
 }
 
 export function LoginForm() {
-    const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [errors, setErrors] = useState<Errors>({});
-
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
-    const validateEmail = (email: string) => {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return regex.test(email);
-    };
+    const validateEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 
     const validateForm = () => {
-        let valid = true;
-        const newErrors: Errors = {};
-
-        if (!email) {
-            newErrors.email = "Email is required.";
-            valid = false;
-        } else if (!validateEmail(email)) {
-            newErrors.email = "Please enter a valid email address.";
-            valid = false;
-        }
-
-        if (!password) {
-            newErrors.password = "Password is required.";
-            valid = false;
-        } else if (password.length < 6) {
-            newErrors.password = "Password must be at least 6 characters long.";
-            valid = false;
-        }
-
-        setErrors(newErrors);
-        return valid;
+        const next: Errors = {};
+        if (!email) next.email = "Email is required";
+        else if (!validateEmail(email)) next.email = "Enter a valid email";
+        if (!password) next.password = "Password is required";
+        else if (password.length < 6) next.password = "Minimum 6 characters";
+        setErrors(next);
+        return Object.keys(next).length === 0;
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (validateForm()) {
-            try {
-                // Use Firebase Auth client SDK to sign in
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                
-                if (userCredential.user) {
-                    // Store the JWT token in localStorage (if needed)
-                    const token = await userCredential.user.getIdToken();
-                    localStorage.setItem('authToken', token);
-                    toast.success("Login successful", {
-                        position: "bottom-right",
-                        autoClose: 3000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        transition: Zoom,
-                    });
-                    router.push("/pages/MainPage");
-                } else {
-                    throw new Error('No user credential received');
-                }
-            } catch (error: any) {
-                console.error("Error logging in:", error.message);
-                toast.error("Login failed", {
-                    position: "bottom-right",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    transition: Bounce,
-                });
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    general: "Invalid Email or Password",
-                    
-                }));
+        if (!validateForm()) return;
+        setLoading(true);
+        try {
+            const cred = await signInWithEmailAndPassword(auth, email, password);
+            if (cred.user) {
+                const token = await cred.user.getIdToken();
+                localStorage.setItem("authToken", token);
+                toast.success("Welcome back", { transition: Zoom });
+                router.push("/pages/MainPage");
             }
+        } catch (err: any) {
+            toast.error("Login failed", { transition: Bounce });
+            setErrors((p) => ({ ...p, general: "Invalid email or password" }));
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="max-w-md w-full mx-auto my-40 rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
-            <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200 text-center">
-                Welcome to Doom
-            </h2>
-            <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-                Don&apos;t have an account? <a href="/pages/LoginPage/signup" className="text-green-300">Sign Up</a> here.
-            </p>
-            <form className="my-8" onSubmit={handleSubmit}>
-                <h3 className="text-neutral-600 mb-3 text-xl dark:text-neutral-300 font-bold">
-                    Login
-                </h3>
-                {errors.general && (
-                    <div className="text-red-600 text-sm font-mono mb-4">{errors.general}</div>
-                )}
-                <div className="mb-2 space-y-2">
+        <AuthShell>
+            <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="w-full max-w-md"
+            >
+                <div className="mb-10 flex items-center justify-between">
+                    <Logo />
+                    <span className="chip">login</span>
+                </div>
+
+                <h1 className="font-display text-3xl font-semibold tracking-tight text-white md:text-4xl">
+                    Welcome back.
+                </h1>
+                <p className="mt-2 text-sm text-white/55">
+                    Don&apos;t have an account?{" "}
+                    <Link
+                        href="/pages/LoginPage/signup"
+                        className="font-medium text-emerald-300 transition-colors hover:text-emerald-200"
+                    >
+                        Create one →
+                    </Link>
+                </p>
+
+                <form onSubmit={handleSubmit} className="mt-10 space-y-5">
+                    {errors.general && (
+                        <div className="flex items-start gap-2 rounded-xl border border-rose-500/30 bg-rose-500/[0.08] px-3 py-2.5 text-sm text-rose-200">
+                            <IconAlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                            <span>{errors.general}</span>
+                        </div>
+                    )}
+
                     <LabelInputContainer>
-                        <Label htmlFor="email">Email Address</Label>
+                        <Label htmlFor="email">Email</Label>
                         <Input
                             id="email"
-                            placeholder="example@gmail.com"
+                            placeholder="you@doom.app"
                             type="email"
-                            aria-label="Email Address"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className={errors.email ? "border-red-500" : ""}
+                            className={errors.email ? "!ring-1 !ring-rose-500/40" : ""}
                         />
-                        {errors.email && (
-                            <span className="text-red-600 text-sm font-mono">{errors.email}</span>
-                        )}
+                        {errors.email && <FieldError>{errors.email}</FieldError>}
                     </LabelInputContainer>
-                    <LabelInputContainer className="mb-4">
-                        <Label htmlFor="password">Password</Label>
+
+                    <LabelInputContainer>
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="password">Password</Label>
+                            <a
+                                href="#"
+                                className="text-[11px] text-white/40 hover:text-white/70"
+                            >
+                                Forgot?
+                            </a>
+                        </div>
                         <Input
                             id="password"
                             placeholder="••••••••"
                             type="password"
-                            aria-label="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className={errors.password ? "border-red-500" : ""}
+                            className={errors.password ? "!ring-1 !ring-rose-500/40" : ""}
                         />
-                        {errors.password && (
-                            <span className="text-red-600 text-sm font-mono">{errors.password}</span>
-                        )}
+                        {errors.password && <FieldError>{errors.password}</FieldError>}
                     </LabelInputContainer>
+
                     <button
-                        className="bg-gradient-to-br top-4 relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
                         type="submit"
+                        disabled={loading}
+                        className="btn-primary group mt-2 w-full !py-3"
                     >
-                        Login &rarr;
-                        <BottomGradient />
+                        {loading ? "Signing in…" : "Sign in"}
+                        {!loading && (
+                            <IconArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+                        )}
                     </button>
-                </div>
-            </form>
+                </form>
+
+                <p className="mt-8 text-center font-mono text-[11px] text-white/30">
+                    secured · firebase · tls 1.3
+                </p>
+            </motion.div>
+        </AuthShell>
+    );
+}
+
+export function AuthShell({ children }: { children: React.ReactNode }) {
+    return (
+        <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-ink px-6 py-12">
+            <div className="pointer-events-none absolute inset-0 bg-aurora" />
+            <div className="pointer-events-none absolute inset-0 bg-grid mask-radial opacity-30" />
+            <div className="pointer-events-none absolute inset-0 bg-noise mix-blend-overlay" />
+            <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/[0.06] bg-surface-1/60 p-8 shadow-card backdrop-blur-xl md:p-10">
+                {children}
+            </div>
         </div>
     );
 }
 
-const LabelInputContainer = ({
+export const LabelInputContainer = ({
     children,
     className,
 }: {
     children: React.ReactNode;
     className?: string;
-}) => {
-    return (
-        <div className={cn("flex flex-col space-y-2 w-full", className)}>
-            {children}
-        </div>
-    );
-};
+}) => (
+    <div className={cn("flex w-full flex-col gap-1.5", className)}>
+        {children}
+    </div>
+);
 
-const BottomGradient = () => {
-    return (
-        <>
-            <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-green-500 to-transparent" />
-            <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-emerald-500 to-transparent" />
-        </>
-    );
-};
+export const FieldError = ({ children }: { children: React.ReactNode }) => (
+    <span className="font-mono text-[11px] text-rose-300/80">{children}</span>
+);

@@ -1,355 +1,233 @@
 "use client";
-import { cn } from "@/lib/utils";
 import React from "react";
-import { BentoGrid, BentoGridItem } from "@/app/componenets/ui/bento-grid";
-import {
-  IconBoxAlignRightFilled,
-  IconClipboardCopy,
-  IconFileBroken,
-  IconSignature,
-  IconTableColumn,
-} from "@tabler/icons-react";
 import { motion } from "framer-motion";
-import Image from "next/image";
+import {
+    IconMessage,
+    IconPaperclip,
+    IconSparkles,
+    IconWorld,
+    IconMicrophone,
+} from "@tabler/icons-react";
+import { BentoGrid, BentoGridItem } from "@/app/componenets/ui/bento-grid";
+import { cn } from "@/lib/utils";
 
 export function Bento() {
-  return (
-    <BentoGrid className="max-screen mx-auto md:auto-rows-[20rem] ">
-      {items.map((item, i) => (
-        <BentoGridItem
-          key={i}
-          title={item.title}
-          description={item.description}
-          header={item.header}
-          className={cn("[&>p:text-lg] dark:bg-black dark:bg-opacity-40", item.className)}
-          icon={item.icon}
-        />
-      ))}
-    </BentoGrid>
-  );
+    return (
+        <BentoGrid>
+            {items.map((item, i) => (
+                <BentoGridItem
+                    key={i}
+                    title={item.title}
+                    description={item.description}
+                    header={item.header}
+                    className={cn(item.className)}
+                    icon={item.icon}
+                />
+            ))}
+        </BentoGrid>
+    );
 }
 
-const SkeletonOne = () => {
-  const variants = {
-    initial: {
-      x: 0,
-    },
-    animate: {
-      x: 10,
-      rotate: 5,
-      transition: {
-        duration: 0.2,
-      },
-    },
-  };
-  const variantsSecond = {
-    initial: {
-      x: 0,
-    },
-    animate: {
-      x: -10,
-      rotate: -5,
-      transition: {
-        duration: 0.2,
-      },
-    },
-  };
-
-  return (
-    
-    <motion.div
-      initial="initial"
-      whileHover="animate"
-      className="flex flex-1 w-full h-full min-h-[6rem] dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex-col space-y-2"
-    >
-      <motion.div
-        variants={variants}
-        className="flex flex-row rounded-full border border-neutral-100 dark:border-white/[0.2] p-2  items-center space-x-2 bg-white dark:bg-black"
-      >
-        <div className="h-6 w-6 rounded-full bg-gradient-to-r from-pink-500 to-violet-500 flex-shrink-0" />
-        <div className="w-full bg-gray-100 h-4 rounded-full dark:bg-neutral-900" />
-      </motion.div>
-      <motion.div
-        variants={variantsSecond}
-        className="flex flex-row rounded-full border border-neutral-100 dark:border-white/[0.2] p-2 items-center space-x-2 w-3/4 ml-auto bg-white dark:bg-black"
-      >
-        <div className="w-full bg-gray-100 h-4 rounded-full dark:bg-neutral-900" />
-        <div className="h-6 w-6 rounded-full bg-gradient-to-r from-pink-500 to-violet-500 flex-shrink-0" />
-      </motion.div>
-      <motion.div
-        variants={variants}
-        className="flex flex-row rounded-full border border-neutral-100 dark:border-white/[0.2] p-2 items-center space-x-2 bg-white dark:bg-black"
-      >
-        <div className="h-6 w-6 rounded-full bg-gradient-to-r from-pink-500 to-violet-500 flex-shrink-0" />
-        <div className="w-full bg-gray-100 h-4 rounded-full dark:bg-neutral-900" />
-      </motion.div>
-    </motion.div>
-  );
-};
-const SkeletonTwo = () => {
-  const variants = {
-    initial: {
-      width: 0,
-    },
-    animate: {
-      width: "100%",
-      transition: {
-        duration: 0.2,
-      },
-    },
-    hover: {
-      width: ["0%", "100%"],
-      transition: {
-        duration: 2,
-      },
-    },
-  };
-  const arr = new Array(6).fill(0);
-  return (
-    <motion.div
-      initial="initial"
-      animate="animate"
-      whileHover="hover"
-      className="flex flex-1 w-full h-full min-h-[6rem] dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex-col space-y-2"
-    >
-      {arr.map((_, i) => (
+const ChatPreview = () => {
+    const variants = {
+        initial: { x: 0 },
+        animate: { x: 6, rotate: 1.2, transition: { duration: 0.3 } },
+    };
+    const variantsAlt = {
+        initial: { x: 0 },
+        animate: { x: -6, rotate: -1.2, transition: { duration: 0.3 } },
+    };
+    return (
         <motion.div
-          key={"skelenton-two" + i}
-          variants={variants}
-          style={{
-            maxWidth: Math.random() * (100 - 40) + 40 + "%",
-          }}
-          className="flex flex-row rounded-full border border-neutral-100 dark:border-white/[0.2] p-2  items-center space-x-2 bg-neutral-100 dark:bg-black w-full h-4"
-        ></motion.div>
-      ))}
-    </motion.div>
-  );
+            initial="initial"
+            whileHover="animate"
+            className="flex h-full w-full flex-col justify-center gap-2.5 p-4"
+        >
+            <motion.div
+                variants={variants}
+                className="flex max-w-[82%] items-center gap-2 rounded-xl rounded-tl-sm border border-white/[0.06] bg-surface-2/80 p-2.5"
+            >
+                <span className="h-6 w-6 flex-shrink-0 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600" />
+                <span className="h-1.5 w-24 rounded-full bg-white/15" />
+            </motion.div>
+            <motion.div
+                variants={variantsAlt}
+                className="flex max-w-[68%] items-center gap-2 self-end rounded-xl rounded-tr-sm bg-gradient-to-br from-emerald-400/90 to-teal-500/90 p-2.5"
+            >
+                <span className="h-1.5 w-20 rounded-full bg-black/25" />
+                <span className="h-1.5 w-10 rounded-full bg-black/25" />
+            </motion.div>
+            <motion.div
+                variants={variants}
+                className="flex max-w-[75%] items-center gap-2 rounded-xl rounded-tl-sm border border-white/[0.06] bg-surface-2/80 p-2.5"
+            >
+                <span className="h-6 w-6 flex-shrink-0 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600" />
+                <span className="h-1.5 w-32 rounded-full bg-white/15" />
+            </motion.div>
+        </motion.div>
+    );
 };
-const SkeletonThree = () => {
-  const variants = {
-    initial: {
-      backgroundPosition: "0 50%",
-    },
-    animate: {
-      backgroundPosition: ["0, 50%", "100% 50%", "0 50%"],
-    },
-  };
-  return (
-    <motion.div
-      initial="initial"
-      animate="animate"
-      variants={variants}
-      transition={{
-        duration: 5,
-        repeat: Infinity,
-        repeatType: "reverse",
-      }}
-      className="flex flex-1 w-full h-full min-h-[6rem] dark:bg-dot-white/[0.2] rounded-lg bg-dot-black/[0.2] flex-col space-y-2"
-      style={{
-        background:
-          "linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab)",
-        backgroundSize: "400% 400%",
-      }}
-    >
-      <motion.div className="h-full w-full rounded-lg"></motion.div>
-    </motion.div>
-  );
-};
-const SkeletonFour = () => {
-  const first = {
-    initial: {
-      x: 20,
-      rotate: -5,
-    },
-    hover: {
-      x: 0,
-      rotate: 0,
-    },
-  };
-  const second = {
-    initial: {
-      x: -20,
-      rotate: 5,
-    },
-    hover: {
-      x: 0,
-      rotate: 0,
-    },
-  };
-  return (
-    <motion.div
-      initial="initial"
-      animate="animate"
-      whileHover="hover"
-      className="flex flex-1 w-full h-full min-h-[6rem] dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex-row space-x-2"
-    >
-      <motion.div
-        variants={first}
-        className="h-full w-1/3 rounded-2xl bg-white p-4 dark:bg-black dark:border-white/[0.1] border border-neutral-200 flex flex-col items-center justify-center"
-      >
-        <Image
-          src="/anime.jpg"
-          alt="avatar"
-          height="100"
-          width="100"
-          className="rounded-full h-10 w-10"
-        />
-        <p className="sm:text-sm text-xs text-center font-semibold text-neutral-500 mt-4">
-          Just code in Vanilla Javascript
-        </p>
-        <p className="border border-red-500 bg-red-100 dark:bg-red-900/20 text-red-600 text-xs rounded-full px-2 py-0.5 mt-4">
-          Delusional
-        </p>
-      </motion.div>
-      <motion.div className="h-full relative z-20 w-1/3 rounded-2xl bg-white p-4 dark:bg-black dark:border-white/[0.1] border border-neutral-200 flex flex-col items-center justify-center">
-        <Image
-          src="/anime.jpg"
-          alt="avatar"
-          height="100"
-          width="100"
-          className="rounded-full h-10 w-10"
-        />
-        <p className="sm:text-sm text-xs text-center font-semibold text-neutral-500 mt-4">
-          Tailwind CSS is cool, you know
-        </p>
-        <p className="border border-green-500 bg-green-100 dark:bg-green-900/20 text-green-600 text-xs rounded-full px-2 py-0.5 mt-4">
-          Sensible
-        </p>
-      </motion.div>
-      <motion.div
-        variants={second}
-        className="h-full w-1/3 rounded-2xl bg-white p-4 dark:bg-black dark:border-white/[0.1] border border-neutral-200 flex flex-col items-center justify-center"
-      >
-        <Image
-          src="/anime.jpg"
-          alt="avatar"
-          height="100"
-          width="100"
-          className="rounded-full h-10 w-10"
-        />
-        <p className="sm:text-sm text-xs text-center font-semibold text-neutral-500 mt-4">
-          I love angular, RSC, and Redux.
-        </p>
-        <p className="border border-orange-500 bg-orange-100 dark:bg-orange-900/20 text-orange-600 text-xs rounded-full px-2 py-0.5 mt-4">
-          Helpless
-        </p>
-      </motion.div>
-    </motion.div>
-  );
-};
-const SkeletonFive = () => {
-  const variants = {
-    initial: {
-      x: 0,
-    },
-    animate: {
-      x: 10,
-      rotate: 5,
-      transition: {
-        duration: 0.2,
-      },
-    },
-  };
-  const variantsSecond = {
-    initial: {
-      x: 0,
-    },
-    animate: {
-      x: -10,
-      rotate: -5,
-      transition: {
-        duration: 0.2,
-      },
-    },
-  };
 
-  return (
-    <motion.div
-      initial="initial"
-      whileHover="animate"
-      className="flex flex-1 w-full h-full min-h-[6rem] dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex-col space-y-2"
-    >
-      <motion.div
-        variants={variants}
-        className="flex flex-row rounded-2xl border border-neutral-100 dark:border-white/[0.2] p-2  items-start space-x-2 bg-white dark:bg-black"
-      >
-        <Image
-          src="/anime.jpg"
-          alt="avatar"
-          height="100"
-          width="100"
-          className="rounded-full h-10 w-10"
-        />
-        <p className="text-xs text-neutral-500">
-          There are a lot of cool framerworks out there like React, Angular,
-          Vue, Svelte that can make your life ....
-        </p>
-      </motion.div>
-      <motion.div
-        variants={variantsSecond}
-        className="flex flex-row rounded-full border border-neutral-100 dark:border-white/[0.2] p-2 items-center justify-end space-x-2 w-3/4 ml-auto bg-white dark:bg-black"
-      >
-        <p className="text-xs text-neutral-500">Use PHP.</p>
-        <div className="h-6 w-6 rounded-full bg-gradient-to-r from-pink-500 to-violet-500 flex-shrink-0" />
-      </motion.div>
-    </motion.div>
-  );
+const FilePreview = () => {
+    const lines = [
+        { w: "70%", delay: 0 },
+        { w: "46%", delay: 0.05 },
+        { w: "82%", delay: 0.1 },
+        { w: "58%", delay: 0.15 },
+        { w: "34%", delay: 0.2 },
+    ];
+    return (
+        <motion.div
+            initial="initial"
+            animate="animate"
+            whileHover="hover"
+            className="flex h-full w-full flex-col justify-center gap-2 p-4"
+        >
+            {lines.map((l, i) => (
+                <motion.div
+                    key={i}
+                    variants={{
+                        initial: { width: 0 },
+                        animate: { width: l.w },
+                        hover: { width: ["0%", l.w] },
+                    }}
+                    transition={{ duration: 0.6, delay: l.delay }}
+                    style={{ maxWidth: l.w }}
+                    className="h-2 rounded-full bg-gradient-to-r from-emerald-400/70 via-emerald-500/40 to-transparent"
+                />
+            ))}
+        </motion.div>
+    );
 };
+
+const AIShimmer = () => {
+    return (
+        <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
+            <motion.div
+                animate={{
+                    background: [
+                        "radial-gradient(circle at 20% 30%, rgba(52,211,153,0.45), transparent 60%)",
+                        "radial-gradient(circle at 80% 70%, rgba(20,184,166,0.45), transparent 60%)",
+                        "radial-gradient(circle at 30% 80%, rgba(110,231,183,0.45), transparent 60%)",
+                        "radial-gradient(circle at 20% 30%, rgba(52,211,153,0.45), transparent 60%)",
+                    ],
+                }}
+                transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-0"
+            />
+            <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-surface-2/80 backdrop-blur-xl">
+                <IconSparkles className="h-6 w-6 text-emerald-300" />
+            </div>
+        </div>
+    );
+};
+
+const ProfilesPreview = () => {
+    const first = {
+        initial: { x: 16, rotate: -4 },
+        hover: { x: 0, rotate: 0 },
+    };
+    const second = {
+        initial: { x: -16, rotate: 4 },
+        hover: { x: 0, rotate: 0 },
+    };
+    const profiles = [
+        { name: "Eren", role: "Designer", color: "from-emerald-400 to-teal-500" },
+        { name: "Mikasa", role: "Engineer", color: "from-teal-400 to-cyan-500" },
+        { name: "Armin", role: "Writer", color: "from-emerald-300 to-green-500" },
+    ];
+    return (
+        <motion.div
+            initial="initial"
+            whileHover="hover"
+            className="flex h-full w-full items-center justify-center gap-2 p-4"
+        >
+            <motion.div
+                variants={first}
+                className="flex w-1/3 flex-col items-center gap-1.5 rounded-xl border border-white/[0.06] bg-surface-2/60 p-3"
+            >
+                <div className={`h-9 w-9 rounded-full bg-gradient-to-br ${profiles[0].color}`} />
+                <p className="text-xs font-medium text-white">{profiles[0].name}</p>
+                <p className="font-mono text-[10px] text-white/40">{profiles[0].role}</p>
+            </motion.div>
+            <motion.div className="relative z-10 flex w-1/3 flex-col items-center gap-1.5 rounded-xl border border-emerald-400/20 bg-surface-2/80 p-3 shadow-glow">
+                <div className={`h-9 w-9 rounded-full bg-gradient-to-br ${profiles[1].color}`} />
+                <p className="text-xs font-medium text-white">{profiles[1].name}</p>
+                <p className="font-mono text-[10px] text-emerald-300">online</p>
+            </motion.div>
+            <motion.div
+                variants={second}
+                className="flex w-1/3 flex-col items-center gap-1.5 rounded-xl border border-white/[0.06] bg-surface-2/60 p-3"
+            >
+                <div className={`h-9 w-9 rounded-full bg-gradient-to-br ${profiles[2].color}`} />
+                <p className="text-xs font-medium text-white">{profiles[2].name}</p>
+                <p className="font-mono text-[10px] text-white/40">{profiles[2].role}</p>
+            </motion.div>
+        </motion.div>
+    );
+};
+
+const VoicePreview = () => {
+    const bars = Array.from({ length: 22 });
+    return (
+        <div className="flex h-full w-full items-center justify-center gap-1 p-4">
+            {bars.map((_, i) => (
+                <motion.span
+                    key={i}
+                    animate={{
+                        height: [
+                            `${8 + Math.sin(i) * 12}px`,
+                            `${24 + Math.cos(i * 0.8) * 18}px`,
+                            `${8 + Math.sin(i) * 12}px`,
+                        ],
+                    }}
+                    transition={{
+                        duration: 1.2 + (i % 4) * 0.2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: i * 0.04,
+                    }}
+                    className="w-1 rounded-full bg-gradient-to-t from-emerald-400/30 to-emerald-300"
+                />
+            ))}
+        </div>
+    );
+};
+
 const items = [
-  {
-    title: "Send Messages",
-    description: (
-      <span className="text-sm">
-        Can chat with users from all over the world.
-      </span>
-    ),
-    header: <SkeletonOne />,
-    className: "md:col-span-1",
-    icon: <IconClipboardCopy className="h-4 w-4 text-neutral-500" />,
-  },
-  {
-    title: "File Sharing",
-    description: (
-      <span className="text-sm">
-        Upload and Share your documents.
-      </span>
-    ),
-    header: <SkeletonTwo />,
-    className: "md:col-span-1",
-    icon: <IconFileBroken className="h-4 w-4 text-neutral-500" />,
-  },
-  {
-    title: "Contextual Suggestions",
-    description: (
-      <span className="text-sm">
-        Get AI assistant on your chat replays.
-      </span>
-    ),
-    header: <SkeletonThree />,
-    className: "md:col-span-1",
-    icon: <IconSignature className="h-4 w-4 text-neutral-500" />,
-  },
-  {
-    title: "Sentiment Analysis",
-    description: (
-      <span className="text-sm">
-        Understand the sentiment of your text with AI analysis.
-      </span>
-    ),
-    header: <SkeletonFour />,
-    className: "md:col-span-2",
-    icon: <IconTableColumn className="h-4 w-4 text-neutral-500" />,
-  },
-
-  {
-    title: "Text Summarization",
-    description: (
-      <span className="text-sm">
-        Summarize your lengthy documents with AI technology.
-      </span>
-    ),
-    header: <SkeletonFive />,
-    className: "md:col-span-1",
-    icon: <IconBoxAlignRightFilled className="h-4 w-4 text-neutral-500" />,
-  },
+    {
+        title: "Send messages",
+        description: "Real-time conversations with anyone, anywhere on the planet.",
+        header: <ChatPreview />,
+        className: "md:col-span-1",
+        icon: <IconMessage className="h-3.5 w-3.5" />,
+    },
+    {
+        title: "File sharing",
+        description: "Drop a file into chat. It's there. No cold-start, no friction.",
+        header: <FilePreview />,
+        className: "md:col-span-1",
+        icon: <IconPaperclip className="h-3.5 w-3.5" />,
+    },
+    {
+        title: "AI assist",
+        description: "Contextual suggestions and smart replies when you need them.",
+        header: <AIShimmer />,
+        className: "md:col-span-1",
+        icon: <IconSparkles className="h-3.5 w-3.5" />,
+    },
+    {
+        title: "A global community",
+        description: "Find people, build friendships, and spark conversations across borders.",
+        header: <ProfilesPreview />,
+        className: "md:col-span-2",
+        icon: <IconWorld className="h-3.5 w-3.5" />,
+    },
+    {
+        title: "Voice messages",
+        description: "When typing isn't enough, speak your mind in a single tap.",
+        header: <VoicePreview />,
+        className: "md:col-span-1",
+        icon: <IconMicrophone className="h-3.5 w-3.5" />,
+    },
 ];

@@ -3,14 +3,16 @@ import { cn } from "@/lib/utils";
 import Link, { LinkProps } from "next/link";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { IconMenu2, IconX, IconLogout, IconHome, IconSettings } from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
+import { IconMenu2, IconX } from "@tabler/icons-react";
+import { usePathname } from "next/navigation";
 
 interface Links {
   label: string;
   href: string;
   icon: React.JSX.Element | React.ReactNode;
-  onClick?: () => void; 
+  onClick?: () => void;
+  badge?: string | number;
+  active?: boolean;
 }
 
 interface SidebarContextProps {
@@ -19,9 +21,7 @@ interface SidebarContextProps {
   animate: boolean;
 }
 
-const SidebarContext = createContext<SidebarContextProps | undefined>(
-  undefined
-);
+const SidebarContext = createContext<SidebarContextProps | undefined>(undefined);
 
 export const useSidebar = () => {
   const context = useContext(SidebarContext);
@@ -43,12 +43,11 @@ export const SidebarProvider = ({
   animate?: boolean;
 }) => {
   const [openState, setOpenState] = useState(false);
-
   const open = openProp !== undefined ? openProp : openState;
   const setOpen = setOpenProp !== undefined ? setOpenProp : setOpenState;
 
   return (
-    <SidebarContext.Provider value={{ open, setOpen, animate: animate }}>
+    <SidebarContext.Provider value={{ open, setOpen, animate }}>
       {children}
     </SidebarContext.Provider>
   );
@@ -72,11 +71,14 @@ export const Sidebar = ({
   );
 };
 
-export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
+export const SidebarBody = (props: {
+  className?: string;
+  children?: React.ReactNode;
+}) => {
   return (
     <>
       <DesktopSidebar {...props} />
-      <MobileSidebar {...(props as React.ComponentProps<"div">)} />
+      <MobileSidebar {...props} />
     </>
   );
 };
@@ -84,24 +86,29 @@ export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
 export const DesktopSidebar = ({
   className,
   children,
-  ...props
-}: React.ComponentProps<typeof motion.div>) => {
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) => {
   const { open, setOpen, animate } = useSidebar();
   return (
-    <motion.div
+    <motion.aside
       className={cn(
-        "h-full px-4 py-4 hidden md:flex md:flex-col bg-neutral-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 w-[300px] flex-shrink-0",
+        "relative hidden md:flex md:flex-col h-full flex-shrink-0 overflow-hidden",
+        "border-r border-white/[0.06] bg-[rgb(var(--surface-0))]/80 backdrop-blur-xl",
+        "px-3 py-5",
         className
       )}
       animate={{
-        width: animate ? (open ? "300px" : "60px") : "300px",
+        width: animate ? (open ? 264 : 72) : 264,
       }}
+      transition={{ type: "spring", stiffness: 220, damping: 28 }}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
-      {...props}
     >
-      {children}
-    </motion.div>
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-emerald-500/[0.04] via-transparent to-transparent" />
+      <div className="relative flex h-full flex-col">{children}</div>
+    </motion.aside>
   );
 };
 
@@ -114,39 +121,47 @@ export const MobileSidebar = ({
   return (
     <div
       className={cn(
-        "h-10 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-neutral-100 dark:bg-gradient-to-t from-emerald-950 to-neutral-950 w-full"
+        "flex h-14 items-center justify-between border-b border-white/[0.06] bg-[rgb(var(--surface-0))]/80 px-4 backdrop-blur-xl md:hidden"
       )}
       {...props}
     >
-      <div className="flex justify-end z-20 w-full">
-        <IconMenu2
-          className="text-neutral-800 dark:text-neutral-200"
-          onClick={() => setOpen(!open)}
-        />
-      </div>
+      <button
+        onClick={() => setOpen(!open)}
+        aria-label="Open menu"
+        className="flex h-9 w-9 items-center justify-center rounded-lg text-white/80 hover:bg-white/5 hover:text-white"
+      >
+        <IconMenu2 className="h-5 w-5" />
+      </button>
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ x: "-100%", opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: "-100%", opacity: 0 }}
-            transition={{
-              duration: 0.3,
-              ease: "easeInOut",
-            }}
-            className={cn(
-              "fixed h-full w-full inset-0 bg-white dark:bg-gradient-to-b from-emerald-950 to-neutral-950 p-10 z-[100] flex flex-col justify-between",
-              className
-            )}
-          >
-            <div
-              className="absolute right-10 top-10 z-50 text-neutral-800 dark:text-neutral-200"
-              onClick={() => setOpen(!open)}
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[99] bg-black/60 backdrop-blur-sm"
+              onClick={() => setOpen(false)}
+            />
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", stiffness: 260, damping: 30 }}
+              className={cn(
+                "fixed inset-y-0 left-0 z-[100] flex w-[80%] max-w-[300px] flex-col gap-6 border-r border-white/[0.06] bg-[rgb(var(--surface-0))] p-6",
+                className
+              )}
             >
-              <IconX />
-            </div>
-            {children}
-          </motion.div>
+              <button
+                className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-lg text-white/70 hover:bg-white/5 hover:text-white"
+                onClick={() => setOpen(false)}
+                aria-label="Close menu"
+              >
+                <IconX className="h-5 w-5" />
+              </button>
+              {children}
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>
@@ -163,57 +178,56 @@ export const SidebarLink = ({
   props?: LinkProps;
 }) => {
   const { open, animate } = useSidebar();
+  const pathname = usePathname();
+  const isActive =
+    link.active ??
+    (link.href !== "#" && pathname === link.href);
+
   return (
     <Link
       href={link.href}
+      onClick={link.onClick}
       className={cn(
-        "flex items-center justify-start gap-2 group/sidebar py-2",
+        "group/sidebar relative flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm transition-colors duration-150",
+        isActive
+          ? "bg-emerald-500/10 text-white"
+          : "text-white/65 hover:bg-white/[0.04] hover:text-white",
         className
       )}
-      onClick={link.onClick} 
       {...props}
     >
-      {link.icon}
+      {isActive && (
+        <motion.span
+          layoutId="sidebar-active"
+          transition={{ type: "spring", stiffness: 380, damping: 32 }}
+          className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-gradient-to-b from-emerald-300 to-emerald-500"
+        />
+      )}
+      <span
+        className={cn(
+          "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg transition-colors",
+          isActive
+            ? "text-emerald-300"
+            : "text-white/60 group-hover/sidebar:text-emerald-300"
+        )}
+      >
+        {link.icon}
+      </span>
       <motion.span
         animate={{
-          display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
+          width: animate ? (open ? "auto" : 0) : "auto",
         }}
-        className="text-neutral-700 dark:text-neutral-200 text-sm group-hover/sidebar:translate-x-1 group-hover/sidebar:text-emerald-700 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+        transition={{ duration: 0.18 }}
+        className="overflow-hidden whitespace-nowrap"
       >
         {link.label}
       </motion.span>
+      {link.badge !== undefined && open && (
+        <span className="ml-auto inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-mono font-medium text-emerald-300">
+          {link.badge}
+        </span>
+      )}
     </Link>
-  );
-};
-
-// Usage in your component
-const MySidebarComponent = () => {
-  const router = useRouter();
-
-  const handleLogout = () => {
-    localStorage.removeItem("token"); 
-    router.push("/pages/LoginPage");
-  };
-
-  const links: Links[] = [
-    { label: "Home", href: "/home", icon: <IconHome /> },
-    { label: "Settings", href: "/settings", icon: <IconSettings /> },
-    {
-      label: "Logout",
-      href: "#",
-      icon: <IconLogout />,
-      onClick: handleLogout, 
-    },
-  ];
-
-  return (
-    <Sidebar>
-      <SidebarBody>
-        {links.map((link, idx) => (
-          <SidebarLink key={idx} link={link} />
-        ))}
-      </SidebarBody>
-    </Sidebar>
   );
 };

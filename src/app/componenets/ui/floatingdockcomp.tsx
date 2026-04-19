@@ -4,7 +4,6 @@ import {
   IconFile,
   IconMoodHappy,
   IconLanguage,
-  IconNewSection,
   IconMicrophone,
   IconTrash,
   IconPlayerStop,
@@ -259,24 +258,24 @@ export function FloatingDockComp({
   
 
   const links = [
-    { title: "Emoji", icon: <IconMoodHappy className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleEmojiClick },
-    { title: "File", icon: <IconFile className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleFileClick },
-    { title: "Translate", icon: <IconLanguage className="h-full w-full text-neutral-500 dark:text-neutral-300" />, onClick: handleLanguageClick },
+    { title: "Emoji", icon: <IconMoodHappy className="h-full w-full" />, onClick: handleEmojiClick },
+    { title: "File", icon: <IconFile className="h-full w-full" />, onClick: handleFileClick },
+    { title: "Translate", icon: <IconLanguage className="h-full w-full" />, onClick: handleLanguageClick },
     {
-      title: isRecording ? "Stop" : "Voice Message",
-      icon: <IconMicrophone className={`h-full w-full ${isRecording ? "text-red-500" : "text-neutral-500"} dark:text-neutral-300`} />,
+      title: isRecording ? "Stop" : "Voice",
+      icon: <IconMicrophone className={`h-full w-full ${isRecording ? "text-rose-400" : ""}`} />,
       onClick: handleVoiceMessageClick,
     },
     {
       title: "ChatGPT",
-      icon: <IconBrandOpenai className="h-full w-full text-neutral-500 dark:text-neutral-300" />,
+      icon: <IconBrandOpenai className="h-full w-full" />,
       onClick: handleChatGPTClick,
-    }, 
-    { title: "DOOM", icon: <Image src="/doom1.png" width={500} height={200} alt="Aceternity Logo" />, href: "#" },
+    },
+    { title: "DOOM", icon: <Image src="/doom1.png" width={500} height={200} alt="DOOM" />, href: "#" },
     {
       title: "Ping Pong",
-      icon: <IconPingPong className="h-full w-full text-neutral-500 dark:text-neutral-300" />,
-      onClick: handlePingPongClick, // Explicitly call the function
+      icon: <IconPingPong className="h-full w-full" />,
+      onClick: handlePingPongClick,
     },
   ];
 
@@ -287,11 +286,11 @@ export function FloatingDockComp({
       {/* Popup FileUpload component */}
       {isFileUploadVisible && (
         <div
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-ink/70 backdrop-blur-md"
           onClick={() => setFileUploadVisible(false)}
         >
           <div
-            className="bg-neutral-950 bg-opacity-35 p-2 rounded-3xl shadow-lg"
+            className="w-full max-w-lg overflow-hidden rounded-3xl border border-white/[0.08] bg-surface-1/95 p-4 shadow-card backdrop-blur-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <FileUpload
@@ -300,12 +299,14 @@ export function FloatingDockComp({
                 setFileUploadVisible(false);
               }}
             />
-            <button
-              className="mt-4 px-4 py-2 bg-emerald-700 hover:bg-emerald-950 rounded-3xl"
-              onClick={() => setFileUploadVisible(false)}
-            >
-              Close
-            </button>
+            <div className="flex justify-end pt-2">
+              <button
+                className="btn-ghost text-xs"
+                onClick={() => setFileUploadVisible(false)}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -324,62 +325,74 @@ export function FloatingDockComp({
       {/* Language Picker Popup */}
       {isLanguagePickerVisible && (
         <div
-          className="fixed bottom-20 right-4 z-50 bg-black bg-opacity-35 p-1 rounded-full shadow-lg"
+          className="fixed bottom-24 right-6 z-50 overflow-hidden rounded-2xl border border-white/[0.08] bg-surface-1/95 p-2 shadow-card backdrop-blur-xl"
           onClick={(e) => e.stopPropagation()}
         >
           <select
             value={selectedLanguage}
             onChange={handleLanguageSelect}
-            className="p-2 bg-emerald-700 rounded-2xl"
+            className="bg-transparent px-3 py-1.5 text-sm text-white focus:outline-none"
           >
-            <option value="es">Spanish</option>
-            <option value="fr">French</option>
-            <option value="de">German</option>
-            <option value="hi">Hindi</option>
-            <option value="zh">Chinese</option>
+            <option value="es" className="bg-surface-2">Spanish</option>
+            <option value="fr" className="bg-surface-2">French</option>
+            <option value="de" className="bg-surface-2">German</option>
+            <option value="hi" className="bg-surface-2">Hindi</option>
+            <option value="zh" className="bg-surface-2">Chinese</option>
           </select>
         </div>
       )}
 
       {/* Translate Button */}
       <button
-        className="px-4 py-2 bg-emerald-700 hover:bg-emerald-950 rounded-3xl ml-4"
+        className="ml-3 btn-ghost text-xs disabled:opacity-50"
         onClick={handleTranslateClick}
-        disabled={isLoading}
+        disabled={isLoading || !message}
       >
-        {isLoading ? "Translating..." : "Translate"}
+        {isLoading ? "Translating…" : "Translate"}
       </button>
 
       {/* Voice Recording UI */}
       {isRecording && (
-        <div className="fixed bottom-24 md:right-26 z-50 p-3 bg-emerald-900 rounded-3xl shadow-lg">
-          <p>Recording... {formatTime(recordingTime)}</p>
-          <div className="relative w-full h-2 bg-gray-300 rounded-full mt-2">
-            <div
-              className="absolute top-0 left-0 h-2 bg-emerald-700 rounded-full"
-              style={{ width: `${(recordingTime % 60) * 100 / 60}%` }}
-            ></div>
+        <div className="fixed bottom-24 right-6 z-50 min-w-[260px] overflow-hidden rounded-2xl border border-white/[0.08] bg-surface-1/95 p-4 shadow-card backdrop-blur-xl">
+          <div className="mb-2 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-rose-400" />
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-white/70">
+                recording
+              </p>
+            </div>
+            <span className="font-mono text-xs text-white/80">
+              {formatTime(recordingTime)}
+            </span>
           </div>
-          <div className="mt-2 flex justify-between">
+          <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
+            <div
+              className="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-400 to-teal-500 transition-all"
+              style={{ width: `${((recordingTime % 60) * 100) / 60}%` }}
+            />
+          </div>
+          <div className="mt-3 flex justify-between gap-2">
             <button
-              className="px-2 py-2 bg-red-600 hover:bg-red-800 rounded-full"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-rose-400/30 bg-rose-500/10 text-rose-300 transition-colors hover:bg-rose-500/20"
               onClick={stopRecording}
+              aria-label="Stop"
             >
-              <IconPlayerStop />
+              <IconPlayerStop size={16} />
             </button>
             <button
-              className="px-3 py-2 bg-emerald-700 hover:bg-emerald-950 rounded-3xl mx-2 cursor-pointer"
+              className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 text-xs font-medium text-ink transition-all hover:brightness-110 disabled:opacity-50"
               onClick={sendRecording}
               disabled={!audioBlob}
             >
-              <IconSend />
+              <IconSend size={15} /> Send
             </button>
             <button
-              className="px-2 py-2 bg-gray-500 hover:bg-gray-700 rounded-full cursor-pointer"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.02] text-white/60 transition-colors hover:text-white disabled:opacity-50"
               onClick={deleteRecording}
               disabled={!audioBlob}
+              aria-label="Delete"
             >
-              <IconTrash />
+              <IconTrash size={16} />
             </button>
           </div>
         </div>
@@ -387,23 +400,22 @@ export function FloatingDockComp({
 
       {/* Recording Error Message */}
       {recordingError && (
-        <div className="fixed bottom-24 right-26 z-50 p-3 bg-red-500 text-white rounded-3xl shadow-lg">
+        <div className="fixed bottom-24 right-6 z-50 rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200 backdrop-blur-xl">
           <p>{recordingError}</p>
         </div>
       )}
 
       {/* Ping Pong Game Modal */}
       {isPingPongVisible && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-neutral-950 p-6 rounded-3xl shadow-lg relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/70 backdrop-blur-md">
+          <div className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-surface-1/95 p-6 shadow-card backdrop-blur-xl">
             <PingPongGame
               gameId="Test-game-id"
               userId="current-user-id"
-              opponentId="current-user-id" 
+              opponentId="current-user-id"
             />
-
             <button
-              className="absolute top-2 right-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-950 rounded-full text-white"
+              className="absolute right-3 top-3 btn-ghost text-xs"
               onClick={() => setPingPongVisible(false)}
             >
               Close
@@ -411,12 +423,16 @@ export function FloatingDockComp({
           </div>
         </div>
       )}
-          {/* ChatGPT Response Section */}
-          {chatGPTResponse && (
-        <div className="fixed bottom-10 right-10 z-50 p-4 bg-neutral-800 text-white rounded-lg shadow-lg">
-          <p>{chatGPTResponse}</p>
+
+      {/* ChatGPT Response Section */}
+      {chatGPTResponse && (
+        <div className="fixed bottom-24 right-6 z-50 max-w-sm rounded-2xl border border-white/[0.08] bg-surface-1/95 p-4 shadow-card backdrop-blur-xl">
+          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-300/80">
+            ChatGPT
+          </p>
+          <p className="text-sm text-white/80">{chatGPTResponse}</p>
           <button
-            className="mt-2 px-4 py-2 bg-red-600 hover:bg-red-800 rounded-full"
+            className="mt-3 btn-ghost text-xs"
             onClick={() => setChatGPTResponse(null)}
           >
             Close
@@ -426,8 +442,11 @@ export function FloatingDockComp({
 
       {/* ChatGPT Loading Indicator */}
       {isChatGPTLoading && (
-        <div className="fixed bottom-10 right-10 z-50 p-4 bg-neutral-800 text-white rounded-lg shadow-lg">
-          <p>Loading ChatGPT response...</p>
+        <div className="fixed bottom-24 right-6 z-50 rounded-2xl border border-white/[0.08] bg-surface-1/95 px-4 py-3 backdrop-blur-xl">
+          <p className="flex items-center gap-2 text-sm text-white/70">
+            <span className="h-3 w-3 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
+            Thinking…
+          </p>
         </div>
       )}
     </div>

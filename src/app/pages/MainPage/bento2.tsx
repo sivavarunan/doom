@@ -1,110 +1,106 @@
 import { cn } from "@/lib/utils";
 import {
-  IconAdjustmentsBolt,
-  IconCloud,
-  IconCurrencyDollar,
-  IconEaseInOut,
-  IconHeart,
-  IconHelp,
-  IconRouteAltLeft,
-  IconTerminal2,
+    IconTerminal2,
+    IconBolt,
+    IconShieldLock,
+    IconCloud,
+    IconRouteAltLeft,
+    IconHeadset,
+    IconAdjustmentsBolt,
+    IconHeart,
 } from "@tabler/icons-react";
 
 export function Bento2() {
-  const features = [
-    {
-      title: "Built for developers",
-      description:
-        "Built for engineers, developers, dreamers, thinkers and doers.",
-      icon: <IconTerminal2 />,
-    },
-    {
-      title: "Ease of use",
-      description:
-        "It's as easy as using an Apple, and as expensive as buying one.",
-      icon: <IconEaseInOut />,
-    },
-    {
-      title: "Pricing like no other",
-      description:
-        "Our prices are best in the market. No cap, no lock, no credit card required.",
-      icon: <IconCurrencyDollar />,
-    },
-    {
-      title: "100% Uptime guarantee",
-      description: "We just cannot be taken down by anyone.",
-      icon: <IconCloud />,
-    },
-    {
-      title: "Multi-tenant Architecture",
-      description: "You can simply share passwords instead of buying new seats",
-      icon: <IconRouteAltLeft />,
-    },
-    {
-      title: "24/7 Customer Support",
-      description:
-        "We are available a 100% of the time. At least our AI Agents are.",
-      icon: <IconHelp />,
-    },
-    {
-      title: "Money back guarantee",
-      description:
-        "If you do not like EveryAI, we will convince you to like us.",
-      icon: <IconAdjustmentsBolt />,
-    },
-    {
-      title: "And everything else",
-      description: "I just ran out of copy ideas. Accept my sincere apologies.",
-      icon: <IconHeart />,
-    },
-  ];
+    const features = [
+        {
+            title: "Built for builders",
+            description: "Made for engineers, designers, and everyone in between.",
+            icon: <IconTerminal2 className="h-4 w-4" />,
+        },
+        {
+            title: "Ridiculously fast",
+            description: "Under 50ms message delivery. No waiting, no jank.",
+            icon: <IconBolt className="h-4 w-4" />,
+        },
+        {
+            title: "Private by default",
+            description: "Your chats are yours. End-to-end, always.",
+            icon: <IconShieldLock className="h-4 w-4" />,
+        },
+        {
+            title: "Built on Firebase",
+            description: "Rock-solid infrastructure. 99.99% uptime.",
+            icon: <IconCloud className="h-4 w-4" />,
+        },
+        {
+            title: "Multi-device sync",
+            description: "Pick up where you left off, on any device.",
+            icon: <IconRouteAltLeft className="h-4 w-4" />,
+        },
+        {
+            title: "Human support",
+            description: "Real people, ready to help. Not bots.",
+            icon: <IconHeadset className="h-4 w-4" />,
+        },
+        {
+            title: "Thoughtful defaults",
+            description: "Works beautifully out of the box — and bends to your will.",
+            icon: <IconAdjustmentsBolt className="h-4 w-4" />,
+        },
+        {
+            title: "Crafted with love",
+            description: "Every pixel considered. Every interaction felt.",
+            icon: <IconHeart className="h-4 w-4" />,
+        },
+    ];
 
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 relative z-10 py-10 max-w-7xl mx-auto">
-      {features.map((feature, index) => (
-        <Feature key={feature.title} {...feature} index={index} />
-      ))}
-    </div>
-  );
+    return (
+        <div className="relative grid grid-cols-1 overflow-hidden rounded-2xl border border-white/[0.06] bg-surface-1/40 md:grid-cols-2 lg:grid-cols-4">
+            {features.map((feature, index) => (
+                <Feature key={feature.title} {...feature} index={index} />
+            ))}
+        </div>
+    );
 }
 
 const Feature = ({
-  title,
-  description,
-  icon,
-  index,
+    title,
+    description,
+    icon,
+    index,
 }: {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  index: number;
+    title: string;
+    description: string;
+    icon: React.ReactNode;
+    index: number;
 }) => {
-  return (
-    <div
-      className={cn(
-        "flex flex-col lg:border-r py-10 relative group/feature dark:border-neutral-800",
-        (index === 0 || index === 4) && "lg:border-l dark:border-neutral-800",
-        index < 4 && "lg:border-b dark:border-neutral-800"
-      )}
-    >
-      {index < 4 && (
-        <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-t from-neutral-100 dark:from-neutral-950 to-transparent pointer-events-none" />
-      )}
-      {index >= 4 && (
-        <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-b from-neutral-100 dark:from-neutral-950 to-transparent pointer-events-none" />
-      )}
-      <div className="mb-4 relative z-10 px-10 text-neutral-600 dark:text-neutral-400 group-hover/feature:text-emerald-600 transition duration-200">
-        {icon}
-      </div>
-      <div className="text-lg font-bold mb-2 relative z-10 px-10">
-        <div className="absolute left-0 inset-y-0 h-6 group-hover/feature:h-8 w-1 rounded-tr-full rounded-br-full bg-neutral-300 dark:bg-neutral-700 group-hover/feature:bg-emerald-600 transition-all duration-200 origin-center" />
-        <span className="group-hover/feature:translate-x-2 transition duration-200 inline-block text-neutral-800 dark:text-neutral-100">
-          {title}
-        </span>
-      </div>
-      <p className="text-sm text-neutral-600 dark:text-neutral-300 max-w-xs relative z-10 px-10">
-        {description}
-      </p>
-    </div>
-  );
+    return (
+        <div
+            className={cn(
+                "group/feature relative flex flex-col gap-3 p-7 transition-colors duration-300",
+                "border-white/[0.05]",
+                index % 4 !== 3 && "lg:border-r",
+                index % 2 !== 1 && "md:border-r lg:border-r",
+                index < 4 && "lg:border-b",
+                index < 4 && index >= 2 && "md:border-b",
+                index === 1 && "md:border-b lg:border-b-0"
+            )}
+        >
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-emerald-500/[0.05] via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover/feature:opacity-100" />
+            <div className="pointer-events-none absolute inset-y-6 left-0 w-[2px] rounded-r-full bg-gradient-to-b from-emerald-300 to-emerald-500 opacity-0 transition-opacity duration-300 group-hover/feature:opacity-100" />
+
+            <div className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-300 transition-colors group-hover/feature:bg-emerald-500/15">
+                {icon}
+            </div>
+
+            <div className="relative">
+                <h3 className="font-display text-base font-semibold text-white transition-transform duration-300 group-hover/feature:translate-x-1">
+                    {title}
+                </h3>
+                <p className="mt-1.5 text-[13px] leading-relaxed text-white/55">
+                    {description}
+                </p>
+            </div>
+        </div>
+    );
 };

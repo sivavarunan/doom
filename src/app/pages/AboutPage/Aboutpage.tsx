@@ -1,284 +1,251 @@
 "use client";
-import React, { useState } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "@/app/componenets/ui/Sidebar";
-import {
-  IconArrowLeft,
-  IconBrandTabler,
-  IconSettings,
-  IconUserBolt,
-  IconBrandFacebook,
-  IconBrandLinkedin,
-  IconBrandInstagram,
-  IconBrandX,
-  IconWorld
-} from "@tabler/icons-react";
+import React from "react";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { Logo } from "@/app/componenets/logo";
-import { LogoIcon } from "@/app/componenets/LogoIcon";
-import { toast, Bounce } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { motion } from "framer-motion";
+import {
+    IconBrandFacebook,
+    IconBrandInstagram,
+    IconBrandLinkedin,
+    IconBrandX,
+    IconCloud,
+    IconMail,
+    IconMapPin,
+    IconPhone,
+    IconRocket,
+    IconShieldLock,
+    IconSparkles,
+} from "@tabler/icons-react";
+import { AppShell } from "@/app/componenets/AppShell";
 
 export function SidebarComp() {
-
-  const clearIndexedDB = async () => {
-    const databases = [
-      '/firebaseLocalStorageDb',
-      'firebaselocalstorage',
-    ];
-
-    // Delete known databases
-    databases.forEach((dbName) => {
-      if (dbName) {
-        const request = indexedDB.deleteDatabase(dbName);
-        request.onsuccess = () => {
-          console.log(`IndexedDB ${dbName} cleared`);
-        };
-        request.onerror = (event) => {
-          console.error(`Error clearing IndexedDB ${dbName}:`, event);
-        };
-      }
-    });
-
-    // List and delete all databases
-    try {
-      const dbs = await indexedDB.databases();
-      dbs.forEach((dbInfo) => {
-        const dbName = dbInfo.name;
-        if (dbName) {
-          const request = indexedDB.deleteDatabase(dbName);
-          request.onsuccess = () => {
-            console.log(`IndexedDB ${dbName} cleared`);
-          };
-          request.onerror = (event) => {
-            console.error(`Error clearing IndexedDB ${dbName}:`, event);
-          };
-        }
-      });
-    } catch (error) {
-      console.error('Error listing databases:', error);
-    }
-  };
-
-  const handleLogout = async () => {
-    // Remove auth token
-    localStorage.removeItem('authToken');
-
-    // Clear IndexedDB
-    await clearIndexedDB();
-
-    // Clear localStorage and sessionStorage
-    localStorage.clear();
-    sessionStorage.clear();
-
-    // Notify user
-    toast.success("Signed out successfully", {
-      position: "bottom-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      transition: Bounce,
-    });
-
-    // Redirect to Login page
-    window.location.href = '/pages/LoginPage'; // Immediate redirection
-  };
-
-  const links = [
-    {
-      label: "Dashboard",
-      href: "/pages/MainPage",
-      icon: (
-        <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Profile",
-      href: "/pages/Profile",
-      icon: (
-        <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Community",
-      href: "/pages/CommunityPage",
-      icon: (
-        <IconWorld className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Settings",
-      href: "/pages/Settings",
-      icon: (
-        <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Logout",
-      href: "/pages/LoginPage",
-      icon: (
-        <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-      onClick: handleLogout,
-    },
-  ];
-
-  const [open, setOpen] = useState(false);
-  return (
-    <div
-      className={cn(
-        "flex flex-col md:flex-row bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 w-full h-screen overflow-hidden"
-      )}
-    >
-      <Sidebar open={open} setOpen={setOpen} >
-
-        <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden ">
-            {open ? <Logo /> : <LogoIcon />}
-            <div className="mt-8 flex flex-col gap-2">
-              {links.map((link, idx) => (
-                <SidebarLink key={idx} link={link} />
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <SidebarLink
-              link={{
-                label: "About",
-                href: "/pages/AboutPage",
-                icon: (
-                  <Image
-                    src="/anime.jpg"
-                    className="h-7 w-7 flex-shrink-0 rounded-full"
-                    width={50}
-                    height={50}
-                    alt="Avatar"
-                  />
-                ),
-              }}
-            />
-          </div>
-        </SidebarBody>
-      </Sidebar>
-      <div className="flex-1 overflow-y-scroll dark:custom-scrollbar">
-        <div className="flex-1 overflow-auto">
-          <About />
-        </div>
-      </div>
-    </div>
-  );
+    return (
+        <AppShell>
+            <About />
+        </AppShell>
+    );
 }
 
-// About component
+const values = [
+    {
+        title: "Security",
+        description:
+            "User data first. Firebase Auth, strict rules, no leaks in transit or at rest.",
+        icon: IconShieldLock,
+    },
+    {
+        title: "Performance",
+        description:
+            "Edge-hosted on Vercel. Sub-50ms delivery, instant cold starts, snappy UX.",
+        icon: IconRocket,
+    },
+    {
+        title: "Craft",
+        description:
+            "Every pixel considered. Every interaction felt. Details that reward attention.",
+        icon: IconSparkles,
+    },
+];
+
+const socials = [
+    {
+        label: "Facebook",
+        href: "https://facebook.com/sivavarunan.siva",
+        icon: IconBrandFacebook,
+    },
+    { label: "X", href: "https://twitter.com", icon: IconBrandX },
+    {
+        label: "LinkedIn",
+        href: "https://linkedin.com/in/thevarasa-sivavarunan-0b587a266",
+        icon: IconBrandLinkedin,
+    },
+    {
+        label: "Instagram",
+        href: "https://instagram.com/sivavarunan",
+        icon: IconBrandInstagram,
+    },
+];
+
 const About = () => {
-  return (
-    <div className="flex flex-col p-4 md:p-10 w-full h-full">
-      {/* Hero Section */}
-      <div className="relative w-full h-52 rounded-lg mb-10">
-        <div className="absolute inset-0 bg-white dark:bg-neutral-950 animate-pulse "></div>
-        <div className="absolute inset-0  dark:bg-inherit  bg-opacity-50 flex items-center justify-center rounded-sm">
-          <h1 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-4 from-green-400 via-emerald-600 to-teal-700 text-5xl md:text-6xl mt-6 font-bold">
-            About Me
-          </h1>
-        </div>
-      </div>
+    return (
+        <div className="mx-auto w-full max-w-6xl px-5 py-6 md:px-10 md:py-10">
+            {/* Hero */}
+            <motion.section
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="relative mb-10 overflow-hidden rounded-3xl border border-white/[0.06] bg-surface-1/70 p-8 md:p-14"
+            >
+                <div className="pointer-events-none absolute inset-0 bg-aurora" />
+                <div className="pointer-events-none absolute inset-0 bg-grid mask-radial opacity-30" />
+                <div className="relative z-10 max-w-2xl">
+                    <span className="chip mb-4">
+                        <IconCloud className="h-3.5 w-3.5" />
+                        about
+                    </span>
+                    <h1 className="font-display text-4xl font-semibold tracking-tight text-white md:text-6xl">
+                        A chat app, <span className="text-gradient-accent">reimagined</span>.
+                    </h1>
+                    <p className="mt-4 max-w-xl text-sm text-white/60 md:text-base">
+                        DOOM is a Next.js + Firebase-powered messenger built on Vercel&apos;s
+                        edge. Secure, fast, and quietly beautiful.
+                    </p>
+                </div>
+            </motion.section>
 
-      {/* Mission Statement */}
-      <div className="flex flex-col md:flex-row gap-8 mb-10 bg-black bg-opacity-30 p-10 rounded-md">
-        <div className="flex flex-col gap-4 mb-10 md:flex-1">
-          <h2 className="text-2xl md:text-4xl font-bold bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-6 from-green-400 via-emerald-600 to-teal-700">
-            My Mission
-          </h2>
-          <p className="text-base text-neutral-700 dark:text-neutral-300">
-            My mission is to build a robust Next.js web application, integrated with Firebase for secure authentication and real-time database management, and hosted on Vercel for optimal performance. This app will function as a seamless and interactive chatting platform, ensuring users can communicate effortlessly in a secure environment.
-          </p>
-        </div>
+            {/* Mission + Values */}
+            <div className="mb-10 grid gap-5 lg:grid-cols-5">
+                <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1, duration: 0.5 }}
+                    className="relative overflow-hidden rounded-3xl border border-white/[0.06] bg-surface-1/60 p-8 lg:col-span-2"
+                >
+                    <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
+                    <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-emerald-300/80">
+                        mission
+                    </p>
+                    <h2 className="mt-2 font-display text-2xl font-semibold tracking-tight text-white md:text-3xl">
+                        Build a messenger worth using every day.
+                    </h2>
+                    <p className="mt-4 text-sm leading-relaxed text-white/60">
+                        A robust Next.js web application, integrated with Firebase for secure
+                        authentication and realtime data — hosted on Vercel for effortless
+                        global performance. DOOM ships a seamless chat platform where
+                        conversations flow, files share cleanly, and trust is the default.
+                    </p>
+                </motion.div>
 
-        {/* Values Section */}
-        <div className="flex flex-col md:flex-1 gap-4">
-          {[
-            {
-              title: "Security",
-              description:
-                "Prioritizing user data protection through Firebase's reliable authentication and database solutions.",
-            },
-            {
-              title: "Performance",
-              description:
-                "Ensuring fast and efficient communication by hosting on Vercel for optimal app responsiveness.",
-            },
-            {
-              title: "User Experience",
-              description:
-                "Delivering a smooth and intuitive chatting interface that fosters effortless and enjoyable communication.",
-            },
-          ].map((value, i) => (
-            <div key={"values-section" + i} className="flex-1 flex flex-col gap-2">
-              <h3 className="text-xl md:text-2xl bg-clip-text bg-no-repeat font-semibold text-transparent bg-gradient-to-r py-6 from-green-400 via-emerald-600 to-teal-700">
-                {value.title}
-              </h3>
-              <p className="text-base text-neutral-700 dark:text-neutral-300">
-                {value.description}
-              </p>
+                <div className="grid gap-4 lg:col-span-3">
+                    {values.map((v, i) => (
+                        <motion.div
+                            key={v.title}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.15 + i * 0.05, duration: 0.45 }}
+                            className="group flex items-start gap-5 rounded-3xl border border-white/[0.06] bg-surface-1/60 p-6 transition-colors hover:border-emerald-400/20"
+                        >
+                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-300 transition-colors group-hover:bg-emerald-500/20">
+                                <v.icon className="h-5 w-5" />
+                            </span>
+                            <div>
+                                <h3 className="font-display text-lg font-semibold text-white">
+                                    {v.title}
+                                </h3>
+                                <p className="mt-1 text-sm text-white/55">{v.description}</p>
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/*Contact Section */}
-      <div className="flex flex-col md:flex-row gap-8 mb-10 bg-black bg-opacity-35 p-10 rounded-md">
-        {/* Image and Name */}
-        <div className="flex flex-col items-center w-full md:w-1/2 lg:w-1/3">
-          <div className="relative w-32 h-32 md:w-48 md:h-48 lg:w-56 lg:h-56 rounded-full overflow-hidden mb-4">
-            <Image
-              src="/myphoto.jpg"
-              layout="fill"
-              objectFit="cover"
-              className="rounded-full"
-              alt="Avatar"
-            />
-          </div>
-          <h3 className="text-xl font-medium text-neutral-900 dark:text-neutral-200">
-            T.Sivavarunan
-          </h3>
-          <p className="text-sm text-neutral-700 dark:text-neutral-300 mt-2">
-            Software Engineering Under Graduate
-          </p>
-        </div>
+            {/* Contact */}
+            <motion.section
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+                className="relative overflow-hidden rounded-3xl border border-white/[0.06] bg-surface-1/60 p-8 md:p-10"
+            >
+                <div className="pointer-events-none absolute inset-0 bg-aurora opacity-50" />
+                <div className="relative grid gap-8 md:grid-cols-[auto,1fr] md:items-center">
+                    <div className="flex flex-col items-center md:items-start">
+                        <div className="relative h-32 w-32 overflow-hidden rounded-2xl border border-white/10 md:h-44 md:w-44">
+                            <Image
+                                src="/myphoto.jpg"
+                                fill
+                                sizes="176px"
+                                className="object-cover"
+                                alt="T.Sivavarunan"
+                            />
+                        </div>
+                        <h3 className="mt-4 font-display text-lg font-semibold text-white">
+                            T. Sivavarunan
+                        </h3>
+                        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
+                            software engineer
+                        </p>
+                    </div>
 
-        {/* Contact Info and Social Media */}
-        <div className="flex-1 flex flex-col gap-4">
-          <h2 className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-6 from-green-400 via-emerald-600 to-teal-700 text-4xl md:text-4xl font-bold">
-            Get in Touch
-          </h2>
-          <div className="flex flex-col gap-2 text-base text-neutral-700 dark:text-neutral-300">
-            <div>Email: <a href="mailto:Tharagan2001@gmail.com" className="text-emerald-500">Tharagan2001@gmail.com</a></div>
-            <div>Phone: +94 768359459</div>
-            <div>Address: 12th, 36th lane, Colombo 6, Sri Lanka</div>
-          </div>
+                    <div className="flex flex-col gap-5">
+                        <div>
+                            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-emerald-300/80">
+                                contact
+                            </p>
+                            <h2 className="mt-2 font-display text-2xl font-semibold tracking-tight text-white md:text-3xl">
+                                Get in touch.
+                            </h2>
+                        </div>
 
-          {/* Social Media Links */}
-          <div className="flex gap-4 mt-4">
-            <a href="https://facebook.com/sivavarunan.siva" target="_blank" rel="noopener noreferrer" className="text-neutral-700 dark:text-neutral-200 hover:text-blue-600 dark:hover:text-blue-400">
-              <IconBrandFacebook className="h-6 w-6" />
-            </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-neutral-700 dark:text-neutral-200 hover:text-blue-400 dark:hover:text-blue-300">
-              <IconBrandX className="h-6 w-6" />
-            </a>
-            <a href="https://linkedin.com/in/thevarasa-sivavarunan-0b587a266" target="_blank" rel="noopener noreferrer" className="text-neutral-700 dark:text-neutral-200 hover:text-blue-700 dark:hover:text-blue-500">
-              <IconBrandLinkedin className="h-6 w-6" />
-            </a>
-            <a href="https://instagram.com/sivavarunan" target="_blank" rel="noopener noreferrer" className="text-neutral-700 dark:text-neutral-200 hover:text-pink-600 dark:hover:text-pink-400">
-              <IconBrandInstagram className="h-6 w-6" />
-            </a>
-          </div>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                            <ContactRow
+                                icon={<IconMail className="h-4 w-4" />}
+                                label="email"
+                                value={
+                                    <a
+                                        href="mailto:Tharagan2001@gmail.com"
+                                        className="text-emerald-300 hover:underline"
+                                    >
+                                        Tharagan2001@gmail.com
+                                    </a>
+                                }
+                            />
+                            <ContactRow
+                                icon={<IconPhone className="h-4 w-4" />}
+                                label="phone"
+                                value="+94 768 359 459"
+                            />
+                            <ContactRow
+                                icon={<IconMapPin className="h-4 w-4" />}
+                                label="address"
+                                value="12th, 36th lane, Colombo 6, Sri Lanka"
+                                wide
+                            />
+                        </div>
+
+                        <div className="flex gap-2 pt-2">
+                            {socials.map((s) => (
+                                <a
+                                    key={s.label}
+                                    href={s.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label={s.label}
+                                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.02] text-white/60 transition-all hover:-translate-y-0.5 hover:border-emerald-400/30 hover:text-emerald-300"
+                                >
+                                    <s.icon className="h-4 w-4" />
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </motion.section>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
+const ContactRow = ({
+    icon,
+    label,
+    value,
+    wide,
+}: {
+    icon: React.ReactNode;
+    label: string;
+    value: React.ReactNode;
+    wide?: boolean;
+}) => (
+    <div
+        className={`flex items-start gap-3 rounded-2xl border border-white/[0.05] bg-white/[0.02] p-3.5 ${
+            wide ? "sm:col-span-2" : ""
+        }`}
+    >
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-300">
+            {icon}
+        </span>
+        <div className="min-w-0 flex-1">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">
+                {label}
+            </p>
+            <p className="mt-0.5 truncate text-sm text-white/80">{value}</p>
+        </div>
+    </div>
+);

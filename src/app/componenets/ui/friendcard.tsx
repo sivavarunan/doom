@@ -1,6 +1,7 @@
-import React from 'react';
-import Image from 'next/image';
-import { IconUser, IconTrash, IconMessage } from '@tabler/icons-react';
+import React from "react";
+import Image from "next/image";
+import { IconMessage, IconTrash, IconUser } from "@tabler/icons-react";
+import { cn } from "@/lib/utils";
 
 interface FriendCardProps {
     uid: string;
@@ -12,52 +13,88 @@ interface FriendCardProps {
     onRemoveFriend: (uid: string) => void;
 }
 
-const FriendCard: React.FC<FriendCardProps> = ({ uid, profileImage, firstname, lastname, online, onChatStart, onRemoveFriend }) => {
+const FriendCard: React.FC<FriendCardProps> = ({
+    uid,
+    profileImage,
+    firstname,
+    lastname,
+    online,
+    onChatStart,
+    onRemoveFriend,
+}) => {
     return (
         <div
-            className="relative flex items-center justify-between p-4 mb-4 rounded-xl shadow-md cursor-pointer bg-white border-2 border-neutral-950 dark:bg-gradient-to-t from-neutral-950 to-neutral-900 hover:bg-gray-100 dark:hover:bg-neutral-700 w-96"
-        > 
-            <div className="flex items-center">
-                <div className="w-12 h-12 rounded-full overflow-hidden">
+            role="button"
+            tabIndex={0}
+            onClick={onChatStart}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onChatStart();
+                }
+            }}
+            className="group relative flex cursor-pointer items-center gap-3 overflow-hidden rounded-2xl border border-white/[0.06] bg-surface-2/50 p-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-400/20 hover:bg-surface-2/80"
+        >
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-500/[0.04] via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+            <div className="relative shrink-0">
+                <div className="relative h-11 w-11 overflow-hidden rounded-xl border border-white/10 bg-surface-3">
                     {profileImage ? (
                         <Image
                             src={profileImage}
                             alt={`${firstname} ${lastname}`}
-                            className="object-cover w-full h-full"
-                            width={400}
-                            height={400}
+                            width={96}
+                            height={96}
+                            className="h-full w-full object-cover"
                         />
                     ) : (
-                        <div className='dark:bg-gradient-to-t from-neutral-900 to-black bg-white flex items-center justify-center'>
-                            <IconUser stroke={1.5} className='w-12 h-12 rounded-full object-cover' />
+                        <div className="flex h-full w-full items-center justify-center text-white/40">
+                            <IconUser stroke={1.5} className="h-5 w-5" />
                         </div>
                     )}
                 </div>
-                <div className="ml-4">
-                    <h3 className="text-md font-semibold text-black dark:text-white">{firstname} {lastname}</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{online ? 'Online' : 'Offline'}</p>
-                </div>
+                <span
+                    className={cn(
+                        "absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-ink",
+                        online ? "bg-emerald-400 shadow-glow" : "bg-white/20"
+                    )}
+                />
             </div>
-            <div className="flex items-center">
+
+            <div className="relative min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-white">
+                    {firstname} {lastname}
+                </p>
+                <p
+                    className={cn(
+                        "mt-0.5 font-mono text-[10px] uppercase tracking-[0.15em]",
+                        online ? "text-emerald-300" : "text-white/40"
+                    )}
+                >
+                    {online ? "online" : "offline"}
+                </p>
+            </div>
+
+            <div className="relative flex items-center gap-1 opacity-70 transition-opacity group-hover:opacity-100">
                 <button
-                    className="text-teal-500 hover:text-emerald-700 ml-4"
+                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.02] text-white/60 transition-colors hover:border-emerald-400/30 hover:bg-emerald-500/10 hover:text-emerald-300"
                     onClick={(e) => {
                         e.stopPropagation();
                         onChatStart();
                     }}
-                    aria-label={`Start chat with ${firstname} ${lastname}`}
+                    aria-label={`Chat with ${firstname}`}
                 >
-                    <IconMessage size={20} />
+                    <IconMessage size={16} />
                 </button>
                 <button
-                    className="text-red-500 hover:text-red-700 ml-4"
+                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.02] text-white/50 transition-colors hover:border-rose-400/30 hover:bg-rose-500/10 hover:text-rose-300"
                     onClick={(e) => {
                         e.stopPropagation();
                         onRemoveFriend(uid);
                     }}
-                    aria-label={`Remove ${firstname} ${lastname} from friends`}
+                    aria-label={`Remove ${firstname}`}
                 >
-                    <IconTrash size={20} />
+                    <IconTrash size={16} />
                 </button>
             </div>
         </div>

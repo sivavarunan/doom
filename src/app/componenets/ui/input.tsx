@@ -1,60 +1,57 @@
-
 "use client";
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { useMotionTemplate, useMotionValue, motion } from "framer-motion";
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> { }
+    extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => {
-    const radius = 100;
-    const [visible, setVisible] = React.useState(false);
+    ({ className, type, ...props }, ref) => {
+        const [focused, setFocused] = React.useState(false);
+        const mouseX = useMotionValue(0);
+        const mouseY = useMotionValue(0);
 
-    let mouseX = useMotionValue(0);
-    let mouseY = useMotionValue(0);
+        function handleMouseMove({
+            currentTarget,
+            clientX,
+            clientY,
+        }: React.MouseEvent<HTMLDivElement>) {
+            const { left, top } = currentTarget.getBoundingClientRect();
+            mouseX.set(clientX - left);
+            mouseY.set(clientY - top);
+        }
 
-    function handleMouseMove({ currentTarget, clientX, clientY }: any) {
-      let { left, top } = currentTarget.getBoundingClientRect();
-
-      mouseX.set(clientX - left);
-      mouseY.set(clientY - top);
+        return (
+            <motion.div
+                onMouseMove={handleMouseMove}
+                style={{
+                    background: useMotionTemplate`radial-gradient(180px circle at ${mouseX}px ${mouseY}px, rgba(52,211,153,0.22), transparent 70%)`,
+                }}
+                className={cn(
+                    "group/input relative rounded-xl p-[1px] transition-all duration-200",
+                    focused
+                        ? "bg-gradient-to-br from-emerald-400/40 via-emerald-500/10 to-transparent"
+                        : "bg-white/[0.06]"
+                )}
+            >
+                <input
+                    ref={ref}
+                    type={type}
+                    onFocus={() => setFocused(true)}
+                    onBlur={() => setFocused(false)}
+                    className={cn(
+                        "flex h-11 w-full rounded-[11px] border-none bg-[rgb(var(--surface-2))] px-4 text-sm text-white placeholder:text-white/30",
+                        "file:border-0 file:bg-transparent file:text-sm file:font-medium",
+                        "focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+                        "transition-colors duration-200",
+                        className
+                    )}
+                    {...props}
+                />
+            </motion.div>
+        );
     }
-    return (
-      <motion.div
-        style={{
-          background: useMotionTemplate`
-        radial-gradient(
-          ${visible ? radius + "px" : "0px"} circle at ${mouseX}px ${mouseY}px,
-          var(--emerald-500),
-          transparent 80%
-        )
-      `,
-        }}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={() => setVisible(true)}
-        onMouseLeave={() => setVisible(false)}
-        className="p-[2px] rounded-lg transition duration-300 group/input"
-      >
-        <input
-          type={type}
-          className={cn(
-            `flex h-10 w-full border-none bg-gray-50 dark:bg-zinc-800 text-black dark:text-white shadow-input rounded-md px-3 py-2 text-sm  file:border-0 file:bg-transparent 
-          file:text-sm file:font-medium placeholder:text-neutral-400 dark:placeholder-text-neutral-600 
-          focus-visible:outline-none focus-visible:ring-[2px]  focus-visible:ring-neutral-400 dark:focus-visible:ring-neutral-600
-           disabled:cursor-not-allowed disabled:opacity-50
-           dark:shadow-[0px_0px_1px_1px_var(--neutral-700)]
-           group-hover/input:shadow-none transition duration-400
-           `,
-            className
-          )}
-          ref={ref}
-          {...props}
-        />
-      </motion.div>
-    );
-  }
 );
 Input.displayName = "Input";
 

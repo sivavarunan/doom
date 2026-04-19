@@ -1,16 +1,31 @@
 "use client";
 import React, { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import {
+    IconBrandGithub,
+    IconBrandGoogle,
+    IconArrowRight,
+    IconAlertTriangle,
+} from "@tabler/icons-react";
+import {
+    createUserWithEmailAndPassword,
+    signInWithPopup,
+    GoogleAuthProvider,
+} from "firebase/auth";
+import { setDoc, doc } from "firebase/firestore";
+
+import { auth, db } from "@/app/firebase";
 import { Label } from "@/app/componenets/ui/label";
 import { Input } from "@/app/componenets/ui/input";
-import { cn } from "@/lib/utils";
-import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react";
-import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { setDoc, doc } from "firebase/firestore";
-import { db } from "@/app/firebase";
-import { auth } from "@/app/firebase";
-import { toast, Bounce, Zoom } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Logo } from "@/app/componenets/logo";
+import {
+    AuthShell,
+    LabelInputContainer,
+    FieldError,
+} from "../login/login";
+import { toast, Bounce, Zoom } from "react-toastify";
 
 export function SignupForm() {
     const [firstname, setFirstname] = useState("");
@@ -18,6 +33,7 @@ export function SignupForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({
         firstname: "",
         lastname: "",
@@ -28,252 +44,204 @@ export function SignupForm() {
     });
 
     const router = useRouter();
+    const validateEmail = (e: string) => /\S+@\S+\.\S+/.test(e);
 
-    const validateEmail = (email: string) => {
-        const re = /\S+@\S+\.\S+/;
-        return re.test(email);
-    };
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const next = {
+            firstname: "",
+            lastname: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+            general: "",
+        };
 
-    
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    let formIsValid = true;
-    const newErrors = { firstname: "", lastname: "", email: "", password: "", confirmPassword: "", general: "" };
+        if (!firstname.trim()) next.firstname = "Required";
+        if (!lastname.trim()) next.lastname = "Required";
+        if (!email.trim()) next.email = "Required";
+        else if (!validateEmail(email)) next.email = "Invalid email";
+        if (!password.trim()) next.password = "Required";
+        else if (password.length < 8) next.password = "Minimum 8 characters";
+        if (!confirmPassword.trim()) next.confirmPassword = "Required";
+        else if (password !== confirmPassword)
+            next.confirmPassword = "Passwords don't match";
 
-    // First name validation
-    if (!firstname.trim()) {
-        newErrors.firstname = "First name is required.";
-        formIsValid = false;
-    }
+        setErrors(next);
+        const hasErr = Object.values(next).some((v) => v);
+        if (hasErr) return;
 
-    // Last name validation
-    if (!lastname.trim()) {
-        newErrors.lastname = "Last name is required.";
-        formIsValid = false;
-    }
-
-    // Email validation
-    if (!email.trim()) {
-        newErrors.email = "Email is required.";
-        formIsValid = false;
-    } else if (!validateEmail(email)) {
-        newErrors.email = "Invalid email address.";
-        formIsValid = false;
-    }
-
-    // Password validation
-    if (!password.trim()) {
-        newErrors.password = "Password is required.";
-        formIsValid = false;
-    } else if (password.length < 8) {
-        newErrors.password = "Password must be at least 8 characters long.";
-        formIsValid = false;
-    }
-
-    // Confirm password validation
-    if (!confirmPassword.trim()) {
-        newErrors.confirmPassword = "Please confirm your password.";
-        formIsValid = false;
-    } else if (password !== confirmPassword) {
-        newErrors.confirmPassword = "Passwords do not match.";
-        formIsValid = false;
-    }
-
-    setErrors(newErrors);
-
-    if (formIsValid) {
+        setLoading(true);
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-
-            // Save additional user info in Firestore using uid as the document ID
+            const cred = await createUserWithEmailAndPassword(auth, email, password);
+            const user = cred.user;
             await setDoc(doc(db, "users", user.uid), {
                 uid: user.uid,
                 firstname,
                 lastname,
-                email
+                email,
             });
-
-            console.log("User registered:", user);
-            toast.success("Sign up successful", {
-                position: "bottom-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                transition: Zoom,
-            });
+            toast.success("Account created", { transition: Zoom });
             router.push("/pages/LoginPage");
-
-        } catch (error: any) {
-            console.error("Error signing up:", error);
-            toast.error("Signup failed", {
-                position: "bottom-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                transition: Bounce,
-            });
-            if (error.code === "auth/email-already-in-use") {
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    email: "Email is already in use.",
-                }));
+        } catch (err: any) {
+            toast.error("Sign up failed", { transition: Bounce });
+            if (err.code === "auth/email-already-in-use") {
+                setErrors((p) => ({ ...p, email: "Email already in use" }));
             } else {
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    general: "An error occurred during signup. Please try again.",
+                setErrors((p) => ({
+                    ...p,
+                    general: "Something went wrong. Try again.",
                 }));
             }
+        } finally {
+            setLoading(false);
         }
-    }
-};
+    };
+
     const handleGoogleSignIn = async () => {
         const provider = new GoogleAuthProvider();
         try {
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
-            console.log("User signed in with Google:", user);
+            await signInWithPopup(auth, provider);
             router.push("/pages/LoginPage");
-        } catch (error: any) {
-            console.error("Error signing in with Google:", error);
-            alert(`Error: ${error.message}`); // Display the error message to the user
-            // Handle Google Sign-In errors
+        } catch (err: any) {
+            toast.error("Google sign-in failed", { transition: Bounce });
         }
     };
 
     return (
-        <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
-            <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200 text-center">
-                Create an Account
-            </h2>
-            <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-                Sign Up for free or if you have account <a href="/pages/LoginPage" className="text-green-300">Login</a>
-            </p>
-
-            <form className="my-8" onSubmit={handleSubmit}>
-                <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
-                    <LabelInputContainer>
-                        <Label htmlFor="firstname">First name</Label>
-                        <Input
-                            id="firstname"
-                            placeholder="John"
-                            type="text"
-                            value={firstname}
-                            onChange={(e) => setFirstname(e.target.value)}
-                        />
-                        {errors.firstname && <p className="text-red-600 text-sm font-mono">{errors.firstname}</p>}
-                    </LabelInputContainer>
-                    <LabelInputContainer>
-                        <Label htmlFor="lastname">Last name</Label>
-                        <Input
-                            id="lastname"
-                            placeholder="Doe"
-                            type="text"
-                            value={lastname}
-                            onChange={(e) => setLastname(e.target.value)}
-                        />
-                        {errors.lastname && <p className="text-red-600 text-sm font-mono">{errors.lastname}</p>}
-                    </LabelInputContainer>
+        <AuthShell>
+            <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="w-full"
+            >
+                <div className="mb-8 flex items-center justify-between">
+                    <Logo />
+                    <span className="chip">sign up</span>
                 </div>
-                <LabelInputContainer className="mb-4">
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input
-                        id="email"
-                        placeholder="example@gmail.com"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                    {errors.email && <p className="text-red-600 text-sm font-mono">{errors.email}</p>}
-                </LabelInputContainer>
-                <LabelInputContainer className="mb-4">
-                    <Label htmlFor="password">Password</Label>
-                    <Input
-                        id="password"
-                        placeholder="••••••••"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    {errors.password && <p className="text-red-600 text-sm font-mono">{errors.password}</p>}
-                </LabelInputContainer>
-                <LabelInputContainer className="mb-8">
-                    <Label htmlFor="confirmPassword">Retype the password</Label>
-                    <Input
-                        id="confirmPassword"
-                        placeholder="••••••••"
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-                    {errors.confirmPassword && <p className="text-red-600 text-sm font-mono">{errors.confirmPassword}</p>}
-                </LabelInputContainer>
 
-                <button
-                    className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
-                    type="submit"
-                >
-                    Sign up &rarr;
-                    <BottomGradient />
-                </button>
-                {errors.general && <p className="text-red-600 text-sm font-mono mt-4">{errors.general}</p>}
-
-                <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
-
-                <div className="flex flex-col space-y-4">
-                    <button
-                        className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-                        type="button"
+                <h1 className="font-display text-3xl font-semibold tracking-tight text-white md:text-4xl">
+                    Create your account.
+                </h1>
+                <p className="mt-2 text-sm text-white/55">
+                    Already a member?{" "}
+                    <Link
+                        href="/pages/LoginPage"
+                        className="font-medium text-emerald-300 transition-colors hover:text-emerald-200"
                     >
-                        <IconBrandGithub className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
-                        <span className="text-neutral-700 dark:text-neutral-300 text-sm">
-                            GitHub
-                        </span>
-                        <BottomGradient />
+                        Sign in →
+                    </Link>
+                </p>
+
+                <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+                    {errors.general && (
+                        <div className="flex items-start gap-2 rounded-xl border border-rose-500/30 bg-rose-500/[0.08] px-3 py-2.5 text-sm text-rose-200">
+                            <IconAlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                            <span>{errors.general}</span>
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <LabelInputContainer>
+                            <Label htmlFor="firstname">First name</Label>
+                            <Input
+                                id="firstname"
+                                placeholder="Eren"
+                                value={firstname}
+                                onChange={(e) => setFirstname(e.target.value)}
+                            />
+                            {errors.firstname && (
+                                <FieldError>{errors.firstname}</FieldError>
+                            )}
+                        </LabelInputContainer>
+                        <LabelInputContainer>
+                            <Label htmlFor="lastname">Last name</Label>
+                            <Input
+                                id="lastname"
+                                placeholder="Yeager"
+                                value={lastname}
+                                onChange={(e) => setLastname(e.target.value)}
+                            />
+                            {errors.lastname && (
+                                <FieldError>{errors.lastname}</FieldError>
+                            )}
+                        </LabelInputContainer>
+                    </div>
+
+                    <LabelInputContainer>
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                            id="email"
+                            placeholder="you@doom.app"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                        {errors.email && <FieldError>{errors.email}</FieldError>}
+                    </LabelInputContainer>
+
+                    <LabelInputContainer>
+                        <Label htmlFor="password">Password</Label>
+                        <Input
+                            id="password"
+                            type="password"
+                            placeholder="••••••••"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                        {errors.password && <FieldError>{errors.password}</FieldError>}
+                    </LabelInputContainer>
+
+                    <LabelInputContainer>
+                        <Label htmlFor="confirmPassword">Confirm password</Label>
+                        <Input
+                            id="confirmPassword"
+                            type="password"
+                            placeholder="••••••••"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                        {errors.confirmPassword && (
+                            <FieldError>{errors.confirmPassword}</FieldError>
+                        )}
+                    </LabelInputContainer>
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="btn-primary group w-full !py-3"
+                    >
+                        {loading ? "Creating account…" : "Create account"}
+                        {!loading && (
+                            <IconArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+                        )}
                     </button>
-                    <button
-                        className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-                        type="button"
-                        onClick={handleGoogleSignIn}
-                    >
-                        <IconBrandGoogle className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
-                        <span className="text-neutral-700 dark:text-neutral-300 text-sm">
+
+                    <div className="relative my-6 flex items-center">
+                        <div className="h-px flex-1 bg-white/[0.08]" />
+                        <span className="px-3 font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">
+                            or
+                        </span>
+                        <div className="h-px flex-1 bg-white/[0.08]" />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <button
+                            type="button"
+                            className="btn-ghost !py-2.5"
+                            onClick={handleGoogleSignIn}
+                        >
+                            <IconBrandGoogle className="h-4 w-4" />
                             Google
-                        </span>
-                        <BottomGradient />
-                    </button>
-                </div>
-            </form>
-        </div>
+                        </button>
+                        <button type="button" className="btn-ghost !py-2.5">
+                            <IconBrandGithub className="h-4 w-4" />
+                            GitHub
+                        </button>
+                    </div>
+                </form>
+            </motion.div>
+        </AuthShell>
     );
 }
-
-const BottomGradient = () => {
-    return (
-        <>
-            <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-green-500 to-transparent" />
-            <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-emerald-500 to-transparent" />
-        </>
-    );
-};
-
-
-const LabelInputContainer = ({
-    children,
-    className,
-}: {
-    children: React.ReactNode;
-    className?: string;
-}) => {
-    return (
-        <div className={cn("flex flex-col space-y-2 w-full", className)}>
-            {children}
-        </div>
-    );
-};

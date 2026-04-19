@@ -1,258 +1,208 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "@/app/componenets/ui/Sidebar";
+import { motion } from "framer-motion";
 import {
-  IconArrowLeft,
-  IconBrandTabler,
-  IconSettings,
-  IconUserBolt,
-  IconWorld,
+    IconBell,
+    IconLock,
+    IconPalette,
+    IconShieldLock,
+    IconUser,
 } from "@tabler/icons-react";
-import Image from "next/image";
+import { AppShell } from "@/app/componenets/AppShell";
 import { cn } from "@/lib/utils";
-import { Logo } from "@/app/componenets/logo";
-import { LogoIcon } from "@/app/componenets/LogoIcon";
-import { toast, Bounce } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 export function SidebarComp() {
-
-  const clearIndexedDB = async () => {
-    const databases = [
-      '/firebaseLocalStorageDb',
-      'firebaselocalstorage',
-    ];
-
-    // Delete known databases
-    databases.forEach((dbName) => {
-      if (dbName) {
-        const request = indexedDB.deleteDatabase(dbName);
-        request.onsuccess = () => {
-          console.log(`IndexedDB ${dbName} cleared`);
-        };
-        request.onerror = (event) => {
-          console.error(`Error clearing IndexedDB ${dbName}:`, event);
-        };
-      }
-    });
-
-    // List and delete all databases
-    try {
-      const dbs = await indexedDB.databases();
-      dbs.forEach((dbInfo) => {
-        const dbName = dbInfo.name;
-        if (dbName) {
-          const request = indexedDB.deleteDatabase(dbName);
-          request.onsuccess = () => {
-            console.log(`IndexedDB ${dbName} cleared`);
-          };
-          request.onerror = (event) => {
-            console.error(`Error clearing IndexedDB ${dbName}:`, event);
-          };
-        }
-      });
-    } catch (error) {
-      console.error('Error listing databases:', error);
-    }
-  };
-
-  const handleLogout = async () => {
-    // Remove auth token
-    localStorage.removeItem('authToken');
-
-    // Clear IndexedDB
-    await clearIndexedDB();
-
-    // Clear localStorage and sessionStorage
-    localStorage.clear();
-    sessionStorage.clear();
-
-    // Notify user
-    toast.success("Signed out successfully", {
-      position: "bottom-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      transition: Bounce,
-    });
-
-    // Redirect to Login page
-    window.location.href = '/pages/LoginPage'; // Immediate redirection
-  };
-
-  const links = [
-    {
-      label: "Dashboard",
-      href: "/pages/MainPage",
-      icon: (
-        <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Profile",
-      href: "/pages/Profile",
-      icon: (
-        <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Community",
-      href: "/pages/CommunityPage",
-      icon: (
-        <IconWorld className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Settings",
-      href: "/pages/Settings",
-      icon: (
-        <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Logout",
-      href: "/pages/LoginPage",
-      icon: (
-        <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-      onClick: handleLogout,
-    },
-  ];
-
-  const [open, setOpen] = useState(false);
-  return (
-    <div
-      className={cn(
-        "flex flex-col md:flex-row bg-gray-100 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 w-full h-screen overflow-hidden"
-      )}
-    >
-      <Sidebar open={open} setOpen={setOpen} >
-
-        <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden ">
-            {open ? <Logo /> : <LogoIcon />}
-            <div className="mt-8 flex flex-col gap-2">
-              {links.map((link, idx) => (
-                <SidebarLink key={idx} link={link} />
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <SidebarLink
-              link={{
-                label: "About",
-                href: "/pages/AboutPage",
-                icon: (
-                  <Image
-                    src="/anime.jpg"
-                    className="h-7 w-7 flex-shrink-0 rounded-full"
-                    width={50}
-                    height={50}
-                    alt="Avatar"
-                  />
-                ),
-              }}
-            />
-          </div>
-        </SidebarBody>
-      </Sidebar>
-      <div className="flex-1 overflow-y-scroll dark:custom-scrollbar">
-        <div className="flex-1 overflow-auto">
-          <Settings />
-        </div>
-      </div>
-    </div>
-  );
-
-
+    return (
+        <AppShell>
+            <Settings />
+        </AppShell>
+    );
 }
 
+type SectionDef = {
+    id: string;
+    title: string;
+    description: string;
+    icon: typeof IconUser;
+    items: { label: string; description: string; toggle?: boolean }[];
+};
+
+const sections: SectionDef[] = [
+    {
+        id: "account",
+        title: "Account",
+        description: "Manage your identity and credentials.",
+        icon: IconUser,
+        items: [
+            { label: "Change Email", description: "Update your email address." },
+            { label: "Change Password", description: "Rotate your account password." },
+        ],
+    },
+    {
+        id: "privacy",
+        title: "Privacy",
+        description: "Control how your data is protected.",
+        icon: IconShieldLock,
+        items: [
+            {
+                label: "Two-Factor Authentication",
+                description: "Require a second factor on sign-in.",
+                toggle: true,
+            },
+            {
+                label: "Manage Sessions",
+                description: "Review active devices and sessions.",
+            },
+        ],
+    },
+    {
+        id: "notifications",
+        title: "Notifications",
+        description: "Tune how and when DOOM reaches you.",
+        icon: IconBell,
+        items: [
+            {
+                label: "Email Notifications",
+                description: "Summary and security alerts via email.",
+                toggle: true,
+            },
+            {
+                label: "Push Notifications",
+                description: "Realtime alerts on this device.",
+                toggle: true,
+            },
+        ],
+    },
+    {
+        id: "appearance",
+        title: "Appearance",
+        description: "General preferences across the app.",
+        icon: IconPalette,
+        items: [
+            { label: "Dark Mode", description: "Use the dark theme.", toggle: true },
+            {
+                label: "Language",
+                description: "Select your preferred language.",
+            },
+        ],
+    },
+];
+
 const Settings = () => {
-  return (
-    // <div className="flex flex-col w-full h-auto bg-neutral-50 dark:bg-gradient-to-b from-emerald-950 to-neutral-950 p-6">
-    <div className="flex flex-col p-4 md:p-6 rounded-tl-2xl border-2 border-neutral-900 dark:border-neutral-900  w-full h-auto">
+    return (
+        <div className="mx-auto w-full max-w-5xl px-5 py-6 md:px-10 md:py-10">
+            <motion.section
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="relative mb-10 overflow-hidden rounded-3xl border border-white/[0.06] bg-surface-1/70 p-8 md:p-10"
+            >
+                <div className="pointer-events-none absolute inset-0 bg-aurora opacity-70" />
+                <div className="pointer-events-none absolute inset-0 bg-grid mask-radial opacity-25" />
+                <div className="relative z-10">
+                    <span className="chip mb-4">
+                        <IconLock className="h-3.5 w-3.5" />
+                        settings
+                    </span>
+                    <h1 className="font-display text-4xl font-semibold tracking-tight text-white md:text-5xl">
+                        Make it yours.
+                    </h1>
+                    <p className="mt-3 max-w-xl text-sm text-white/55 md:text-base">
+                        Fine-tune account, privacy, notifications and appearance. All changes
+                        save instantly.
+                    </p>
+                </div>
+            </motion.section>
 
-      <SettingsSection title="Account Settings" description="Manage your account details">
-        <SettingItem label="Change Email" description="Update your email address" />
-        <SettingItem label="Change Password" description="Update your account password" />
-      </SettingsSection>
+            <div className="space-y-6">
+                {sections.map((section, idx) => (
+                    <motion.div
+                        key={section.id}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 + idx * 0.05, duration: 0.45 }}
+                        className="rounded-3xl border border-white/[0.06] bg-surface-1/60 p-6 md:p-8"
+                    >
+                        <div className="flex items-start gap-4 border-b border-white/[0.05] pb-5">
+                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-300">
+                                <section.icon className="h-4 w-4" />
+                            </span>
+                            <div className="flex-1">
+                                <h3 className="font-display text-lg font-semibold text-white">
+                                    {section.title}
+                                </h3>
+                                <p className="mt-0.5 text-sm text-white/50">
+                                    {section.description}
+                                </p>
+                            </div>
+                            <span className="hidden font-mono text-[10px] uppercase tracking-[0.2em] text-white/25 md:inline">
+                                #{section.id}
+                            </span>
+                        </div>
 
-
-      <SettingsSection title="Privacy Settings" description="Control your privacy options">
-        <SettingItem label="Two-Factor Authentication" description="Enable or disable 2FA" toggle />
-        <SettingItem label="Manage Sessions" description="View and manage your active sessions" />
-      </SettingsSection>
-
-      <SettingsSection title="Notification Settings" description="Customize your notifications">
-        <SettingItem label="Email Notifications" description="Receive notifications via email" toggle />
-        <SettingItem label="Push Notifications" description="Receive notifications on your device" toggle />
-      </SettingsSection>
-
-
-      <SettingsSection title="General Settings" description="General app preferences">
-        <SettingItem label="Dark Mode" description="Enable dark theme" toggle />
-        <SettingItem label="Language" description="Select your preferred language" />
-      </SettingsSection>
-    </div>
-    // </div>
-  );
+                        <div className="mt-5 divide-y divide-white/[0.04]">
+                            {section.items.map((item) => (
+                                <SettingItem key={item.label} {...item} />
+                            ))}
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
+        </div>
+    );
 };
 
+const SettingItem = ({
+    label,
+    description,
+    toggle,
+}: {
+    label: string;
+    description: string;
+    toggle?: boolean;
+}) => {
+    const [isToggled, setIsToggled] = useState(false);
 
-const SettingsSection = ({ title, description, children }: { title: string; description: string; children: React.ReactNode }) => {
-  return (
-    <div className="mb-8">
-      <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">{title}</h3>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{description}</p>
-      <div className="space-y-4">{children}</div>
-    </div>
-  );
+    useEffect(() => {
+        const stored = localStorage.getItem(label);
+        if (stored) setIsToggled(stored === "true");
+    }, [label]);
+
+    const handleToggle = () => {
+        const next = !isToggled;
+        setIsToggled(next);
+        localStorage.setItem(label, String(next));
+        if (label === "Dark Mode") {
+            document.documentElement.classList.toggle("dark", next);
+        }
+    };
+
+    return (
+        <div className="flex items-center justify-between gap-5 py-4">
+            <div className="min-w-0 flex-1">
+                <h4 className="text-sm font-medium text-white">{label}</h4>
+                <p className="mt-0.5 text-[13px] text-white/50">{description}</p>
+            </div>
+            {toggle ? (
+                <label className="relative inline-flex cursor-pointer items-center">
+                    <input
+                        type="checkbox"
+                        className="peer sr-only"
+                        checked={isToggled}
+                        onChange={handleToggle}
+                    />
+                    <div
+                        className={cn(
+                            "h-6 w-11 rounded-full border border-white/[0.08] bg-white/[0.05] transition-colors",
+                            "peer-checked:border-emerald-400/40 peer-checked:bg-emerald-500/80",
+                            "after:absolute after:left-[3px] after:top-[3px] after:h-4 after:w-4 after:rounded-full after:bg-white after:shadow after:transition-all after:content-['']",
+                            "peer-checked:after:translate-x-5"
+                        )}
+                    />
+                </label>
+            ) : (
+                <button className="btn-ghost text-xs">Open</button>
+            )}
+        </div>
+    );
 };
-
-
-
-const SettingItem = ({ label, description, toggle }: { label: string; description: string; toggle?: boolean }) => {
-  const [isToggled, setIsToggled] = useState(false);
-
-  useEffect(() => {
-    const storedState = localStorage.getItem(label);
-    if (storedState) {
-      setIsToggled(storedState === "true");
-    }
-  }, [label]);
-
-  const handleToggle = () => {
-    setIsToggled((prev) => !prev);
-    localStorage.setItem(label, (!isToggled).toString());
-  
-    if (label === "Dark Mode") {
-      document.body.classList.toggle("dark", !isToggled); // Switch between dark and light mode
-    }
-  };
-  
-
-  return (
-    <div className="flex justify-between items-center bg-white dark:bg-neutral-950 dark:bg-opacity-50 p-4 rounded-lg shadow-sm overflow-hidden">
-      <div className="flex flex-col justify-center">
-        <h4 className="text-md font-medium text-gray-700 dark:text-gray-300">{label}</h4>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
-      </div>
-      {toggle && (
-        <label className="relative flex items-center ml-4 cursor-pointer">
-          <input
-            type="checkbox"
-            className="sr-only peer"
-            checked={isToggled}
-            onChange={handleToggle}
-          />
-          <div className="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 dark:bg-opacity-50 peer-focus:ring-4 peer-focus:ring-emerald-300 dark:peer-focus:ring-emerald-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-600"></div>
-        </label>
-      )}
-    </div>
-  );
-};
-
